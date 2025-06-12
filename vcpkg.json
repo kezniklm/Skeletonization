@@ -1,0 +1,13 @@
+{
+  "name": "skeletonization",
+  "version-string": "1.0.0",
+  "dependencies": [
+    "pybind11",
+    "benchmark",
+    "cuda",
+    {
+      "name": "opencv4",
+      "features": [ "cuda", "contrib" ]
+    }
+  ]
+}
