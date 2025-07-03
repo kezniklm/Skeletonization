@@ -5,9 +5,13 @@ project(SkeletonizationCoreGPU)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/vcpkg-deps.cmake)
 
-file(GLOB_RECURSE GPU_SOURCES CONFIGURE_DEPENDS source/*.cppm)
-file(GLOB_RECURSE GPU_MODULES CONFIGURE_DEPENDS modules/*.ixx)
+file(GLOB_RECURSE GPU_SOURCES CONFIGURE_DEPENDS source/*.ixx)
 
-add_library(SkeletonizationCoreGPU STATIC ${GPU_SOURCES} ${GPU_MODULES})
+add_library(SkeletonizationCoreGPU)
 
-target_include_directories(SkeletonizationCoreGPU PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_sources(SkeletonizationCoreGPU
+        PUBLIC
+        FILE_SET modules TYPE CXX_MODULES FILES
+        ${GPU_SOURCES} )
+
+target_link_libraries(SkeletonizationCoreGPU PUBLIC SkeletonizationCoreCommon)

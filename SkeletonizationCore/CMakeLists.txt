@@ -5,9 +5,18 @@ project(SkeletonizationCore)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/vcpkg-deps.cmake)
 
-file(GLOB_RECURSE CORE_SOURCES CONFIGURE_DEPENDS source/*.cppm)
-file(GLOB_RECURSE CORE_MODULES CONFIGURE_DEPENDS modules/*.ixx)
+file(GLOB_RECURSE CORE_SOURCES CONFIGURE_DEPENDS source/*.ixx)
 
-add_library(SkeletonizationCore STATIC ${CORE_SOURCES} ${CORE_MODULES})
+add_library(SkeletonizationCore)
 
-target_include_directories(SkeletonizationCore PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_sources(SkeletonizationCore
+        PUBLIC
+        FILE_SET modules TYPE CXX_MODULES FILES
+        ${CORE_SOURCES})
+
+target_link_libraries(SkeletonizationCore PUBLIC SkeletonizationCoreCommon)
+
+add_subdirectory(
+    ${CMAKE_SOURCE_DIR}/SkeletonizationCoreCommon
+    ${CMAKE_BINARY_DIR}/SkeletonizationCoreCommon-build
+)
