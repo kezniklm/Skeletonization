@@ -5,12 +5,11 @@ module;
 #include <map>
 #include <string>
 
-export module skeletonizer_registry;
+export module configuration:skeletonizer_configuration;
 
 import skeletonizer_cpu;
 import skeletonizer_gpu;
 import skeletonizer;
-import skeletonizer_factory;
 
 using skeletonizer_creator = std::function<std::unique_ptr<skeletonizer>()>;
 
@@ -23,7 +22,7 @@ export struct image_benchmark_metadata
 	skeletonizer_map skeletonizers;
 };
 
-export inline std::vector<image_benchmark_metadata> skeletonizer_registry = {
+export inline std::vector<image_benchmark_metadata> skeletonizer_configuration = {
 	{"Image 1", R"(C:\Users\matej.keznikl\OneDrive - Thermo Fisher Scientific\Documents\Master's Diploma Thesis\Image datasets\leafsnap-dataset\dataset\images\field\abies_concolor\12995307070714.jpg)", {{skeletonizer_type::cpu, []
 										{ return std::make_unique<skeletonizer_cpu>(); }},
 									   {skeletonizer_type::gpu, []

@@ -1,14 +1,13 @@
 import commandline;
-
-import benchmark_manager;
+import benchmark;
 
 int main(const int argc, const char *const *argv)
 {
-    const commandline_parser commandline_parser(argc, argv);
+    const commandline::parser commandline_parser(argc, argv);
 
     const auto commandline_options = commandline_parser.parse();
 
-    benchmark_manager manager;
+    skeletonization_benchmark::manager manager;
 
     manager.register_all();
 
