@@ -29,22 +29,25 @@ namespace skeletonization_benchmark
 		{
 			for (const auto& [type, skeletonizer_creator] : image_metadata_.skeletonizers)
 			{
-				std::string benchmark_name = image_metadata_.name + "/" + to_string(type);
+				auto skeletonizer = skeletonizer_creator();
+				const std::string name = create_benchmark_name(skeletonizer->name(), type);
 
-				benchmark::RegisterBenchmark(benchmark_name,
-				                             [this, skeletonizer_creator, benchmark_name](benchmark::State& state)
+				benchmark::RegisterBenchmark(name,
+				                             [this, skeletonizer = std::move(skeletonizer), name](
+				                             benchmark::State& state)
 				                             {
-					                             const auto skeletonizer = skeletonizer_creator();
-
 					                             for (auto _ : state)
 					                             {
 						                             const auto result = skeletonizer->apply(binary_image_);
-
-						                             results_[benchmark_name] = result;
+						                             results_[name] = result;
 					                             }
-					                             state.SetLabel(skeletonizer->name());
 				                             });
 			}
+		}
+
+		std::string create_benchmark_name(const std::string& skeletonizer_name, const skeletonizer_type type) const
+		{
+			return image_metadata_.name + "/" + skeletonizer_name + "/" + to_string(type);
 		}
 
 		visual_inspector::image_container process_benchmark_results() const
