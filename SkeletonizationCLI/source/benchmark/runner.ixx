@@ -45,7 +45,8 @@ namespace skeletonization_benchmark
 			}
 		}
 
-		std::string create_benchmark_name(const std::string& skeletonizer_name, const skeletonizer_type type) const
+		std::string create_benchmark_name(const std::string& skeletonizer_name,
+		                                  const skeletonizer::skeletonizer_type type) const
 		{
 			return image_metadata_.name + "/" + skeletonizer_name + "/" + to_string(type);
 		}

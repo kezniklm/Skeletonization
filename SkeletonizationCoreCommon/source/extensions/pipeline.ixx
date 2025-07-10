@@ -1,6 +1,6 @@
 module;
 
-#include <functional> 
+#include <functional>
 #include <type_traits>
 #include <utility>
 
