@@ -51,17 +51,6 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
     endif()
 endif()
 
-# Enable optimizations for smaller binary size
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    message(STATUS "Enabling Release optimizations for smaller binary size")
-
-    if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Os")
-    elseif (MSVC)
-        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O1")
-    endif()
-endif()
-
 # Set C++ standards
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
