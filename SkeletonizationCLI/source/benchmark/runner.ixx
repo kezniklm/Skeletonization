@@ -1,10 +1,11 @@
 module;
 
-#include <benchmark/benchmark.h>
-#include <opencv2/opencv.hpp>
+#include <functional>
 #include <map>
 #include <string>
-#include <functional>
+#include <vector>
+#include <benchmark/benchmark.h>
+#include <opencv2/opencv.hpp>
 
 export module benchmark:runner;
 
@@ -46,9 +47,11 @@ namespace skeletonization_benchmark
 			benchmark::RegisterBenchmark(name,
 			                             [this, name, skeletonizer = std::move(skeletonizer)](benchmark::State& state)
 			                             {
+				                             const auto image = binary_image_.clone();
+
 				                             for (auto _ : state)
 				                             {
-					                             results_[name] = skeletonizer->apply(binary_image_);
+					                             results_[name] = skeletonizer->apply(image);
 				                             }
 			                             });
 		}
