@@ -9,7 +9,7 @@
       "name": "opencv4",
       "features": [ "cuda", "contrib" ]
     },
-    "nlohmann-json",
+    "rapidjson",
     "cli11"
   ]
 }

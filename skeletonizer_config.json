@@ -1,0 +1,30 @@
+[
+  {
+    "name": "Leaf A",
+    "path": "C:\\Users\\matej.keznikl\\OneDrive - Thermo Fisher Scientific\\Documents\\Master's Diploma Thesis\\Image datasets\\leafsnap-dataset\\dataset\\images\\field\\abies_concolor\\12995307070714.jpg",
+    "skeletonizers": [
+      {
+        "type": "cpu",
+        "algorithm": "zhang_suen"
+      },
+      {
+        "type": "gpu",
+        "algorithm": "zhang_suen"
+      }
+    ]
+  },
+  {
+    "name": "Leaf B",
+    "path": "C:\\Users\\matej.keznikl\\OneDrive - Thermo Fisher Scientific\\Documents\\Master's Diploma Thesis\\Image datasets\\leafsnap-dataset\\dataset\\images\\field\\acer_ginnala\\13291762511387.jpg",
+    "skeletonizers": [
+      {
+        "type": "cpu",
+        "algorithm": "zhang_suen"
+      },
+      {
+        "type": "gpu",
+        "algorithm": "zhang_suen"
+      }
+    ]
+  }
+]

@@ -27,22 +27,30 @@ namespace skeletonization_benchmark
 
 		void register_all_benchmarks()
 		{
-			for (const auto& [type, skeletonizer_creator] : image_metadata_.skeletonizers)
+			for (const auto& [type, creators] : image_metadata_.skeletonizers)
 			{
-				auto skeletonizer = skeletonizer_creator();
-				const std::string name = create_benchmark_name(skeletonizer->name(), type);
+				for (const auto& creator : creators)
+				{
+					auto skeletonizer = creator();
 
-				benchmark::RegisterBenchmark(name,
-				                             [this, skeletonizer = std::move(skeletonizer), name](
-				                             benchmark::State& state)
-				                             {
-					                             for (auto _ : state)
-					                             {
-						                             const auto result = skeletonizer->apply(binary_image_);
-						                             results_[name] = result;
-					                             }
-				                             });
+					const std::string name = create_benchmark_name(skeletonizer->name(), type);
+
+					register_benchmark(name, std::move(skeletonizer));
+				}
 			}
+		}
+
+
+		void register_benchmark(const std::string& name, std::unique_ptr<skeletonizer::skeletonizer> skeletonizer)
+		{
+			benchmark::RegisterBenchmark(name,
+			                             [this, name, skeletonizer = std::move(skeletonizer)](benchmark::State& state)
+			                             {
+				                             for (auto _ : state)
+				                             {
+					                             results_[name] = skeletonizer->apply(binary_image_);
+				                             }
+			                             });
 		}
 
 		std::string create_benchmark_name(const std::string& skeletonizer_name,

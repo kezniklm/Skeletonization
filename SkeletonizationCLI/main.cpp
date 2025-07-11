@@ -1,19 +1,19 @@
 import commandline;
 import benchmark;
 
-int main(const int argc, const char *const *argv)
+int main(const int argc, const char* const * argv)
 {
-    const commandline::parser commandline_parser(argc, argv);
+	const commandline::parser commandline_parser(argc, argv);
 
-    const auto commandline_options = commandline_parser.parse();
+	const auto [configuration_path] = commandline_parser.parse();
 
-    skeletonization_benchmark::manager manager;
+	skeletonization_benchmark::manager manager;
 
-    manager.register_all();
+	manager.register_all(configuration_path);
 
-    manager.run_all();
+	manager.run_all();
 
-    manager.show_results();
+	manager.show_results();
 
-    return 0;
+	return 0;
 }

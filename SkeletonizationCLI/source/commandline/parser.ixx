@@ -21,7 +21,9 @@ namespace commandline
 
 			CLI::App app{"Skeletonization benchmark"};
 
-			app.add_flag("-v,--verbose", commandline_arguments.verbose, "Enable verbose output");
+			app.add_option("-c,--config", commandline_arguments.configuration_path, "Path to configuration JSON file")
+			   ->default_val(commandline_arguments.configuration_path)
+			   ->check(CLI::ExistingFile);
 
 			try
 			{

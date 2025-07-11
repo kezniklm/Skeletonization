@@ -20,9 +20,9 @@ namespace skeletonization_benchmark
 	export class manager
 	{
 	public:
-		void register_all()
+		void register_all(const std::string& configuration_path)
 		{
-			for (const auto& image_metadata : skeletonizer_configuration)
+			for (const auto& image_metadata : configuration::load_skeletonizer_configuration(configuration_path))
 			{
 				add_runner(image_metadata);
 			}
@@ -47,24 +47,24 @@ namespace skeletonization_benchmark
 		void delete_runner(const std::string& name)
 		{
 			std::erase_if(runners_, [&](const auto& pair)
-				{
-					return pair.first == name;
-				});
+			{
+				return pair.first == name;
+			});
 		}
 
 		void show_results() const
 		{
-			 visual_inspector::visualiser visualiser;
+			visual_inspector::visualiser visualiser;
 
-			 std::ranges::for_each(std::views::values(runners_), [&visualiser](const auto& runner)
-				 {
-					 auto benchmark_image_container = runner->process_benchmark_results();
-					 visualiser.add_benchmark_image_container(benchmark_image_container);
-				 });
+			std::ranges::for_each(std::views::values(runners_), [&visualiser](const auto& runner)
+			{
+				auto benchmark_image_container = runner->process_benchmark_results();
+				visualiser.add_benchmark_image_container(benchmark_image_container);
+			});
 
-			 constexpr auto default_window_name = "Skeletonization algorithms comparison";
+			constexpr auto default_window_name = "Skeletonization algorithms comparison";
 
-			 visualiser.show(default_window_name);
+			visualiser.show(default_window_name);
 		}
 
 	private:

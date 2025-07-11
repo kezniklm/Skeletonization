@@ -8,6 +8,8 @@ file(GLOB_RECURSE CLI_MAIN CONFIGURE_DEPENDS main.cpp)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/vcpkg-deps.cmake)
 
+file(COPY "${CMAKE_SOURCE_DIR}/skeletonizer_config.json" DESTINATION "${CMAKE_BINARY_DIR}")
+
 add_executable(SkeletonizationCLI ${CLI_MAIN} ${CLI_SOURCE})
 
 target_sources(SkeletonizationCLI
@@ -17,4 +19,4 @@ target_sources(SkeletonizationCLI
 
 target_include_directories(SkeletonizationCLI PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-target_link_libraries(SkeletonizationCLI PRIVATE SkeletonizationCore SkeletonizationCoreGPU benchmark::benchmark CLI11::CLI11)
+target_link_libraries(SkeletonizationCLI PRIVATE SkeletonizationCore SkeletonizationCoreGPU benchmark::benchmark CLI11::CLI11 RapidJSON rapidjson)
