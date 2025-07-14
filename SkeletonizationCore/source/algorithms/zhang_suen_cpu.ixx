@@ -42,31 +42,35 @@ namespace skeletonizer::cpu::algorithms
 
 				for (int column = 1; column < binary_image.cols - 1; ++column)
 				{
-					if (current[column] == 1)
+					const uchar p1 = current[column];
+
+					if (p1 != 1)
 					{
-						const uchar p2 = previous[column];
-						const uchar p3 = previous[column + 1];
-						const uchar p4 = current[column + 1];
-						const uchar p5 = next[column + 1];
-						const uchar p6 = next[column];
-						const uchar p7 = next[column - 1];
-						const uchar p8 = current[column - 1];
-						const uchar p9 = previous[column - 1];
+						continue;
+					}
 
-						const int a = (p2 == 0 && p3 == 1) + (p3 == 0 && p4 == 1) +
-							(p4 == 0 && p5 == 1) + (p5 == 0 && p6 == 1) +
-							(p6 == 0 && p7 == 1) + (p7 == 0 && p8 == 1) +
-							(p8 == 0 && p9 == 1) + (p9 == 0 && p2 == 1);
+					const uchar p2 = previous[column];
+					const uchar p3 = previous[column + 1];
+					const uchar p4 = current[column + 1];
+					const uchar p5 = next[column + 1];
+					const uchar p6 = next[column];
+					const uchar p7 = next[column - 1];
+					const uchar p8 = current[column - 1];
+					const uchar p9 = previous[column - 1];
 
-						const int b = p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9;
+					const int a = (p2 == 0 && p3 == 1) + (p3 == 0 && p4 == 1) +
+						(p4 == 0 && p5 == 1) + (p5 == 0 && p6 == 1) +
+						(p6 == 0 && p7 == 1) + (p7 == 0 && p8 == 1) +
+						(p8 == 0 && p9 == 1) + (p9 == 0 && p2 == 1);
 
-						const int step_condition_c = p2 * p4 * p6;
-						const int step_condition_d = p4 * p6 * p8;
+					const int b = p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9;
 
-						if (a == 1 && b >= 2 && b <= 6 && step_condition_c == 0 && step_condition_d == 0)
-						{
-							marker_pointer[column] = 1;
-						}
+					const int step_condition_c = p2 * p4 * p6;
+					const int step_condition_d = p4 * p6 * p8;
+
+					if (a == 1 && b >= 2 && b <= 6 && step_condition_c == 0 && step_condition_d == 0)
+					{
+						marker_pointer[column] = 1;
 					}
 				}
 			}
@@ -87,31 +91,35 @@ namespace skeletonizer::cpu::algorithms
 
 				for (int column = 1; column < binary_image.cols - 1; ++column)
 				{
-					if (current[column] == 1)
+					const uchar p1 = current[column];
+
+					if (p1 != 1)
 					{
-						const uchar p2 = previous[column];
-						const uchar p3 = previous[column + 1];
-						const uchar p4 = current[column + 1];
-						const uchar p5 = next[column + 1];
-						const uchar p6 = next[column];
-						const uchar p7 = next[column - 1];
-						const uchar p8 = current[column - 1];
-						const uchar p9 = previous[column - 1];
+						continue;
+					}
 
-						const int a = (p2 == 0 && p3 == 1) + (p3 == 0 && p4 == 1) +
-							(p4 == 0 && p5 == 1) + (p5 == 0 && p6 == 1) +
-							(p6 == 0 && p7 == 1) + (p7 == 0 && p8 == 1) +
-							(p8 == 0 && p9 == 1) + (p9 == 0 && p2 == 1);
+					const uchar p2 = previous[column];
+					const uchar p3 = previous[column + 1];
+					const uchar p4 = current[column + 1];
+					const uchar p5 = next[column + 1];
+					const uchar p6 = next[column];
+					const uchar p7 = next[column - 1];
+					const uchar p8 = current[column - 1];
+					const uchar p9 = previous[column - 1];
 
-						const int b = p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9;
+					const int a = (p2 == 0 && p3 == 1) + (p3 == 0 && p4 == 1) +
+						(p4 == 0 && p5 == 1) + (p5 == 0 && p6 == 1) +
+						(p6 == 0 && p7 == 1) + (p7 == 0 && p8 == 1) +
+						(p8 == 0 && p9 == 1) + (p9 == 0 && p2 == 1);
 
-						const int step_condition_c = p2 * p4 * p8;
-						const int step_condition_d = p2 * p6 * p8;
+					const int b = p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9;
 
-						if (a == 1 && b >= 2 && b <= 6 && step_condition_c == 0 && step_condition_d == 0)
-						{
-							marker_pointer[column] = 1;
-						}
+					const int step_condition_c = p2 * p4 * p8;
+					const int step_condition_d = p2 * p6 * p8;
+
+					if (a == 1 && b >= 2 && b <= 6 && step_condition_c == 0 && step_condition_d == 0)
+					{
+						marker_pointer[column] = 1;
 					}
 				}
 			}
