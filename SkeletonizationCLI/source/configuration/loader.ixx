@@ -92,6 +92,30 @@ namespace configuration
 				});
 			}
 		}
+		else if (algorithm == "guo_hall")
+		{
+			if (skeletonizer_type == skeletonizer::skeletonizer_type::cpu)
+			{
+				creators.push_back([]
+					{
+						return std::make_unique<skeletonizer::cpu::algorithms::guo_hall_cpu>();
+					});
+			}
+			else if (skeletonizer_type == skeletonizer::skeletonizer_type::thread)
+			{
+				creators.push_back([]
+					{
+						return std::make_unique<skeletonizer::cpu::algorithms::guo_hall_cpu_threads>();
+					});
+			}
+			else if (skeletonizer_type == skeletonizer::skeletonizer_type::gpu)
+			{
+				creators.push_back([]
+					{
+						return std::make_unique<skeletonizer::gpu::algorithms::guo_hall_gpu>();
+					});
+			}
+		}
 
 		if (creators.empty())
 		{

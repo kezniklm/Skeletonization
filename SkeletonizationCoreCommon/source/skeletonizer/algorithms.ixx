@@ -15,4 +15,13 @@ namespace skeletonizer::algorithms
 			return "Zhang-Suen";
 		}
 	};
+
+	export class guo_hall : virtual public skeletonizer
+	{
+	public:
+		std::string name() const final override
+		{
+			return "Guo-Hall";
+		}
+	};
 }
