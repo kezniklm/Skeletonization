@@ -19,6 +19,7 @@ namespace skeletonizer
 	export enum class skeletonizer_type
 	{
 		cpu,
+		thread,
 		gpu
 	};
 
@@ -28,6 +29,8 @@ namespace skeletonizer
 		{
 		case skeletonizer_type::cpu:
 			return "CPU";
+		case skeletonizer_type::thread:
+			return "THREAD";
 		case skeletonizer_type::gpu:
 			return "GPU";
 		default:

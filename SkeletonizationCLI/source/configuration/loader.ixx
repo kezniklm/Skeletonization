@@ -49,6 +49,11 @@ namespace configuration
 			return skeletonizer::skeletonizer_type::cpu;
 		}
 
+		if (skeletonizer_type_string == "thread")
+		{
+			return skeletonizer::skeletonizer_type::thread;
+		}
+
 		if (skeletonizer_type_string == "gpu")
 		{
 			return skeletonizer::skeletonizer_type::gpu;
@@ -71,6 +76,13 @@ namespace configuration
 				{
 					return std::make_unique<skeletonizer::cpu::algorithms::zhang_suen_cpu>();
 				});
+			}
+			else if (skeletonizer_type == skeletonizer::skeletonizer_type::thread)
+			{
+				creators.push_back([]
+					{
+						return std::make_unique<skeletonizer::cpu::algorithms::zhang_suen_cpu_threads>();
+					});
 			}
 			else if (skeletonizer_type == skeletonizer::skeletonizer_type::gpu)
 			{
