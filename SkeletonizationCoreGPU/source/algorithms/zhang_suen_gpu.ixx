@@ -11,9 +11,8 @@ export namespace skeletonizer::gpu::algorithms
 {
 	export class zhang_suen_gpu final : public ::skeletonizer::algorithms::zhang_suen, public skeletonizer_gpu
 	{
-		cv::Mat apply(const cv::Mat& binary_image) const override
+		void apply(cv::Mat& binary_image) const override
 		{
-			return binary_image;
 		}
 	};
 }

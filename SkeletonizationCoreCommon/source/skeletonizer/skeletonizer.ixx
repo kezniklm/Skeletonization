@@ -11,7 +11,7 @@ namespace skeletonizer
 	public:
 		virtual ~skeletonizer() = default;
 
-		virtual cv::Mat apply(const cv::Mat& binary_image) const = 0;
+		virtual void apply(cv::Mat& binary_image) const = 0;
 
 		virtual std::string name() const = 0;
 	};
