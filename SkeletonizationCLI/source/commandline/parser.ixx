@@ -15,14 +15,14 @@ namespace commandline
 		{
 		}
 
-		arguments parse() const
+		void parse() const
 		{
-			arguments commandline_arguments;
+			auto& [configuration_path, number_of_benchmark_iterations] = global_arguments();
 
 			CLI::App app{"Skeletonization benchmark"};
 
-			app.add_option("-c,--config", commandline_arguments.configuration_path, "Path to configuration JSON file")
-			   ->default_val(commandline_arguments.configuration_path)
+			app.add_option("-c,--config", configuration_path, "Path to configuration JSON file")
+			   ->default_val(configuration_path)
 			   ->check(CLI::ExistingFile);
 
 			try
@@ -33,8 +33,6 @@ namespace commandline
 			{
 				std::exit(app.exit(e));
 			}
-
-			return commandline_arguments;
 		}
 
 	private:

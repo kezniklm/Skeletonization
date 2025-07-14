@@ -5,11 +5,11 @@ int main(const int argc, const char* const * argv)
 {
 	const commandline::parser commandline_parser(argc, argv);
 
-	const auto [configuration_path] = commandline_parser.parse();
+	commandline_parser.parse();
 
 	skeletonization_benchmark::manager manager;
 
-	manager.register_all(configuration_path);
+	manager.register_all();
 
 	manager.run_all();
 

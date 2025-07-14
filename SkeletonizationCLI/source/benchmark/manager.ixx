@@ -12,6 +12,7 @@ export module benchmark:manager;
 
 import configuration;
 import visual_inspector;
+import commandline;
 
 import :runner;
 
@@ -20,8 +21,10 @@ namespace skeletonization_benchmark
 	export class manager
 	{
 	public:
-		void register_all(const std::string& configuration_path)
+		void register_all()
 		{
+			const auto& [configuration_path, _] = global_arguments();
+
 			for (const auto& image_metadata : configuration::load_skeletonizer_configuration(configuration_path))
 			{
 				add_runner(image_metadata);

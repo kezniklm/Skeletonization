@@ -13,6 +13,7 @@ import skeletonizer;
 import configuration;
 import image_processing;
 import visual_inspector;
+import commandline;
 
 namespace skeletonization_benchmark
 {
@@ -44,16 +45,21 @@ namespace skeletonization_benchmark
 
 		void register_benchmark(const std::string& name, std::unique_ptr<skeletonizer::skeletonizer> skeletonizer)
 		{
+			const auto& [_, number_of_benchmark_iterations] = global_arguments();
+
+
 			benchmark::RegisterBenchmark(name,
 			                             [this, name, skeletonizer = std::move(skeletonizer)](benchmark::State& state)
 			                             {
-				                             const auto image = binary_image_.clone();
+				                             auto image = binary_image_.clone();
 
 				                             for (auto _ : state)
 				                             {
-					                             results_[name] = skeletonizer->apply(image);
+					                             skeletonizer->apply(image);
 				                             }
-			                             });
+
+											 results_[name] = scale(image);
+			                             })->Iterations(number_of_benchmark_iterations);
 		}
 
 		std::string create_benchmark_name(const std::string& skeletonizer_name,
