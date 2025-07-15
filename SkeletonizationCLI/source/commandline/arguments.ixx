@@ -9,8 +9,8 @@ namespace commandline
 	export struct arguments
 	{
 		std::string configuration_path = "../skeletonizer_config.json";
-
-		unsigned int number_of_benchmark_iterations = 10000;
+		
+		unsigned int number_of_benchmark_iterations = 1000;
 	};
 }
 

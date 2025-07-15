@@ -141,6 +141,31 @@ namespace configuration
 			}
 		}
 
+		else if (algorithm == "kwon_gi_kang")
+		{
+			if (skeletonizer_type == skeletonizer::skeletonizer_type::cpu)
+			{
+				creators.push_back([]
+					{
+						return std::make_unique<skeletonizer::cpu::algorithms::kwon_gi_kang_cpu>();
+					});
+			}
+			else if (skeletonizer_type == skeletonizer::skeletonizer_type::thread)
+			{
+				creators.push_back([]
+					{
+						return std::make_unique<skeletonizer::cpu::algorithms::kwon_gi_kang_cpu_threads>();
+					});
+			}
+			else if (skeletonizer_type == skeletonizer::skeletonizer_type::gpu)
+			{
+				creators.push_back([]
+					{
+						return std::make_unique<skeletonizer::gpu::algorithms::kwon_gi_kang_gpu>();
+					});
+			}
+		}
+
 		if (creators.empty())
 		{
 			throw std::runtime_error(

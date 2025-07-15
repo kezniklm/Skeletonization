@@ -32,4 +32,12 @@ namespace skeletonizer::algorithms
 			return "Hesselink-Roerdink";
 		}
 	};
+
+	export class kwon_gi_kang : virtual public skeletonizer
+	{
+		std::string name() const final
+		{
+			return "Kwon-Gi-Kang";
+		}
+	};
 }
