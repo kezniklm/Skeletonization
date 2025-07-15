@@ -116,6 +116,30 @@ namespace configuration
 					});
 			}
 		}
+		else if (algorithm == "hesselink_roerdink")
+		{
+			if (skeletonizer_type == skeletonizer::skeletonizer_type::cpu)
+			{
+				creators.push_back([]
+					{
+						return std::make_unique<skeletonizer::cpu::algorithms::hesselink_roerdink_cpu>();
+					});
+			}
+			else if (skeletonizer_type == skeletonizer::skeletonizer_type::thread)
+			{
+				creators.push_back([]
+					{
+						return std::make_unique<skeletonizer::cpu::algorithms::hesselink_roerdink_cpu_threads>();
+					});
+			}
+			else if (skeletonizer_type == skeletonizer::skeletonizer_type::gpu)
+			{
+				creators.push_back([]
+					{
+						return std::make_unique<skeletonizer::gpu::algorithms::hesselink_roerdink_gpu>();
+					});
+			}
+		}
 
 		if (creators.empty())
 		{

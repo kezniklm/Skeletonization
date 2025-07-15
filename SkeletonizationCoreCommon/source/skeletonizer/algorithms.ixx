@@ -24,4 +24,12 @@ namespace skeletonizer::algorithms
 			return "Guo-Hall";
 		}
 	};
+
+	export class hesselink_roerdink : virtual public skeletonizer
+	{
+		std::string name() const final
+		{
+			return "Hesselink-Roerdink";
+		}
+	};
 }

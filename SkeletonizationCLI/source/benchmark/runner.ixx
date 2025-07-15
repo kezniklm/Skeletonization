@@ -51,14 +51,14 @@ namespace skeletonization_benchmark
 			benchmark::RegisterBenchmark(name,
 			                             [this, name, skeletonizer = std::move(skeletonizer)](benchmark::State& state)
 			                             {
-				                             auto image = binary_image_.clone();
-
 				                             for (auto _ : state)
 				                             {
-					                             skeletonizer->apply(image);
-				                             }
+					                             auto image = binary_image_.clone();
 
-											 results_[name] = scale(image);
+					                             skeletonizer->apply(image);
+
+					                             results_[name] = scale(image);
+				                             }
 			                             })->Iterations(number_of_benchmark_iterations);
 		}
 
