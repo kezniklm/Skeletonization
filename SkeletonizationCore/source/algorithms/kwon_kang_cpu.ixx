@@ -23,7 +23,7 @@ namespace skeletonizer::cpu::algorithms
 				first_iteration(binary_image, marker);
 				second_iteration(binary_image, marker);
 
-				//cleanup_oblique_corners(binary_image, marker);
+				cleanup_oblique_corners(binary_image, marker);
 
 				cv::absdiff(binary_image, previous, difference);
 				binary_image.copyTo(previous);
