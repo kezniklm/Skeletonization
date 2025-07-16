@@ -14,6 +14,11 @@ namespace skeletonizer
 		virtual void apply(cv::Mat& binary_image) const = 0;
 
 		virtual std::string name() const = 0;
+
+		virtual bool has_changed(const cv::Mat& difference) const
+		{
+			return cv::countNonZero(difference) > 0;
+		}
 	};
 
 	export enum class skeletonizer_type

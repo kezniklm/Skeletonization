@@ -129,10 +129,5 @@ namespace skeletonizer::cpu::algorithms
 
 			binary_image &= ~marker;
 		}
-
-		static bool has_changed(const cv::Mat& difference)
-		{
-			return cv::countNonZero(difference) > 0;
-		}
 	};
 }
