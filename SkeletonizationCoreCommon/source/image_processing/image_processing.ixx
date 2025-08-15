@@ -6,7 +6,9 @@ export module image_processing;
 
 import pipeline;
 
-constexpr auto default_ratio = 255;
+export constexpr auto default_ratio = 255;
+export constexpr auto high = 255;
+export constexpr auto low = 0;
 
 export inline cv::Mat read_image(const std::string& path)
 {
@@ -91,7 +93,7 @@ export inline cv::Mat extract_filled_contours(const cv::Mat& image)
 	{
 		if (constexpr auto min_area = 100.0; cv::contourArea(c) > min_area)
 		{
-			cv::drawContours(filled, std::vector<std::vector<cv::Point>>{c}, -1, 255, cv::FILLED);
+			cv::drawContours(filled, std::vector<std::vector<cv::Point>>{c}, -1, high, cv::FILLED);
 		}
 	}
 
@@ -100,12 +102,12 @@ export inline cv::Mat extract_filled_contours(const cv::Mat& image)
 
 export inline cv::Mat binarize(const cv::Mat& image)
 {
-	return image / 255;
+	return image / default_ratio;
 }
 
 export inline cv::Mat scale(const cv::Mat& image)
 {
-	return image * 255;
+	return image * default_ratio;
 }
 
 export inline cv::Mat preprocess_image(const cv::Mat& image)

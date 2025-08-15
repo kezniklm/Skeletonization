@@ -5,6 +5,7 @@ module;
 export module skeletonizer_cpu:hesselink_roerdink_threads;
 
 import :core;
+import image_processing;
 
 namespace skeletonizer::cpu::algorithms
 {
@@ -14,7 +15,7 @@ namespace skeletonizer::cpu::algorithms
 	public:
 		void apply(cv::Mat& binary_image) const override
 		{
-			binary_image *= 255;
+			binary_image *= high;
 
 			cv::Mat skeleton_map = cv::Mat::zeros(binary_image.size(), CV_8UC1);
 
