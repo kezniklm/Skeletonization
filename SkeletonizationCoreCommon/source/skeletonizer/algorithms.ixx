@@ -40,4 +40,12 @@ namespace skeletonizer::algorithms
 			return "Kwon-Gi-Kang";
 		}
 	};
+
+	export class petrosino_salvi : virtual public skeletonizer
+	{
+		std::string name() const final
+		{
+			return "Petrosino-Salvi";
+		}
+	};
 }

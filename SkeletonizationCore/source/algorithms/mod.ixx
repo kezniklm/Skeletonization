@@ -9,3 +9,5 @@ export import :hesselink_roerdink;
 export import :hesselink_roerdink_threads;
 export import :kwon_gi_kang;
 export import :kwon_gi_kang_threads;
+export import :petrosino_salvi;
+export import :petrosino_salvi_threads;

@@ -167,6 +167,31 @@ namespace configuration
 			}
 		}
 
+		else if (algorithm == "petrosino_salvi")
+		{
+			if (skeletonizer_type == skeletonizer::skeletonizer_type::cpu)
+			{
+				creators.push_back([]
+				{
+					return std::make_unique<skeletonizer::cpu::algorithms::petrosino_salvi_cpu>();
+				});
+			}
+			else if (skeletonizer_type == skeletonizer::skeletonizer_type::thread)
+			{
+				creators.push_back([]
+				{
+					return std::make_unique<skeletonizer::cpu::algorithms::petrosino_salvi_thread>();
+				});
+			}
+			else if (skeletonizer_type == skeletonizer::skeletonizer_type::gpu)
+			{
+				creators.push_back([]
+				{
+					return std::make_unique<skeletonizer::gpu::algorithms::petrosino_salvi_gpu>();
+				});
+			}
+		}
+
 		if (creators.empty())
 		{
 			throw std::runtime_error(
@@ -244,9 +269,7 @@ namespace configuration
 			LOG(FATAL) << "Configuration file must contain a list of skeletonizers.";
 		}
 
-		constexpr auto default_entries_count = 10;
-
-		std::vector<image_benchmark_metadata> all_entries(default_entries_count);
+		std::vector<image_benchmark_metadata> all_entries;
 
 		for (rapidjson::SizeType index = 0; index < document.Size(); ++index)
 		{
