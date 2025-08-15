@@ -12,6 +12,7 @@ module;
 #include <vector>
 #include <rapidjson/document.h>
 #include <rapidjson/istreamwrapper.h>
+#include "glog/logging.h"
 
 export module configuration:loader;
 
@@ -80,9 +81,9 @@ namespace configuration
 			else if (skeletonizer_type == skeletonizer::skeletonizer_type::thread)
 			{
 				creators.push_back([]
-					{
-						return std::make_unique<skeletonizer::cpu::algorithms::zhang_suen_cpu_threads>();
-					});
+				{
+					return std::make_unique<skeletonizer::cpu::algorithms::zhang_suen_cpu_threads>();
+				});
 			}
 			else if (skeletonizer_type == skeletonizer::skeletonizer_type::gpu)
 			{
@@ -97,23 +98,23 @@ namespace configuration
 			if (skeletonizer_type == skeletonizer::skeletonizer_type::cpu)
 			{
 				creators.push_back([]
-					{
-						return std::make_unique<skeletonizer::cpu::algorithms::guo_hall_cpu>();
-					});
+				{
+					return std::make_unique<skeletonizer::cpu::algorithms::guo_hall_cpu>();
+				});
 			}
 			else if (skeletonizer_type == skeletonizer::skeletonizer_type::thread)
 			{
 				creators.push_back([]
-					{
-						return std::make_unique<skeletonizer::cpu::algorithms::guo_hall_cpu_threads>();
-					});
+				{
+					return std::make_unique<skeletonizer::cpu::algorithms::guo_hall_cpu_threads>();
+				});
 			}
 			else if (skeletonizer_type == skeletonizer::skeletonizer_type::gpu)
 			{
 				creators.push_back([]
-					{
-						return std::make_unique<skeletonizer::gpu::algorithms::guo_hall_gpu>();
-					});
+				{
+					return std::make_unique<skeletonizer::gpu::algorithms::guo_hall_gpu>();
+				});
 			}
 		}
 		else if (algorithm == "hesselink_roerdink")
@@ -121,23 +122,23 @@ namespace configuration
 			if (skeletonizer_type == skeletonizer::skeletonizer_type::cpu)
 			{
 				creators.push_back([]
-					{
-						return std::make_unique<skeletonizer::cpu::algorithms::hesselink_roerdink_cpu>();
-					});
+				{
+					return std::make_unique<skeletonizer::cpu::algorithms::hesselink_roerdink_cpu>();
+				});
 			}
 			else if (skeletonizer_type == skeletonizer::skeletonizer_type::thread)
 			{
 				creators.push_back([]
-					{
-						return std::make_unique<skeletonizer::cpu::algorithms::hesselink_roerdink_cpu_threads>();
-					});
+				{
+					return std::make_unique<skeletonizer::cpu::algorithms::hesselink_roerdink_cpu_threads>();
+				});
 			}
 			else if (skeletonizer_type == skeletonizer::skeletonizer_type::gpu)
 			{
 				creators.push_back([]
-					{
-						return std::make_unique<skeletonizer::gpu::algorithms::hesselink_roerdink_gpu>();
-					});
+				{
+					return std::make_unique<skeletonizer::gpu::algorithms::hesselink_roerdink_gpu>();
+				});
 			}
 		}
 
@@ -146,23 +147,23 @@ namespace configuration
 			if (skeletonizer_type == skeletonizer::skeletonizer_type::cpu)
 			{
 				creators.push_back([]
-					{
-						return std::make_unique<skeletonizer::cpu::algorithms::kwon_gi_kang_cpu>();
-					});
+				{
+					return std::make_unique<skeletonizer::cpu::algorithms::kwon_gi_kang_cpu>();
+				});
 			}
 			else if (skeletonizer_type == skeletonizer::skeletonizer_type::thread)
 			{
 				creators.push_back([]
-					{
-						return std::make_unique<skeletonizer::cpu::algorithms::kwon_gi_kang_cpu_threads>();
-					});
+				{
+					return std::make_unique<skeletonizer::cpu::algorithms::kwon_gi_kang_cpu_threads>();
+				});
 			}
 			else if (skeletonizer_type == skeletonizer::skeletonizer_type::gpu)
 			{
 				creators.push_back([]
-					{
-						return std::make_unique<skeletonizer::gpu::algorithms::kwon_gi_kang_gpu>();
-					});
+				{
+					return std::make_unique<skeletonizer::gpu::algorithms::kwon_gi_kang_gpu>();
+				});
 			}
 		}
 
@@ -226,7 +227,7 @@ namespace configuration
 
 		if (!file)
 		{
-			throw std::runtime_error("Cannot open configuration file: " + filename);
+			LOG(FATAL) << "Cannot open configuration file: " << filename;
 		}
 
 		rapidjson::IStreamWrapper isw(file);
@@ -235,15 +236,17 @@ namespace configuration
 
 		if (document.HasParseError())
 		{
-			throw std::runtime_error("Failed to parse JSON file.");
+			LOG(FATAL) << "Failed to parse JSON file: " << filename;
 		}
 
-		if (!document.IsArray())
+		if (!document.IsArray() || document.Empty())
 		{
-			throw std::runtime_error("Configuration file must contain a JSON array.");
+			LOG(FATAL) << "Configuration file must contain a list of skeletonizers.";
 		}
 
-		std::vector<image_benchmark_metadata> all_entries;
+		constexpr auto default_entries_count = 10;
+
+		std::vector<image_benchmark_metadata> all_entries(default_entries_count);
 
 		for (rapidjson::SizeType index = 0; index < document.Size(); ++index)
 		{
@@ -253,13 +256,8 @@ namespace configuration
 			}
 			catch (const std::exception& e)
 			{
-				std::cerr << "Skipping entry " << index << ": " << e.what() << '\n';
+				LOG(WARNING) << "Skipping entry " << index << ": " << e.what();
 			}
-		}
-
-		if (all_entries.empty())
-		{
-			throw std::runtime_error("No valid configuration entries found.");
 		}
 
 		return all_entries;

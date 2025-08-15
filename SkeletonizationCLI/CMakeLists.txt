@@ -19,4 +19,4 @@ target_sources(SkeletonizationCLI
 
 target_include_directories(SkeletonizationCLI PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-target_link_libraries(SkeletonizationCLI PRIVATE SkeletonizationCore SkeletonizationCoreGPU benchmark::benchmark CLI11::CLI11 RapidJSON rapidjson)
+target_link_libraries(SkeletonizationCLI PRIVATE SkeletonizationCore SkeletonizationCoreGPU benchmark::benchmark CLI11::CLI11 RapidJSON rapidjson glog::glog)

@@ -5,6 +5,7 @@ module;
 #include <string>
 #include <algorithm>
 #include <stdexcept>
+#include "glog/logging.h"
 
 export module visual_inspector:image_container;
 
@@ -21,7 +22,9 @@ namespace visual_inspector
 		{
 			if (image.empty())
 			{
-				throw std::runtime_error("Attempted to add empty image.");
+				LOG(WARNING) << "Attempted to add empty image. Skipping image " << name_ << " ...";
+
+				return;
 			}
 
 			images_.push_back(image);
@@ -32,7 +35,9 @@ namespace visual_inspector
 		{
 			if (image.empty())
 			{
-				throw std::runtime_error("Attempted to add empty image.");
+				LOG(WARNING) << "Attempted to add empty image. Skipping image " << name_ << " ...";
+
+				return;
 			}
 
 			images_.push_back(image);

@@ -10,6 +10,7 @@
       "features": [ "cuda", "contrib" ]
     },
     "rapidjson",
-    "cli11"
+    "cli11",
+    "glog"
   ]
 }

@@ -7,6 +7,8 @@ module;
 #include <benchmark/benchmark.h>
 #include <opencv2/opencv.hpp>
 
+#include "glog/logging.h"
+
 export module benchmark:runner;
 
 import skeletonizer;
@@ -42,11 +44,17 @@ namespace skeletonization_benchmark
 			}
 		}
 
-
 		void register_benchmark(const std::string& name, std::unique_ptr<skeletonizer::skeletonizer> skeletonizer)
 		{
 			const auto& [_, number_of_benchmark_iterations] = global_arguments();
 
+			if (name.size() > max_total_algorithm_name_length)
+			{
+				LOG(WARNING) << "Skipping benchmark for \"" << name << "\" (name too long, limit is " <<
+					user_algorithm_name_length << " characters)" << std::endl << std::endl;
+
+				return;
+			}
 
 			benchmark::RegisterBenchmark(name,
 			                             [this, name, skeletonizer = std::move(skeletonizer)](benchmark::State& state)
@@ -89,6 +97,15 @@ namespace skeletonization_benchmark
 
 			return image_container;
 		}
+
+		static constexpr int max_algorithm_type_length = 5;
+
+		static constexpr int max_algorithm_author_length = 20;
+
+		static constexpr int user_algorithm_name_length = 25;
+
+		static constexpr int max_total_algorithm_name_length = user_algorithm_name_length + max_algorithm_author_length +
+			max_algorithm_type_length;
 
 	private:
 		image_benchmark_metadata image_metadata_;
