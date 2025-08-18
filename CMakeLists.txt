@@ -45,9 +45,10 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
     message(STATUS "Enabling Release optimizations for performance")
 
     if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-         add_compile_options(-O3 -march=native)
+        add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-O3 -march=native>)
     elseif (MSVC)
-        add_compile_options(/arch:AVX2)
+        add_compile_options($<$<COMPILE_LANGUAGE:CXX>:/arch:AVX2>)
+        add_compile_options($<$<COMPILE_LANGUAGE:CXX>:/O2>)
     endif()
 endif()
 
