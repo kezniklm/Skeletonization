@@ -15,7 +15,7 @@ namespace skeletonizer
 
 		virtual std::string name() const = 0;
 
-		virtual bool has_changed(const cv::Mat& difference) const
+		virtual bool has_changed(const cv::InputArray& difference) const
 		{
 			return cv::countNonZero(difference) > 0;
 		}
