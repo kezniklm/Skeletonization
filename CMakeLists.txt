@@ -50,6 +50,11 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
         add_compile_options($<$<COMPILE_LANGUAGE:CXX>:/arch:AVX2>)
         add_compile_options($<$<COMPILE_LANGUAGE:CXX>:/O2>)
     endif()
+    if (CMAKE_CUDA_COMPILER)
+        add_compile_options($<$<COMPILE_LANGUAGE:CUDA>:-O3>)
+        add_compile_options($<$<COMPILE_LANGUAGE:CUDA>:--use_fast_math>)
+        add_compile_options($<$<COMPILE_LANGUAGE:CUDA>:--restrict>)
+    endif()
 endif()
 
 # Set C++ standards
