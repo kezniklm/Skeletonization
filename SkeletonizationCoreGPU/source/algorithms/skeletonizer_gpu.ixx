@@ -10,6 +10,8 @@ namespace skeletonizer::gpu
 {
 	export class skeletonizer_gpu : virtual public skeletonizer
 	{
+	protected:
+		static constexpr auto block_dimension = 14;
 	};
 
 	cv::cuda::GpuMat operator~(const cv::cuda::GpuMat& mat)

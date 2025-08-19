@@ -10,5 +10,3 @@ void zhang_suen_iteration(
 	int* d_changed,
 	dim3 grid,
 	dim3 block);
-
-constexpr auto BLOCK_DIMENSION = 14;

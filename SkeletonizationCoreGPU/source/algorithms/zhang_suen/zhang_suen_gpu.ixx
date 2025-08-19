@@ -19,7 +19,7 @@ export namespace skeletonizer::gpu::algorithms
 			cv::cuda::GpuMat gpu_src(binary_image);
 			cv::cuda::GpuMat gpu_dst(binary_image.size(), gpu_src.type());
 
-			constexpr dim3 block(BLOCK_DIMENSION, BLOCK_DIMENSION);
+			constexpr dim3 block(block_dimension, block_dimension);
 			const dim3 grid((gpu_src.cols + block.x - 1) / block.x,
 			                (gpu_src.rows + block.y - 1) / block.y);
 
