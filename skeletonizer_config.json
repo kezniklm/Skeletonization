@@ -8,6 +8,10 @@
         "algorithm": "zhang_suen"
       },
       {
+        "type": "thread",
+        "algorithm": "zhang_suen"
+      },
+      {
         "type": "gpu",
         "algorithm": "zhang_suen"
       }
@@ -19,6 +23,10 @@
     "skeletonizers": [
       {
         "type": "cpu",
+        "algorithm": "zhang_suen"
+      },
+      {
+        "type": "thread",
         "algorithm": "zhang_suen"
       },
       {
