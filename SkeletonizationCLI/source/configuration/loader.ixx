@@ -30,6 +30,13 @@ export struct skeletonizer_variant
 	std::string algorithm;
 };
 
+export struct skeletonizer_config
+{
+	std::string name;
+	std::string path;
+	std::vector<skeletonizer_variant> skeletonizers;
+};
+
 export struct image_benchmark_metadata
 {
 	std::string name;
@@ -281,6 +288,39 @@ namespace configuration
 			{
 				LOG(WARNING) << "Skipping entry " << index << ": " << e.what();
 			}
+		}
+
+		return all_entries;
+	}
+
+	export inline std::vector<image_benchmark_metadata> load_skeletonizer_configuration(
+		const std::vector<skeletonizer_config>& skeletonizer_configurations)
+	{
+		std::vector<image_benchmark_metadata> all_entries;
+
+		for (const auto& [name, path, skeletonizers] : skeletonizer_configurations)
+		{
+			image_benchmark_metadata meta;
+
+			meta.name = name;
+			meta.path = path;
+
+			for (const auto& [type, algorithm] : skeletonizers)
+			{
+				meta.variants.push_back({type, algorithm});
+
+				const auto type_enum = parse_type(const_cast<std::string&>(type));
+
+				const auto creators = make_algorithm_creators(type_enum, algorithm);
+
+				auto& existing = meta.skeletonizers[type_enum];
+
+				existing.insert(existing.end(),
+				                std::make_move_iterator(creators.begin()),
+				                std::make_move_iterator(creators.end()));
+			}
+
+			all_entries.push_back(std::move(meta));
 		}
 
 		return all_entries;

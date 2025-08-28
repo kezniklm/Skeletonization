@@ -23,9 +23,13 @@ namespace skeletonization_benchmark
 	public:
 		void register_all()
 		{
-			const auto& [configuration_path, _] = global_arguments();
+			const auto& arguments = global_arguments();
 
-			for (const auto& image_metadata : configuration::load_skeletonizer_configuration(configuration_path))
+			for (const auto& image_metadata : arguments.configuration_path.empty()
+				                                  ? configuration::load_skeletonizer_configuration(
+					                                  arguments.skeletonizer_configuration)
+				                                  : configuration::load_skeletonizer_configuration(
+					                                  arguments.configuration_path))
 			{
 				add_runner(image_metadata);
 			}

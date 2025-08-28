@@ -46,7 +46,7 @@ namespace skeletonization_benchmark
 
 		void register_benchmark(const std::string& name, std::unique_ptr<skeletonizer::skeletonizer> skeletonizer)
 		{
-			const auto& [_, number_of_benchmark_iterations] = global_arguments();
+			const auto& arguments = global_arguments();
 
 			if (name.size() > max_total_algorithm_name_length)
 			{
@@ -67,7 +67,7 @@ namespace skeletonization_benchmark
 
 					                             results_[name] = scale(image);
 				                             }
-			                             })->Iterations(number_of_benchmark_iterations);
+			                             })->Iterations(arguments.number_of_benchmark_iterations);
 		}
 
 		std::string create_benchmark_name(const std::string& skeletonizer_name,
@@ -104,7 +104,8 @@ namespace skeletonization_benchmark
 
 		static constexpr int user_algorithm_name_length = 25;
 
-		static constexpr int max_total_algorithm_name_length = user_algorithm_name_length + max_algorithm_author_length +
+		static constexpr int max_total_algorithm_name_length = user_algorithm_name_length + max_algorithm_author_length
+			+
 			max_algorithm_type_length;
 
 	private:
