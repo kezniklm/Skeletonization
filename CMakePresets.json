@@ -36,19 +36,6 @@
       }
     },
     {
-      "name": "x64-debug-sanitizer",
-      "displayName": "x64 Debug with Sanitizer",
-      "inherits": [ "windows-base", "linux-base" ],
-      "architecture": {
-        "value": "x64",
-        "strategy": "external"
-      },
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "USE_SANITIZER": "ON"
-      }
-    },
-    {
       "name": "x64-debug",
       "displayName": "x64 Debug",
       "inherits": [ "windows-base", "linux-base" ],
@@ -57,8 +44,7 @@
         "strategy": "external"
       },
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "USE_SANITIZER": "OFF"
+        "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
