@@ -26,6 +26,10 @@ namespace commandline
 			   ->check(CLI::ExistingFile)
 			   ->default_val(default_configuration_path);
 
+			app.add_option("--benchmark_out", args.benchmark_out, "Path to benchmark file output");
+
+			app.add_option("--benchmark_out_format", args.benchmark_out_format, "Path to benchmark file output");
+
 			auto current_leaf = std::make_shared<skeletonizer_config>();
 
 			std::vector<skeletonizer_config> skeletonizer_configurations;

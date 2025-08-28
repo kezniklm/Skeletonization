@@ -16,7 +16,7 @@ int main(const int argc, const char* const * argv)
 
 	commandline_parser.parse();
 
-	skeletonization_benchmark::manager manager;
+	skeletonization_benchmark::manager manager(argc, argv);
 
 	manager.register_all();
 

@@ -21,6 +21,66 @@ namespace skeletonization_benchmark
 	export class manager
 	{
 	public:
+		static void initialize_google_benchmark(const int argc, const char* const* argv)
+		{
+			std::vector<std::string> args(argv, argv + argc);
+
+			const auto has_user_output_flag = [](const std::vector<std::string>& arguments)
+			{
+				for (const auto& argument : arguments)
+				{
+					if (argument.find("--benchmark_out=") == 0)
+					{
+						return true;
+					}
+				}
+
+				return false;
+			};
+
+			if (!has_user_output_flag(args))
+			{
+				const auto default_benchmark_results_filename = []
+				{
+					auto t = std::time(nullptr);
+
+					std::tm tm{};
+#ifdef _WIN32
+					localtime_s(&tm, &t);
+#else
+					localtime_r(&t, &tm);
+#endif
+					std::ostringstream oss;
+					oss << "skeletonizers_benchmark_results_"
+						<< std::put_time(&tm, "%Y-%m-%d_%H-%M-%S")
+						<< ".json";
+
+					return oss.str();
+				};
+
+				args.push_back("--benchmark_out=" + default_benchmark_results_filename());
+				args.push_back("--benchmark_out_format=json");
+			}
+
+			std::vector<char*> mutable_argv;
+
+			mutable_argv.reserve(args.size());
+
+			for (auto& s : args)
+			{
+				mutable_argv.push_back(const_cast<char*>(s.c_str()));
+			}
+
+			int mutable_argc = static_cast<int>(mutable_argv.size());
+
+			benchmark::Initialize(&mutable_argc, mutable_argv.data());
+		}
+
+		manager(const int argc, const char* const* argv)
+		{
+			initialize_google_benchmark(argc, argv);
+		}
+
 		void register_all()
 		{
 			const auto& arguments = global_arguments();
