@@ -19,9 +19,26 @@
       }
     },
     {
+      "name": "linux-base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "installDir": "${sourceDir}/out/install/${presetName}",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++",
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
       "name": "x64-debug-sanitizer",
       "displayName": "x64 Debug with Sanitizer",
-      "inherits": "windows-base",
+      "inherits": [ "windows-base", "linux-base" ],
       "architecture": {
         "value": "x64",
         "strategy": "external"
@@ -34,7 +51,7 @@
     {
       "name": "x64-debug",
       "displayName": "x64 Debug",
-      "inherits": "windows-base",
+      "inherits": [ "windows-base", "linux-base" ],
       "architecture": {
         "value": "x64",
         "strategy": "external"
