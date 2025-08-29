@@ -178,7 +178,7 @@ __global__ void zhang_suen_iteration_kernel_opt(
 	}
 
 	// A: Transition count (0→1 along neighbors)
-	const int transition_count = (p2 == 0 && p3 == 1) +
+	const int a = (p2 == 0 && p3 == 1) +
 		(p3 == 0 && p4 == 1) +
 		(p4 == 0 && p5 == 1) +
 		(p5 == 0 && p6 == 1) +
@@ -188,15 +188,13 @@ __global__ void zhang_suen_iteration_kernel_opt(
 		(p9 == 0 && p2 == 1);
 
 	// B: Neighbor count (number of foreground pixels)
-	const int neighbor_count = p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9;
+	const int b = p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9;
 
 	// C, D: Connectivity checks
-	const int condition_c = first_pass ? p2 * p4 * p6 : p2 * p4 * p8;
-	const int condition_d = first_pass ? p4 * p6 * p8 : p2 * p6 * p8;
+	const int step_condition_c = first_pass ? p2 * p4 * p6 : p2 * p4 * p8;
+	const int step_condition_d = first_pass ? p4 * p6 * p8 : p2 * p6 * p8;
 
-	if (transition_count == 1 &&
-		neighbor_count >= 2 && neighbor_count <= 6 &&
-		condition_c == 0 && condition_d == 0)
+	if (a == 1 && b >= 2 && b <= 6 && step_condition_c == 0 && step_condition_d == 0)
 	{
 		dst(global_pixel_y, global_pixel_x) = 0;
 		atomicExch(d_changed, 1);
