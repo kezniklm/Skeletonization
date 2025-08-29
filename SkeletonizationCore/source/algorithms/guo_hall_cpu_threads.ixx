@@ -46,7 +46,7 @@ namespace skeletonizer::cpu::algorithms
 
 					for (int column = 1; column < binary_image.cols - 1; ++column)
 					{
-						const auto p1 = current[column];
+						const uchar p1 = current[column];
 
 						if (p1 != 1)
 						{
@@ -67,12 +67,11 @@ namespace skeletonizer::cpu::algorithms
 							(p6 == 0 && p7 == 1) + (p7 == 0 && p8 == 1) +
 							(p8 == 0 && p9 == 1) + (p9 == 0 && p2 == 1);
 
-						const int n1 = (p2 | p3) + (p4 | p5) + (p6 | p7) + (p8 | p9);
-						const int n2 = (p3 | p4) + (p5 | p6) + (p7 | p8) + (p9 | p2);
-
+						const int n1 = (p9 | p2) + (p3 | p4) + (p5 | p6) + (p7 | p8);
+						const int n2 = (p2 | p3) + (p4 | p5) + (p6 | p7) + (p8 | p9);
 						const int n = std::min(n1, n2);
 
-						const int m = p2 & p4 & p8;
+						const int m = (p2 | p3 | !p5) & p4;
 
 						if (c == 1 && (n >= 2 && n <= 3) && m == 0)
 						{
