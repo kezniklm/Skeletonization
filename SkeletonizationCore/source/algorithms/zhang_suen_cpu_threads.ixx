@@ -10,8 +10,6 @@ namespace skeletonizer::cpu::algorithms
 {
 	export class zhang_suen_cpu_threads final : public skeletonizer_cpu, public ::skeletonizer::algorithms::zhang_suen
 	{
-		using iteration_function = std::function<void(cv::Mat&, cv::Mat&)>;
-
 		void apply(cv::Mat& binary_image) const override
 		{
 			cv::Mat previous(binary_image.size(), CV_8UC1, cv::Scalar(0));
