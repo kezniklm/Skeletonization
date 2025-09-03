@@ -57,19 +57,19 @@ namespace skeletonizer::cpu::algorithms
 						const uchar y2 = next2[column];
 						const uchar y5 = curr[column + 2];
 
-						const int A = ((x2 ^ x3) != 0) + ((x3 ^ x4) != 0) + ((x4 ^ x5) != 0) +
+						const int a = ((x2 ^ x3) != 0) + ((x3 ^ x4) != 0) + ((x4 ^ x5) != 0) +
 							((x5 ^ x6) != 0) + ((x6 ^ x7) != 0) + ((x7 ^ x8) != 0) +
 							((x8 ^ x1) != 0) + ((x1 ^ x2) != 0);
 
-						const int B = (x2 != 0) + (x3 != 0) + (x4 != 0) + (x5 != 0) +
+						const int b = (x2 != 0) + (x3 != 0) + (x4 != 0) + (x5 != 0) +
 							(x6 != 0) + (x7 != 0) + (x8 != 0) + (x1 != 0);
 
-						const int R = x1 && x7 && x8 &&
+						const int r = x1 && x7 && x8 &&
 							((!y5 && x2 && x3 && !x5) || (!y2 && !x3 && x5 && x6));
 
-						if (A == 2 && B >= 2 && B <= 6 && R == 0)
+						if (a == 2 && b >= 2 && b <= 6 && r == 0)
 						{
-							mark_row[column] = high;
+							mark_row[column] = 1;
 						}
 					}
 				}
@@ -103,19 +103,19 @@ namespace skeletonizer::cpu::algorithms
 						const uchar x7 = next1[column];
 						const uchar x8 = next1[column + 1];
 
-						const int S0 = (x3 && x7) || (x5 && x1);
-						const int S1 = (x1 && !x6 && (!x4 || x3)) || (x3 && !x8 && (!x6 || x5)) ||
+						const int s0 = (x3 && x7) || (x5 && x1);
+						const int s1 = (x1 && !x6 && (!x4 || x3)) || (x3 && !x8 && (!x6 || x5)) ||
 							(x7 && !x4 && (!x2 || x1)) || (x5 && !x2 && (!x8 || x7));
 
-						const int B = (x2 != 0) + (x3 != 0) + (x4 != 0) + (x5 != 0) +
+						const int b = (x2 != 0) + (x3 != 0) + (x4 != 0) + (x5 != 0) +
 							(x6 != 0) + (x7 != 0) + (x8 != 0) + (x1 != 0);
 
-						const int R = (x3 && ((x1 && !x8) || (x5 && !x6))) ||
+						const int r = (x3 && ((x1 && !x8) || (x5 && !x6))) ||
 							(x7 && ((!x5 && !x8) || (!x1 && !x6)));
 
-						if (!S0 && S1 && R == 0 && B >= 3)
+						if (!s0 && s1 && r == 0 && b >= 3)
 						{
-							mark_row[column] = 255;
+							mark_row[column] = 1;
 						}
 					}
 				}
