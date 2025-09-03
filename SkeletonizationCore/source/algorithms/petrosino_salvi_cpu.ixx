@@ -34,7 +34,7 @@ namespace skeletonizer::cpu::algorithms
 		{
 			marker.setTo(0);
 
-			for (int row = 2; row < binary_image.rows - 2; row++)
+			for (auto row = 2; row < binary_image.rows - 2; row++)
 			{
 				const uchar* prev1 = binary_image.ptr<uchar>(row - 1);
 				const uchar* curr = binary_image.ptr<uchar>(row);
@@ -46,16 +46,16 @@ namespace skeletonizer::cpu::algorithms
 				{
 					if (curr[column])
 					{
-						const uchar x1 = curr[column + 1];
-						const uchar x2 = prev1[column + 1];
-						const uchar x3 = prev1[column];
-						const uchar x4 = prev1[column - 1];
-						const uchar x5 = curr[column - 1];
-						const uchar x6 = next1[column - 1];
-						const uchar x7 = next1[column];
-						const uchar x8 = next1[column + 1];
-						const uchar y2 = next2[column];
-						const uchar y5 = curr[column + 2];
+						const auto x1 = curr[column + 1];
+						const auto x2 = prev1[column + 1];
+						const auto x3 = prev1[column];
+						const auto x4 = prev1[column - 1];
+						const auto x5 = curr[column - 1];
+						const auto x6 = next1[column - 1];
+						const auto x7 = next1[column];
+						const auto x8 = next1[column + 1];
+						const auto y2 = next2[column];
+						const auto y5 = curr[column + 2];
 
 						const int a = ((x2 ^ x3) != 0) + ((x3 ^ x4) != 0) + ((x4 ^ x5) != 0) +
 							((x5 ^ x6) != 0) + ((x6 ^ x7) != 0) + ((x7 ^ x8) != 0) +
@@ -94,14 +94,14 @@ namespace skeletonizer::cpu::algorithms
 				{
 					if (curr[column])
 					{
-						const uchar x1 = curr[column + 1];
-						const uchar x2 = prev1[column + 1];
-						const uchar x3 = prev1[column];
-						const uchar x4 = prev1[column - 1];
-						const uchar x5 = curr[column - 1];
-						const uchar x6 = next1[column - 1];
-						const uchar x7 = next1[column];
-						const uchar x8 = next1[column + 1];
+						const auto x1 = curr[column + 1];
+						const auto x2 = prev1[column + 1];
+						const auto x3 = prev1[column];
+						const auto x4 = prev1[column - 1];
+						const auto x5 = curr[column - 1];
+						const auto x6 = next1[column - 1];
+						const auto x7 = next1[column];
+						const auto x8 = next1[column + 1];
 
 						const int s0 = (x3 && x7) || (x5 && x1);
 						const int s1 = (x1 && !x6 && (!x4 || x3)) || (x3 && !x8 && (!x6 || x5)) ||
