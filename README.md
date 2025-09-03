@@ -1,7 +1,7 @@
 # Skeletonization
 
 ## Overview
-This project is part of my diploma thesis **Analysis and Efficient Implementation of Skeletonization Algorithms for Digital Image Processing** – the process of reducing shapes in images to their simplified skeletal form while preserving structural and topological properties.  
+This project is part of diploma thesis **Analysis and Efficient Implementation of Skeletonization Algorithms for Digital Image Processing** – the process of reducing shapes in images to their simplified skeletal form while preserving structural and topological properties.  
 The goal is to **implement, optimize, and compare skeletonization algorithms** across different computing paradigms:
 - **Single-threaded CPU implementation**
 - **Multi-threaded CPU implementation**
