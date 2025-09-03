@@ -1,5 +1,4 @@
 ﻿#include "guo_hall.cuh"
-#include "../gpu_common.cuh"
 
 #include <cuda_runtime.h>
 #include "opencv2/core.hpp"
@@ -13,77 +12,62 @@ __global__ void guo_hall_iteration_kernel_opt(
 	const int num_rows,
 	const int num_cols,
 	const bool first_pass,
-	int* d_changed)
+	int* d_changed,
+	const int halo)
 {
 	extern __shared__ uchar shared_tile[];
 
-	// ---------------------------
-	// Thread and block indexing
-	// ---------------------------
-	const int local_thread_x = threadIdx.x;
-	const int local_thread_y = threadIdx.y;
-	const int global_pixel_x = blockIdx.x * blockDim.x + local_thread_x;
-	const int global_pixel_y = blockIdx.y * blockDim.y + local_thread_y;
+	const auto local_x = threadIdx.x;
+	const auto local_y = threadIdx.y;
+	const auto global_x = global_index_x(blockIdx.x, local_x, blockDim.x);
+	const auto global_y = global_index_y(blockIdx.y, local_y, blockDim.y);
 
-	// Shared memory indexing (stride includes halo border)
-	const int shared_stride = blockDim.x + 2;
-	const int shared_x = local_thread_x + 1; // +1 offset for halo
-	const int shared_y = local_thread_y + 1; // +1 offset for halo
+	const auto shared_stride = blockDim.x + 2 * halo;
 
-	// ---------------------------
-	// Load pixels into shared memory
-	// ---------------------------
-	shared_tile[shared_y * shared_stride + shared_x] = load_center_pixel(
-		src, global_pixel_x, global_pixel_y, num_cols, num_rows);
-		
-	load_halo_edges(shared_tile, src, global_pixel_x, global_pixel_y, num_cols, num_rows, shared_stride, shared_x,
-	                shared_y);
-	load_halo_corners(shared_tile, src, global_pixel_x, global_pixel_y, num_cols, num_rows, shared_stride);
+	shared_tile[shared_index(local_x, local_y, shared_stride, halo)] = load_center_pixel(
+		src, global_x, global_y, num_cols, num_rows);
+
+	load_halo_edges(shared_tile, src, global_x, global_y, num_cols, num_rows, shared_stride, local_x, local_y, halo,
+		blockDim);
+	load_halo_corners(shared_tile, src, global_x, global_y, num_cols, num_rows, shared_stride, local_x, local_y, halo,
+		blockDim);
 
 	__syncthreads();
 
-	// ---------------------------
-	// Bounds and border checks
-	// ---------------------------
-	const bool is_out_of_bounds = global_pixel_x >= num_cols || global_pixel_y >= num_rows;
-
-	if (is_out_of_bounds)
+	if (is_out_of_bounds(global_x, global_y, num_cols, num_rows))
 	{
 		return;
 	}
 
-	const bool is_border_pixel = global_pixel_x == 0 || global_pixel_y == 0 || global_pixel_x == num_cols - 1 ||
-		global_pixel_y == num_rows - 1;
-
-	if (is_border_pixel)
+	if (is_border_pixel(global_x, global_y, num_cols, num_rows))
 	{
-		dst(global_pixel_y, global_pixel_x) = src(global_pixel_y, global_pixel_x);
+		dst(global_y, global_x) = src(global_y, global_x);
 		return;
 	}
 
-	const uchar p1 = shared_tile[shared_y * shared_stride + shared_x];
+	const auto p1 = shared_tile[shared_index(local_x, local_y, shared_stride, halo)];
 
 	if (p1 != 1)
 	{
-		dst(global_pixel_y, global_pixel_x) = 0;
+		dst(global_y, global_x) = 0;
 		return;
 	}
 
-	const uchar p2 = shared_tile[(shared_y - 1) * shared_stride + shared_x];
-	const uchar p3 = shared_tile[(shared_y - 1) * shared_stride + shared_x + 1];
-	const uchar p4 = shared_tile[shared_y * shared_stride + shared_x + 1];
-	const uchar p5 = shared_tile[(shared_y + 1) * shared_stride + shared_x + 1];
-	const uchar p6 = shared_tile[(shared_y + 1) * shared_stride + shared_x];
-	const uchar p7 = shared_tile[(shared_y + 1) * shared_stride + shared_x - 1];
-	const uchar p8 = shared_tile[shared_y * shared_stride + shared_x - 1];
-	const uchar p9 = shared_tile[(shared_y - 1) * shared_stride + shared_x - 1];
+	const auto p2 = shared_tile[shared_index(local_x, local_y - 1, shared_stride, halo)];
+	const auto p3 = shared_tile[shared_index(local_x + 1, local_y - 1, shared_stride, halo)];
+	const auto p4 = shared_tile[shared_index(local_x + 1, local_y, shared_stride, halo)];
+	const auto p5 = shared_tile[shared_index(local_x + 1, local_y + 1, shared_stride, halo)];
+	const auto p6 = shared_tile[shared_index(local_x, local_y + 1, shared_stride, halo)];
+	const auto p7 = shared_tile[shared_index(local_x - 1, local_y + 1, shared_stride, halo)];
+	const auto p8 = shared_tile[shared_index(local_x - 1, local_y, shared_stride, halo)];
+	const auto p9 = shared_tile[shared_index(local_x - 1, local_y - 1, shared_stride, halo)];
 
 	// ---------------------------
 	// Count transitions from 0 → 1 in the 8-neighbor sequence
 	// This is used to determine if a pixel is an edge pixel
 	// c == 1 means exactly one foreground region is connected around p1
 	// ---------------------------
-	const int c = (p2 == 0 && p3 == 1) + (p3 == 0 && p4 == 1) +
+	const auto c = (p2 == 0 && p3 == 1) + (p3 == 0 && p4 == 1) +
 		(p4 == 0 && p5 == 1) + (p5 == 0 && p6 == 1) +
 		(p6 == 0 && p7 == 1) + (p7 == 0 && p8 == 1) +
 		(p8 == 0 && p9 == 1) + (p9 == 0 && p2 == 1);
@@ -93,16 +77,16 @@ __global__ void guo_hall_iteration_kernel_opt(
 	// n1 and n2 are sums of ORed neighbor pairs
 	// These count the number of non-zero (foreground) pixels in specific groups
 	// ---------------------------
-	const int n1 = (p9 | p2) + (p3 | p4) + (p5 | p6) + (p7 | p8);
-	const int n2 = (p2 | p3) + (p4 | p5) + (p6 | p7) + (p8 | p9);
+	const auto n1 = (p9 | p2) + (p3 | p4) + (p5 | p6) + (p7 | p8);
+	const auto n2 = (p2 | p3) + (p4 | p5) + (p6 | p7) + (p8 | p9);
 
-	const int n = min(n1, n2);
+	const auto n = min(n1, n2);
 
 	// ---------------------------
 	// Guo-Hall deletion condition 'm'
 	// Determines if deletion of p1 would break connectivity
 	// Different for first and second sub-iterations
-	const int m = first_pass ? (p6 | p7 | !p9) & p8 : (p2 | p3 | !p5) & p4;
+	const auto m = first_pass ? (p6 | p7 | !p9) & p8 : (p2 | p3 | !p5) & p4;
 
 	// ---------------------------
 	// Decide whether to delete the current pixel
@@ -113,12 +97,12 @@ __global__ void guo_hall_iteration_kernel_opt(
 	// ---------------------------
 	if (c == 1 && (n >= 2 && n <= 3) && m == 0)
 	{
-		dst(global_pixel_y, global_pixel_x) = 0;
+		dst(global_y, global_x) = 0;
 		atomicExch(d_changed, 1);
 	}
 	else
 	{
-		dst(global_pixel_y, global_pixel_x) = 1;
+		dst(global_y, global_x) = 1;
 	}
 }
 
@@ -127,10 +111,12 @@ extern inline void guo_hall_iteration(
 	const cv::cuda::GpuMat& dst,
 	const bool first_pass,
 	int* d_changed,
-	dim3 grid,
-	dim3 block)
+	const dim3 grid,
+	const dim3 block,
+	const int halo)
 {
-	size_t shared_mem = (block.x + HALO) * (block.y + HALO) * sizeof(uchar);
+	const size_t shared_mem = compute_shared_mem_size(block, halo);
+
 	guo_hall_iteration_kernel_opt << <grid, block, shared_mem >> >(src, dst, src.rows, src.cols, first_pass,
-	                                                               d_changed);
+	                                                               d_changed, halo);
 }
