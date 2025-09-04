@@ -64,60 +64,48 @@ namespace skeletonizer::cpu::algorithms
 						const auto x7 = next_weight[col - 1];
 						const auto x8 = current_weight[col - 1];
 
-						const std::array neighbours = {x1, x2, x3, x4, x5, x6, x7, x8};
-
-						const auto should_delete_pixel =
-							current_weight[col] == 1 && any_greater_or_equal_than(neighbours, 3) ||
-							current_weight[col] == 2 && any_greater_or_equal_than(neighbours, 3) &&
-							has_critical_pairs(neighbours) ||
-							current_weight[col] == 3 && any_greater_or_equal_than(neighbours, 7) &&
-							(all_non_zero<3>({x6, x7, x8}) || all_non_zero<3>({x1, x2, x3}) ||
-								all_non_zero<3>({x1, x7, x8}) || all_non_zero<3>({x6, x7, x5}) ||
-								all_non_zero<3>({x3, x4, x5}) || all_non_zero<3>({x2, x3, x4}) ||
-								all_non_zero<3>({x4, x5, x6}) || all_non_zero<3>({x8, x1, x2}) ||
-								all_non_zero<3>({x6, x7, x4}) || all_non_zero<3>({x6, x1, x8}) ||
-								all_non_zero<3>({x6, x3, x4}) || all_non_zero<3>({x6, x5, x8})) ||
-							current_weight[col] == 4 && (all_non_zero<4>({x1, x2, x3, x4}) || all_non_zero<4>({
-									x1, x2, x7, x8
-								}) ||
-								all_non_zero<4>({x1, x2, x3, x8}) || all_non_zero<4>({x1, x6, x7, x8}) ||
-								all_non_zero<4>({x5, x6, x7, x8}) || all_non_zero<4>({x4, x5, x6, x7}) ||
-								all_non_zero<4>({x3, x4, x5, x6}) || all_non_zero<4>({x5, x2, x3, x4}) ||
-								all_non_zero<4>({x6, x7, x3, x4}) || all_non_zero<4>({x1, x8, x5, x6})) ||
-							current_weight[col] == 5 && any_equal_to(neighbours, 8) && (all_non_zero<5>({
-									x7, x8, x1, x2, x3
-								}) ||
-								all_non_zero<5>({x7, x8, x1, x5, x6}) || all_non_zero<5>({x3, x4, x5, x6, x7}) ||
-								all_non_zero<5>({x1, x2, x3, x4, x5}) || all_non_zero<5>({x4, x5, x6, x7, x8}) ||
-								all_non_zero<5>({x6, x7, x8, x1, x2}) || all_non_zero<5>({x1, x2, x3, x4, x8}) ||
-								all_non_zero<5>({x2, x3, x4, x5, x6})) ||
-							current_weight[col] == 6 && any_equal_to(neighbours, 8) &&
-							(all_non_zero<6>({x3, x4, x5, x6, x7, x8}) || all_non_zero<6>({x1, x2, x3, x6, x7, x8})
+						const bool should_delete =
+							(current_weight[col] == 1 && any_greater_or_equal_than(3, x1, x2, x3, x4, x5, x6, x7, x8))
+							||
+							(current_weight[col] == 2 && any_greater_or_equal_than(3, x1, x2, x3, x4, x5, x6, x7, x8) &&
+								has_critical_pairs(x1, x2, x3, x4, x5, x6, x7, x8)) ||
+							(current_weight[col] == 3 && any_greater_or_equal_than(7, x1, x2, x3, x4, x5, x6, x7, x8) &&
+								(all_non_zero(x6, x7, x8) || all_non_zero(x1, x2, x3) ||
+									all_non_zero(x1, x7, x8) || all_non_zero(x6, x7, x5) ||
+									all_non_zero(x3, x4, x5) || all_non_zero(x2, x3, x4) ||
+									all_non_zero(x4, x5, x6) || all_non_zero(x8, x1, x2) ||
+									all_non_zero(x6, x7, x4) || all_non_zero(x6, x1, x8) ||
+									all_non_zero(x6, x3, x4) || all_non_zero(x6, x5, x8))) ||
+							(current_weight[col] == 4 && (all_non_zero(x1, x2, x3, x4) || all_non_zero(x1, x2, x7, x8)
 								||
-								all_non_zero<6>({x1, x2, x5, x6, x7, x8}) || all_non_zero<6>({
-									x1, x4, x5, x6, x7, x8
-								}) ||
-								all_non_zero<6>({x1, x2, x3, x4, x7, x8}) || all_non_zero<6>({
-									x3, x4, x5, x6, x7, x2
-								}) ||
-								all_non_zero<6>({x3, x4, x5, x6, x1, x2}) || all_non_zero<6>({
-									x1, x2, x3, x4, x5, x8
-								})) ||
-							current_weight[col] == 7 && any_equal_to(neighbours, 8) &&
-							(all_non_zero<7>({x1, x2, x3, x5, x6, x7, x8}) ||
-								all_non_zero<7>({x1, x3, x4, x5, x6, x7, x8}) ||
-								all_non_zero<7>({x1, x2, x3, x4, x5, x6, x7}) ||
-								all_non_zero<7>({x1, x2, x3, x4, x5, x7, x8}));
+								all_non_zero(x1, x2, x3, x8) || all_non_zero(x1, x6, x7, x8) ||
+								all_non_zero(x5, x6, x7, x8) || all_non_zero(x4, x5, x6, x7) ||
+								all_non_zero(x3, x4, x5, x6) || all_non_zero(x5, x2, x3, x4) ||
+								all_non_zero(x6, x7, x3, x4) || all_non_zero(x1, x8, x5, x6))) ||
+							(current_weight[col] == 5 && any_equal_to(8, x1, x2, x3, x4, x5, x6, x7, x8) &&
+								(all_non_zero(x7, x8, x1, x2, x3) || all_non_zero(x7, x8, x1, x5, x6) ||
+									all_non_zero(x3, x4, x5, x6, x7) || all_non_zero(x1, x2, x3, x4, x5) ||
+									all_non_zero(x4, x5, x6, x7, x8) || all_non_zero(x6, x7, x8, x1, x2) ||
+									all_non_zero(x1, x2, x3, x4, x8) || all_non_zero(x2, x3, x4, x5, x6))) ||
+							(current_weight[col] == 6 && any_equal_to(8, x1, x2, x3, x4, x5, x6, x7, x8) &&
+								(all_non_zero(x3, x4, x5, x6, x7, x8) || all_non_zero(x1, x2, x3, x6, x7, x8) ||
+									all_non_zero(x1, x2, x5, x6, x7, x8) || all_non_zero(x1, x4, x5, x6, x7, x8) ||
+									all_non_zero(x1, x2, x3, x4, x7, x8) || all_non_zero(x3, x4, x5, x6, x7, x2) ||
+									all_non_zero(x3, x4, x5, x6, x1, x2) || all_non_zero(x1, x2, x3, x4, x5, x8))) ||
+							(current_weight[col] == 7 && any_equal_to(8, x1, x2, x3, x4, x5, x6, x7, x8) &&
+								(all_non_zero(x1, x2, x3, x5, x6, x7, x8) || all_non_zero(x1, x3, x4, x5, x6, x7, x8) ||
+									all_non_zero(x1, x2, x3, x4, x5, x6, x7) ||
+									all_non_zero(x1, x2, x3, x4, x5, x7, x8)));
 
-						if (should_delete_pixel)
+						if (should_delete)
 						{
 							marker_pointer[col] = 1;
 						}
 					}
-
-					binary_image &= ~marker;
 				}
 			});
+
+			binary_image &= ~marker;
 		}
 
 		static void calculate_weight(cv::Mat& image, cv::Mat& weight)
