@@ -11,3 +11,5 @@ export import :kwon_gi_kang;
 export import :kwon_gi_kang_threads;
 export import :petrosino_salvi;
 export import :petrosino_salvi_threads;
+export import :han_la_rhee;
+export import :han_la_rhee_threads;
