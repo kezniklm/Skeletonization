@@ -32,10 +32,10 @@ __device__ __forceinline__ bool is_out_of_bounds(const int global_x, const int g
 	return global_x >= num_cols || global_y >= num_rows;
 }
 
-__device__ __forceinline__ bool is_border_pixel(const int global_x, const int global_y, const int num_cols,
+__device__ __forceinline__ bool is_border_pixel(const int x, const int y, const int num_cols,
                                                 const int num_rows)
 {
-	return global_x == 0 || global_y == 0 || global_x == num_cols - 1 || global_y == num_rows - 1;
+	return x <= 0 || y <= 0 || x == num_cols - 1 || y == num_rows - 1;
 }
 
 __device__ __forceinline__ uchar load_center_pixel(
