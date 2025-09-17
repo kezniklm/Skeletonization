@@ -198,6 +198,32 @@ namespace configuration
 				});
 			}
 		}
+
+		else if (algorithm == "han_la_rhee")
+		{
+			if (skeletonizer_type == skeletonizer::skeletonizer_type::cpu)
+			{
+				creators.push_back([]
+				{
+					return std::make_unique<skeletonizer::cpu::algorithms::han_la_rhee_cpu>();
+				});
+			}
+			else if (skeletonizer_type == skeletonizer::skeletonizer_type::thread)
+			{
+				creators.push_back([]
+				{
+					return std::make_unique<skeletonizer::cpu::algorithms::han_la_rhee_cpu_threads>();
+				});
+			}
+			else if (skeletonizer_type == skeletonizer::skeletonizer_type::gpu)
+			{
+				creators.push_back([]
+				{
+					return std::make_unique<skeletonizer::gpu::algorithms::han_la_rhee_gpu>();
+				});
+			}
+		}
+
 		else if (algorithm == "choi_lam_siu")
 		{
 			if (skeletonizer_type == skeletonizer::skeletonizer_type::cpu)
