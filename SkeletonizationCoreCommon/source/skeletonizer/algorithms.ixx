@@ -140,4 +140,12 @@ namespace skeletonizer::algorithms
 				(x6 && x8) || (x8 && x2);
 		}
 	};
+
+	export class choi_lam_siu : virtual public skeletonizer
+	{
+		std::string name() const final
+		{
+			return "Choi_Lam_Siu";
+		}
+	};
 }

@@ -13,3 +13,5 @@ export import :petrosino_salvi;
 export import :petrosino_salvi_threads;
 export import :han_la_rhee;
 export import :han_la_rhee_threads;
+export import :choi_lam_siu;
+export import :choi_lam_siu_threads;
