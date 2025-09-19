@@ -51,12 +51,12 @@ namespace skeletonizer::algorithms
 
 	export class han_la_rhee : virtual public skeletonizer
 	{
-	public:
 		std::string name() const final
 		{
 			return "Han-La-Rhee";
 		}
 
+	protected:
 		template <typename... Args>
 		static inline bool any_greater_or_equal_than(const uchar threshold, Args... values)
 		{
