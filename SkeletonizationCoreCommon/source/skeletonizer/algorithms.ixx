@@ -147,5 +147,23 @@ namespace skeletonizer::algorithms
 		{
 			return "Choi_Lam_Siu";
 		}
+
+	protected:
+		struct xy_distance_maps
+		{
+			const cv::Mat nearest_background_row_index;
+			const cv::Mat nearest_background_column_index;
+
+			explicit xy_distance_maps(cv::Mat row, cv::Mat col)
+				: nearest_background_row_index(std::move(row)),
+				  nearest_background_column_index(std::move(col))
+			{
+			}
+
+			[[nodiscard]] inline bool is_valid() const noexcept
+			{
+				return !nearest_background_row_index.empty() && !nearest_background_column_index.empty();
+			}
+		};
 	};
 }
