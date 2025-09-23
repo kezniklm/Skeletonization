@@ -32,6 +32,8 @@ namespace skeletonizer::cpu::algorithms
 			while (has_changed(difference));
 
 			cleanup_oblique_corners(binary_image, marker);
+
+			clear_border(binary_image);
 		}
 
 		static void first_iteration(cv::Mat& binary_image, cv::Mat& marker)

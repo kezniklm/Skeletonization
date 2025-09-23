@@ -51,6 +51,8 @@ export namespace skeletonizer::gpu::algorithms
 
 			src->download(binary_image);
 
+			clear_border(binary_image);
+
 			cudaDeviceSynchronize();
 		}
 	};

@@ -26,6 +26,8 @@ namespace skeletonizer::cpu::algorithms
 				binary_image.copyTo(previous);
 			}
 			while (has_changed(difference));
+
+			clear_border(binary_image);
 		}
 
 		static void iteration(cv::Mat& binary_image, cv::Mat& marker, const cv::Mat& weight)

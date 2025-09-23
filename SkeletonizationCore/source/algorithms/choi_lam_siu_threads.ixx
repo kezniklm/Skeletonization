@@ -16,36 +16,29 @@ namespace skeletonizer::cpu::algorithms
 	                                          public ::skeletonizer::algorithms::choi_lam_siu
 	{
 	public:
-		void apply(cv::Mat& binary_image) override
+		void apply(cv::Mat& binary_image) const override
 		{
 			const xy_distance_maps distance_maps = get_distance_map(binary_image);
 
 			skeletonize(binary_image, distance_maps);
+
+			clear_border(binary_image);
 		}
 
 		static inline void skeletonize(cv::Mat& binary_image, const xy_distance_maps& distance_maps,
 		                               const int minimal_residual_distance = 100,
 		                               const int maximal_residual_distance = INT_MAX)
 		{
-			cv::parallel_for_(cv::Range(0, binary_image.rows), [&](const cv::Range& range)
+			cv::parallel_for_(cv::Range(1, binary_image.rows - 1), [&](const cv::Range& range)
 			{
 				for (auto row = range.start; row < range.end; ++row)
 				{
 					const auto binary_image_row_pointer = binary_image.ptr<uchar>(row);
 
-					for (auto column = 0; column < binary_image.cols; ++column)
+					for (auto column = 1; column < binary_image.cols - 1; ++column)
 					{
 						if (!binary_image_row_pointer[column])
 						{
-							continue;
-						}
-
-						const bool is_border = row == 0 || row == binary_image.rows - 1 || column == 0 || column ==
-							binary_image.cols - 1;
-
-						if (is_border)
-						{
-							binary_image_row_pointer[column] = 0;
 							continue;
 						}
 
@@ -102,7 +95,7 @@ namespace skeletonizer::cpu::algorithms
 				a.store(0, std::memory_order_relaxed);
 			}
 
-			cv::parallel_for_(cv::Range(0, binary_image.rows), [&](const cv::Range& range)
+			cv::parallel_for_(cv::Range(1, binary_image.rows - 1), [&](const cv::Range& range)
 			{
 				for (auto y = range.start; y < range.end; ++y)
 				{
@@ -110,7 +103,7 @@ namespace skeletonizer::cpu::algorithms
 
 					const auto label_row = label_matrix.ptr<int>(y);
 
-					for (int x = 0; x < binary_image.cols; ++x)
+					for (int x = 1; x < binary_image.cols - 1; ++x)
 					{
 						if (image_row[x] != 0) // background
 						{
@@ -146,7 +139,7 @@ namespace skeletonizer::cpu::algorithms
 
 			const auto lut_size = static_cast<int>(label_to_background_point_lut.size());
 
-			cv::parallel_for_(cv::Range(0, binary_image.rows), [&](const cv::Range& range)
+			cv::parallel_for_(cv::Range(1, binary_image.rows - 1), [&](const cv::Range& range)
 			{
 				for (auto y = range.start; y < range.end; ++y)
 				{
@@ -157,7 +150,7 @@ namespace skeletonizer::cpu::algorithms
 					const auto dy_row = dy.ptr<int>(y);
 					const auto dx_row = dx.ptr<int>(y);
 
-					for (int x = 0; x < binary_image.cols; ++x)
+					for (int x = 1; x < binary_image.cols - 1; ++x)
 					{
 						if (image_row[x] == 0)
 						{

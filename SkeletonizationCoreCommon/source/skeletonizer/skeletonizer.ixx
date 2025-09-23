@@ -19,6 +19,15 @@ namespace skeletonizer
 		{
 			return cv::countNonZero(difference) > 0;
 		}
+
+		static inline void clear_border(const cv::Mat& binary_image)
+		{
+			binary_image.row(0).setTo(0);
+			binary_image.row(binary_image.rows - 1).setTo(0);
+			binary_image.col(0).setTo(0);
+			binary_image.col(binary_image.cols - 1).setTo(0);
+		}
+
 	};
 
 	export enum class skeletonizer_type
