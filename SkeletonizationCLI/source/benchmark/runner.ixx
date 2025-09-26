@@ -16,6 +16,7 @@ import configuration;
 import image_processing;
 import visual_inspector;
 import commandline;
+import skeletonizer_cpu;
 
 namespace skeletonization_benchmark
 {
@@ -44,6 +45,29 @@ namespace skeletonization_benchmark
 			}
 		}
 
+		visual_inspector::image_container process_benchmark_results() const
+		{
+			visual_inspector::image_container image_container(image_metadata_.name);
+
+			constexpr auto default_input_image_name = "Original Image";
+
+			image_container.add_image(input_image_, default_input_image_name);
+
+			for (const auto& [name, image] : results_)
+			{
+				if (name.empty())
+				{
+					image_container.add_image(image);
+					continue;
+				}
+
+				image_container.add_image(image, name);
+			}
+
+			return image_container;
+		}
+
+	private:
 		void register_benchmark(const std::string& name, std::unique_ptr<skeletonizer::skeletonizer> skeletonizer)
 		{
 			const auto& arguments = global_arguments();
@@ -76,28 +100,6 @@ namespace skeletonization_benchmark
 			return image_metadata_.name + "/" + skeletonizer_name + "/" + to_string(type);
 		}
 
-		visual_inspector::image_container process_benchmark_results() const
-		{
-			visual_inspector::image_container image_container(image_metadata_.name);
-
-			constexpr auto default_input_image_name = "Original Image";
-
-			image_container.add_image(input_image_, default_input_image_name);
-
-			for (const auto& [name, image] : results_)
-			{
-				if (name.empty())
-				{
-					image_container.add_image(image);
-					continue;
-				}
-
-				image_container.add_image(image, name);
-			}
-
-			return image_container;
-		}
-
 		static constexpr int max_algorithm_type_length = 5;
 
 		static constexpr int max_algorithm_author_length = 20;
@@ -105,10 +107,8 @@ namespace skeletonization_benchmark
 		static constexpr int user_algorithm_name_length = 25;
 
 		static constexpr int max_total_algorithm_name_length = user_algorithm_name_length + max_algorithm_author_length
-			+
-			max_algorithm_type_length;
+			+ max_algorithm_type_length;
 
-	private:
 		image_benchmark_metadata image_metadata_;
 		cv::Mat input_image_;
 		cv::Mat binary_image_;

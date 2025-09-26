@@ -6,12 +6,10 @@ export module skeletonizer_cpu:guo_hall_threads;
 
 import :core;
 
-namespace skeletonizer::cpu::algorithms
+export namespace skeletonizer::cpu::algorithms
 {
-	export class guo_hall_cpu_threads final : public skeletonizer_cpu, public ::skeletonizer::algorithms::guo_hall
+	class guo_hall_cpu_threads final : public skeletonizer_cpu, public ::skeletonizer::algorithms::guo_hall
 	{
-		using iteration_function = std::function<void(cv::Mat&, cv::Mat&)>;
-
 		void apply(cv::Mat& binary_image) const override
 		{
 			cv::Mat previous(binary_image.size(), CV_8UC1, cv::Scalar(0));

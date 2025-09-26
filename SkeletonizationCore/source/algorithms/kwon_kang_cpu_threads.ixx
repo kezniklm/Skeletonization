@@ -6,13 +6,11 @@ export module skeletonizer_cpu:kwon_gi_kang_threads;
 
 import :core;
 
-namespace skeletonizer::cpu::algorithms
+export namespace skeletonizer::cpu::algorithms
 {
-	export class kwon_gi_kang_cpu_threads final : public skeletonizer_cpu,
-	                                              public ::skeletonizer::algorithms::kwon_gi_kang
+	class kwon_gi_kang_cpu_threads final : public skeletonizer_cpu,
+	                                       public ::skeletonizer::algorithms::kwon_gi_kang
 	{
-		using iteration_function = std::function<void(cv::Mat&, cv::Mat&)>;
-
 		void apply(cv::Mat& binary_image) const override
 		{
 			cv::Mat previous(binary_image.size(), CV_8UC1, cv::Scalar(0));

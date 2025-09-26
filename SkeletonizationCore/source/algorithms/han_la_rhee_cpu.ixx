@@ -6,9 +6,9 @@ export module skeletonizer_cpu:han_la_rhee;
 
 import :core;
 
-namespace skeletonizer::cpu::algorithms
+export namespace skeletonizer::cpu::algorithms
 {
-	export class han_la_rhee_cpu final : public skeletonizer_cpu, public ::skeletonizer::algorithms::han_la_rhee
+	class han_la_rhee_cpu final : public skeletonizer_cpu, public ::skeletonizer::algorithms::han_la_rhee
 	{
 		void apply(cv::Mat& binary_image) const override
 		{

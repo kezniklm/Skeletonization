@@ -8,10 +8,10 @@ import image_processing;
 
 import :core;
 
-namespace skeletonizer::cpu::algorithms
+export namespace skeletonizer::cpu::algorithms
 {
-	export class petrosino_salvi_thread final : public skeletonizer_cpu,
-	                                            public ::skeletonizer::algorithms::petrosino_salvi
+	class petrosino_salvi_thread final : public skeletonizer_cpu,
+	                                     public ::skeletonizer::algorithms::petrosino_salvi
 	{
 		void apply(cv::Mat& binary_image) const override
 		{

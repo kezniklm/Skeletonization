@@ -6,9 +6,9 @@ export module skeletonizer_cpu:zhang_suen_threads;
 
 import :core;
 
-namespace skeletonizer::cpu::algorithms
+export namespace skeletonizer::cpu::algorithms
 {
-	export class zhang_suen_cpu_threads final : public skeletonizer_cpu, public ::skeletonizer::algorithms::zhang_suen
+	class zhang_suen_cpu_threads final : public skeletonizer_cpu, public ::skeletonizer::algorithms::zhang_suen
 	{
 		void apply(cv::Mat& binary_image) const override
 		{

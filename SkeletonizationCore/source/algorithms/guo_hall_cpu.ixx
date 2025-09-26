@@ -6,9 +6,9 @@ export module skeletonizer_cpu:guo_hall;
 
 import :core;
 
-namespace skeletonizer::cpu::algorithms
+export namespace skeletonizer::cpu::algorithms
 {
-	export class guo_hall_cpu final : public skeletonizer_cpu, public ::skeletonizer::algorithms::guo_hall
+	class guo_hall_cpu final : public skeletonizer_cpu, public ::skeletonizer::algorithms::guo_hall
 	{
 		void apply(cv::Mat& binary_image) const override
 		{

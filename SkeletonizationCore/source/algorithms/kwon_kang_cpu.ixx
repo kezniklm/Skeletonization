@@ -6,9 +6,9 @@ export module skeletonizer_cpu:kwon_gi_kang;
 
 import :core;
 
-namespace skeletonizer::cpu::algorithms
+export namespace skeletonizer::cpu::algorithms
 {
-	export class kwon_gi_kang_cpu final : public skeletonizer_cpu, public ::skeletonizer::algorithms::kwon_gi_kang
+	class kwon_gi_kang_cpu final : public skeletonizer_cpu, public ::skeletonizer::algorithms::kwon_gi_kang
 	{
 		void apply(cv::Mat& binary_image) const override
 		{

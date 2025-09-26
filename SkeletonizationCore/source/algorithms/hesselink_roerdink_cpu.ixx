@@ -9,12 +9,11 @@ export module skeletonizer_cpu:hesselink_roerdink;
 import :core;
 import image_processing;
 
-namespace skeletonizer::cpu::algorithms
+export namespace skeletonizer::cpu::algorithms
 {
-	export class hesselink_roerdink_cpu final : public skeletonizer_cpu,
-	                                            public ::skeletonizer::algorithms::hesselink_roerdink
+	class hesselink_roerdink_cpu final : public skeletonizer_cpu,
+	                                     public ::skeletonizer::algorithms::hesselink_roerdink
 	{
-	public:
 		void apply(cv::Mat& binary_image) const override
 		{
 			binary_image *= high;
@@ -29,7 +28,6 @@ namespace skeletonizer::cpu::algorithms
 			binary_image = skeleton_map;
 		}
 
-	private:
 		static constexpr auto pixel_background = 0;
 		static constexpr auto pixel_skeleton = 128;
 		static constexpr auto pruning_threshold = 5.0;
