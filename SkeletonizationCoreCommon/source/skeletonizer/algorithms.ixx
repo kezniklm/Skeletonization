@@ -1,6 +1,7 @@
 module;
 
-#include <opencv2/core.hpp>
+#include "opencv2/core.hpp"
+#include "opencv2/imgproc.hpp"
 
 export module skeletonizer:algorithms;
 
@@ -165,5 +166,29 @@ namespace skeletonizer::algorithms
 				return !nearest_background_row_index.empty() && !nearest_background_column_index.empty();
 			}
 		};
+
+		static inline cv::Mat compute_nearest_background_labels(const cv::Mat& binary_image)
+		{
+			cv::Mat distances, labels;
+
+			cv::distanceTransform(binary_image, distances, labels, cv::DIST_L2, cv::DIST_MASK_3, cv::DIST_LABEL_PIXEL);
+
+			return labels;
+		}
+
+		[[nodiscard]] static inline int get_max_array_value(const cv::Mat& labels) noexcept
+		{
+			double min_value, max_value;
+
+			cv::minMaxLoc(labels, &min_value, &max_value);
+
+			return static_cast<int>(max_value);
+		}
+
+		template <typename... CommonType>
+		static constexpr std::common_type_t<CommonType...> squared_length(CommonType... value) noexcept
+		{
+			return ((value * value) + ...);
+		}
 	};
 }

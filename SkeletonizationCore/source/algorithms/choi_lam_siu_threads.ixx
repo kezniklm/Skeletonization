@@ -2,18 +2,18 @@
 
 #include <map>
 #include <variant>
-#include <opencv2/core.hpp>
-#include "opencv2/imgproc.hpp"
+
+#include "opencv2/core.hpp"
 
 export module skeletonizer_cpu:choi_lam_siu_threads;
 
 import :core;
 import image_processing;
 
-namespace skeletonizer::cpu::algorithms
+export namespace skeletonizer::cpu::algorithms
 {
-	export class choi_lam_siu_threads final : public skeletonizer_cpu,
-	                                          public ::skeletonizer::algorithms::choi_lam_siu
+	class choi_lam_siu_threads final : public skeletonizer_cpu,
+	                                   public ::skeletonizer::algorithms::choi_lam_siu
 	{
 	public:
 		void apply(cv::Mat& binary_image) const override
@@ -65,21 +65,6 @@ namespace skeletonizer::cpu::algorithms
 
 			return xy_distance_maps(std::move(nearest_background_row_index),
 			                        std::move(nearest_background_column_index));
-		}
-
-		static inline cv::Mat compute_nearest_background_labels(const cv::Mat& binary_image)
-		{
-			cv::Mat distances, labels;
-			cv::distanceTransform(binary_image, distances, labels, cv::DIST_L2, cv::DIST_MASK_3,
-			                      cv::DIST_LABEL_PIXEL);
-			return labels;
-		}
-
-		[[nodiscard]] static inline int get_max_array_value(const cv::Mat& labels) noexcept
-		{
-			double min_value, max_value;
-			cv::minMaxLoc(labels, &min_value, &max_value);
-			return static_cast<int>(max_value);
 		}
 
 		static inline std::vector<cv::Point> build_label_to_background_point_lut(const cv::Mat& binary_image,
@@ -225,12 +210,6 @@ namespace skeletonizer::cpu::algorithms
 			}
 
 			return false;
-		}
-
-		template <typename... CommonType>
-		static constexpr std::common_type_t<CommonType...> squared_length(CommonType... value) noexcept
-		{
-			return ((value * value) + ...);
 		}
 	};
 }
