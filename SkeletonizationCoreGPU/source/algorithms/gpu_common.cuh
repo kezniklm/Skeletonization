@@ -19,7 +19,7 @@ __device__ __forceinline__ int global_index_y(const int block_y, const int local
 	return block_y * block_dim_y + local_y;
 }
 
-__host__ __forceinline__ size_t compute_shared_mem_size(const dim3 block, const int halo = DEFAULT_HALO)
+__host__ __forceinline__ size_t compute_shared_mem_size(const dim3 block, const int halo)
 {
 	return (block.x + 2 * halo) * (block.y + 2 * halo) * sizeof(uchar);
 }
@@ -36,20 +36,22 @@ __device__ __forceinline__ bool is_border_pixel(const int x, const int y, const 
 	return x <= 0 || y <= 0 || x == num_cols - 1 || y == num_rows - 1;
 }
 
-__device__ __forceinline__ uchar load_center_pixel(
-	const cv::cuda::PtrStep<uchar>& src,
+template <typename T>
+__device__ __forceinline__ T load_center_pixel(
+	const cv::cuda::PtrStep<T>& src,
 	const int global_x, const int global_y,
 	const int num_cols, const int num_rows
 )
 {
-	return (global_x >= 0 && global_x < num_cols && global_y >= 0 && global_y < num_rows)
+	return global_x >= 0 && global_x < num_cols && global_y >= 0 && global_y < num_rows
 		       ? src(global_y, global_x)
-		       : 0;
+		       : T(0);
 }
 
+template <typename T>
 __device__ __forceinline__ void load_halo_edges(
-	uchar* shared_tile,
-	const cv::cuda::PtrStep<uchar>& src,
+	T* shared_tile,
+	const cv::cuda::PtrStep<T>& src,
 	const int global_x, const int global_y,
 	const int num_cols, const int num_rows,
 	const int shared_stride,
@@ -79,9 +81,10 @@ __device__ __forceinline__ void load_halo_edges(
 	}
 }
 
+template <typename T>
 __device__ __forceinline__ void load_halo_corners(
-	uchar* shared_tile,
-	const cv::cuda::PtrStep<uchar>& src,
+	T* shared_tile,
+	const cv::cuda::PtrStep<T>& src,
 	const int global_x, const int global_y,
 	const int num_cols, const int num_rows,
 	const int shared_stride,
