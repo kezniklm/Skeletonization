@@ -1,9 +1,9 @@
-module;
+﻿module;
+
+#include "choi_lam_siu.cuh"
 
 #include "opencv2/core.hpp"
-#include "opencv2/core/cuda.hpp"
-#include "cuda_runtime.h"
-#include "choi_lam_siu.cuh"
+#include "opencv2/cudaarithm.hpp"
 
 export module skeletonizer_gpu:choi_lam_siu;
 
@@ -12,44 +12,32 @@ import :core;
 
 export namespace skeletonizer::gpu::algorithms
 {
-	export class choi_lam_siu_gpu final : public ::skeletonizer::algorithms::choi_lam_siu, public skeletonizer_gpu
+	class choi_lam_siu_gpu final : public ::skeletonizer::algorithms::choi_lam_siu, public skeletonizer_gpu<32>
 	{
 		void apply(cv::Mat& binary_image) const override
 		{
-			cv::cuda::GpuMat gpu_src(binary_image);
-			cv::cuda::GpuMat gpu_dst(binary_image.size(), gpu_src.type());
+			cv::cuda::GpuMat gpu_binary_image(binary_image);
 
-			constexpr dim3 block(block_dimension, block_dimension);
-			const dim3 grid((gpu_src.cols + block.x - 1) / block.x,
-			                (gpu_src.rows + block.y - 1) / block.y);
+			constexpr dim3 block(block_dimension_x, block_dimension_y);
+			const dim3 grid((binary_image.cols + block.x - 1) / block.x,
+			                (binary_image.rows + block.y - 1) / block.y);
 
-			int host_changed, *device_changed = nullptr;
+			const auto label_matrix = compute_nearest_background_labels(binary_image);
 
-			cudaMalloc(&device_changed, sizeof(int));
+			const cv::cuda::GpuMat label_matrix_gpu(label_matrix);
 
-			cv::cuda::GpuMat *src = &gpu_src, *dst = &gpu_dst;
+			const auto max_label = get_max_array_value(label_matrix);
 
-			do
-			{
-				cudaMemset(device_changed, 0, sizeof(int));
+			const auto lut_size = max_label + 1;
 
-				choi_lam_siu_iteration(*src, *dst, true, device_changed, grid, block);
+			const auto lut = build_label_to_background_point_lut(gpu_binary_image, label_matrix_gpu, block, grid,
+			                                                     lut_size);
 
-				std::swap(src, dst);
+			skeletonize(gpu_binary_image, label_matrix_gpu, lut, block, grid, halo);
 
-				choi_lam_siu_iteration(*src, *dst, false, device_changed, grid, block);
+			gpu_binary_image.download(binary_image);
 
-				std::swap(src, dst);
-
-				cudaMemcpy(&host_changed, device_changed, sizeof(int), cudaMemcpyDeviceToHost);
-			}
-			while (host_changed != 0);
-
-			cudaFree(device_changed);
-
-			src->download(binary_image);
-
-			cudaDeviceSynchronize();
+			clear_border(binary_image);
 		}
 	};
 }

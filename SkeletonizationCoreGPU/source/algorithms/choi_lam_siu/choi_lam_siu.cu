@@ -1,106 +1,193 @@
-﻿#include "choi_lam_siu.cuh"
+﻿#include "../gpu_common.cuh"
 
 #include <cuda_runtime.h>
-#include "opencv2/core.hpp"
-#include "opencv2/core/cuda.hpp"
-#include "opencv2/core/cuda_types.hpp"
-#include "opencv2/core/hal/interface.h"
+#include <limits>
+#include <opencv2/core/cuda.hpp>
 
-__global__ void choi_lam_siu_iteration_kernel_opt(
-	const cv::cuda::PtrStep<uchar> src,
-	cv::cuda::PtrStep<uchar> dst,
-	const int num_rows,
-	const int num_cols,
-	const bool first_pass,
-	int* d_changed,
-	const int halo
-)
+__device__ __constant__ int8_t dx8[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
+__device__ __constant__ int8_t dy8[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
+
+__global__ void build_label_to_background_point_lut_kernel(
+	cv::cuda::PtrStepSz<uchar> binary_image_pointer,
+	cv::cuda::PtrStepSz<int> label_pointer,
+	int2* __restrict__ lut, const int lut_size)
 {
-	extern __shared__ uchar shared_tile[];
+	const int x = global_index_x(blockIdx.x, threadIdx.x, blockDim.x);
+	const int y = global_index_y(blockIdx.y, threadIdx.y, blockDim.y);
 
-	const int local_x = threadIdx.x;
-	const int local_y = threadIdx.y;
-	const int global_x = global_index_x(blockIdx.x, local_x, blockDim.x);
-	const int global_y = global_index_y(blockIdx.y, local_y, blockDim.y);
+	if (is_out_of_bounds(x, y, binary_image_pointer.cols, binary_image_pointer.rows) ||
+		is_border_pixel(x, y, binary_image_pointer.cols, binary_image_pointer.rows) ||
+		binary_image_pointer(y, x) != 0)
+	{
+		return;
+	}
 
+	const int id = label_pointer(y, x);
+
+	if (id <= 0 || id >= lut_size)
+	{
+		return;
+	}
+
+	lut[id] = make_int2(x, y);
+}
+
+__global__ void skeletonizer_kernel(
+	const cv::cuda::PtrStepSz<uchar> binary_image, // has to be copied
+	const cv::cuda::PtrStepSz<int> labels, // has to be copied
+	const int2* __restrict__ lut, const int lut_size,
+	cv::cuda::PtrStepSz<uchar> out,
+	const int min_d2, const int max_d2, const int halo)
+{
 	const int shared_stride = blockDim.x + 2 * halo;
+	const int lx = threadIdx.x;
+	const int ly = threadIdx.y;
+	const int gx = global_index_x(blockIdx.x, lx, blockDim.x);
+	const int gy = global_index_y(blockIdx.y, ly, blockDim.y);
 
-	shared_tile[shared_index(local_x, local_y, shared_stride, halo)] = load_center_pixel(
-		src, global_x, global_y, num_cols, num_rows);
+	extern __shared__ unsigned char shared_memory[];
+	const auto label_tile = reinterpret_cast<int*>(shared_memory);
+	const auto binary_image_tile = reinterpret_cast<uchar*>(label_tile + shared_stride * (blockDim.y + 2 * halo));
 
-	load_halo_edges(shared_tile, src, global_x, global_y, num_cols, num_rows, shared_stride, local_x, local_y, halo,
-	                blockDim);
-	load_halo_corners(shared_tile, src, global_x, global_y, num_cols, num_rows, shared_stride, local_x, local_y, halo,
-	                  blockDim);
+	// center
+	binary_image_tile[shared_index(lx, ly, shared_stride, halo)] =
+		load_center_pixel(binary_image, gx, gy, binary_image.cols, binary_image.rows);
+	label_tile[shared_index(lx, ly, shared_stride, halo)] =
+		load_center_pixel(labels, gx, gy, labels.cols, labels.rows);
+
+	// halos
+	load_halo_edges(binary_image_tile, binary_image, gx, gy, binary_image.cols, binary_image.rows,
+	                shared_stride, lx, ly, halo, blockDim);
+	load_halo_edges(label_tile, labels, gx, gy, labels.cols, labels.rows,
+	                shared_stride, lx, ly, halo, blockDim);
+
+	load_halo_corners(binary_image_tile, binary_image, gx, gy, binary_image.cols, binary_image.rows,
+	                  shared_stride, lx, ly, halo, blockDim);
+	load_halo_corners(label_tile, labels, gx, gy, labels.cols, labels.rows,
+	                  shared_stride, lx, ly, halo, blockDim);
 
 	__syncthreads();
 
-	if (is_out_of_bounds(global_x, global_y, num_cols, num_rows))
+	if (is_out_of_bounds(gx, gy, binary_image.cols, binary_image.rows) || is_border_pixel(
+		gx, gy, binary_image.cols, binary_image.rows))
 	{
+		if (!is_out_of_bounds(gx, gy, out.cols, out.rows))
+		{
+			out(gy, gx) = 0;
+		}
+
 		return;
 	}
 
-	if (is_border_pixel(global_x, global_y, num_cols, num_rows))
+	const int sIdx = shared_index(lx, ly, shared_stride, halo);
+
+	if (binary_image_tile[sIdx] == 0)
 	{
-		dst(global_y, global_x) = src(global_y, global_x);
+		out(gy, gx) = 0;
 		return;
 	}
 
-	const auto p1 = shared_tile[shared_index(local_x, local_y, shared_stride, halo)];
-	const auto p2 = shared_tile[shared_index(local_x, local_y - 1, shared_stride, halo)];
-	const auto p3 = shared_tile[shared_index(local_x + 1, local_y - 1, shared_stride, halo)];
-	const auto p4 = shared_tile[shared_index(local_x + 1, local_y, shared_stride, halo)];
-	const auto p5 = shared_tile[shared_index(local_x + 1, local_y + 1, shared_stride, halo)];
-	const auto p6 = shared_tile[shared_index(local_x, local_y + 1, shared_stride, halo)];
-	const auto p7 = shared_tile[shared_index(local_x - 1, local_y + 1, shared_stride, halo)];
-	const auto p8 = shared_tile[shared_index(local_x - 1, local_y, shared_stride, halo)];
-	const auto p9 = shared_tile[shared_index(local_x - 1, local_y - 1, shared_stride, halo)];
-
-	if (p1 == 0)
+	const int lid = label_tile[sIdx];
+	if (lid <= 0 || lid >= lut_size)
 	{
-		dst(global_y, global_x) = 0;
+		out(gy, gx) = 0;
 		return;
 	}
 
-	// A: Transition count (0→1 along neighbors)
-	const int a = (p2 == 0 && p3 == 1) +
-		(p3 == 0 && p4 == 1) +
-		(p4 == 0 && p5 == 1) +
-		(p5 == 0 && p6 == 1) +
-		(p6 == 0 && p7 == 1) +
-		(p7 == 0 && p8 == 1) +
-		(p8 == 0 && p9 == 1) +
-		(p9 == 0 && p2 == 1);
+	const int2 q = lut[lid];
+	const int qx = q.x - gx;
+	const int qy = q.y - gy;
+	const int r2_q = qx * qx + qy * qy;
 
-	// B: Neighbor count (number of foreground pixels)
-	const int b = p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9;
+	bool keep = false;
 
-	// C, D: Connectivity checks
-	const int step_condition_c = first_pass ? p2 * p4 * p6 : p2 * p4 * p8;
-	const int step_condition_d = first_pass ? p4 * p6 * p8 : p2 * p6 * p8;
-
-	if (a == 1 && b >= 2 && b <= 6 && step_condition_c == 0 && step_condition_d == 0)
+#pragma unroll
+	for (int k = 0; k < 8; ++k)
 	{
-		dst(global_y, global_x) = 0;
-		atomicExch(d_changed, 1);
+		const int label_id = label_tile[shared_index(lx + dx8[k], ly + dy8[k], shared_stride, halo)];
+
+		if (label_id <= 0 || label_id >= lut_size)
+		{
+			continue;
+		}
+
+		const int2 qi = lut[label_id];
+
+		const int nx = gx + dx8[k];
+		const int ny = gy + dy8[k];
+
+		// Qi = DM(Pi) + (Δx,Δy)
+		const int qix = (qi.x - nx) + dx8[k];
+		const int qiy = (qi.y - ny) + dy8[k];
+
+		const int ddx = qix - qx;
+		const int ddy = qiy - qy;
+		const int d2 = ddx * ddx + ddy * ddy;
+
+		const int r2_qi = qix * qix + qiy * qiy;
+		const int delta_r2 = r2_qi - r2_q;
+
+		int max_dir = std::abs(ddx);
+		const int ady = std::abs(ddy);
+
+		if (ady > max_dir)
+		{
+			max_dir = ady;
+		}
+		if (max_dir < 1)
+		{
+			max_dir = 1;
+		}
+
+		if (d2 < min_d2 || d2 > max_d2 || delta_r2 > max_dir)
+		{
+			continue;
+		}
+
+		keep = true;
+
+		break;
 	}
-	else
-	{
-		dst(global_y, global_x) = 1;
-	}
+
+	out(gy, gx) = keep ? 1 : 0;
 }
 
-extern inline void choi_lam_siu_iteration(
-	const cv::cuda::GpuMat& src,
-	const cv::cuda::GpuMat& dst,
-	const bool first_pass,
-	int* d_changed,
-	dim3 grid,
-	dim3 block,
-	const int halo)
+extern inline cv::cuda::GpuMat build_label_to_background_point_lut(
+	const cv::cuda::GpuMat& binary_image,
+	const cv::cuda::GpuMat& label_matrix,
+	const dim3 block,
+	const dim3 grid,
+	const int lut_size)
 {
-	const size_t shared_mem = compute_shared_mem_size(block, halo);
+	cv::cuda::GpuMat lut(1, lut_size, CV_32SC2, cv::Scalar::all(-1));
 
-	choi_lam_siu_iteration_kernel_opt << <grid, block, shared_mem >> >(src, dst, src.rows, src.cols, first_pass,
-	                                                                 d_changed, halo);
+	build_label_to_background_point_lut_kernel << <grid, block >> >(
+		binary_image, label_matrix, lut.ptr<int2>(), lut_size);
+
+	return lut;
+}
+
+extern inline void skeletonize(
+	cv::cuda::GpuMat& binary_image,
+	const cv::cuda::GpuMat& label_matrix,
+	const cv::cuda::GpuMat& lut,
+	const dim3 block,
+	const dim3 grid,
+	const int halo,
+	const int min_d2,
+	const int max_d2)
+{
+	const auto lut_size = lut.cols;
+
+	const cv::cuda::GpuMat output(binary_image.size(), binary_image.type(), cv::Scalar::all(0));
+
+	const auto tile_w = block.x + 2 * halo;
+	const auto tile_h = block.y + 2 * halo;
+	const size_t shared_memory_size = tile_w * tile_h * (sizeof(int) + sizeof(uint8_t));
+
+	skeletonizer_kernel<<<grid, block, shared_memory_size>>>(binary_image, label_matrix,
+	                                                         lut.ptr<int2>(), lut_size,
+	                                                         output, min_d2, max_d2, halo);
+
+	output.copyTo(binary_image);
 }
