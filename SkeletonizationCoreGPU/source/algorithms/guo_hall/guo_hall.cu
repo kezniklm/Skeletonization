@@ -1,4 +1,4 @@
-﻿#include "guo_hall.cuh"
+﻿#include "../gpu_common.cuh"
 
 #include <cuda_runtime.h>
 #include "opencv2/core.hpp"
@@ -6,7 +6,7 @@
 #include "opencv2/core/cuda_types.hpp"
 #include "opencv2/core/hal/interface.h"
 
-__global__ void guo_hall_iteration_kernel_opt(
+__global__ void guo_hall_iteration_kernel(
 	const cv::cuda::PtrStep<uchar> src,
 	cv::cuda::PtrStep<uchar> dst,
 	const int num_rows,
@@ -28,9 +28,9 @@ __global__ void guo_hall_iteration_kernel_opt(
 		src, global_x, global_y, num_cols, num_rows);
 
 	load_halo_edges(shared_tile, src, global_x, global_y, num_cols, num_rows, shared_stride, local_x, local_y, halo,
-		blockDim);
+	                blockDim);
 	load_halo_corners(shared_tile, src, global_x, global_y, num_cols, num_rows, shared_stride, local_x, local_y, halo,
-		blockDim);
+	                  blockDim);
 
 	__syncthreads();
 
@@ -117,6 +117,6 @@ extern inline void guo_hall_iteration(
 {
 	const size_t shared_mem = compute_shared_mem_size(block, halo);
 
-	guo_hall_iteration_kernel_opt << <grid, block, shared_mem >> >(src, dst, src.rows, src.cols, first_pass,
-	                                                               d_changed, halo);
+	guo_hall_iteration_kernel << <grid, block, shared_mem >> >(src, dst, src.rows, src.cols, first_pass,
+	                                                           d_changed, halo);
 }

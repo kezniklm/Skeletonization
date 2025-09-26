@@ -1,14 +1,17 @@
-﻿#include "petrosino_salvi.cuh"
+﻿#include "../gpu_common.cuh"
 
-#include <cuda_runtime.h>
+#include "cuda_runtime.h"
+
 #include "opencv2/core.hpp"
 #include "opencv2/core/cuda.hpp"
 #include "opencv2/core/cuda_types.hpp"
 #include "opencv2/core/hal/interface.h"
 
-__device__ __forceinline__ bool petrosino_salvi_first_pass(const uchar x1, const uchar x2, const uchar x3, const uchar x4,
-                                                     const uchar x5, const uchar x6, const uchar x7, const uchar x8,
-                                                     const uchar y2, const uchar y5)
+__device__ __forceinline__ bool petrosino_salvi_first_pass(const uchar x1, const uchar x2, const uchar x3,
+                                                           const uchar x4,
+                                                           const uchar x5, const uchar x6, const uchar x7,
+                                                           const uchar x8,
+                                                           const uchar y2, const uchar y5)
 {
 	const int a = ((x2 ^ x3) != 0) + ((x3 ^ x4) != 0) + ((x4 ^ x5) != 0) +
 		((x5 ^ x6) != 0) + ((x6 ^ x7) != 0) + ((x7 ^ x8) != 0) +
@@ -20,11 +23,13 @@ __device__ __forceinline__ bool petrosino_salvi_first_pass(const uchar x1, const
 	const int r = x1 && x7 && x8 &&
 		((!y5 && x2 && x3 && !x5) || (!y2 && !x3 && x5 && x6));
 
-	return (a == 2 && b >= 2 && b <= 6 && r == 0);
+	return a == 2 && b >= 2 && b <= 6 && r == 0;
 }
 
-__device__ __forceinline__ bool petrosino_salvi_second_pass(const uchar x1, const uchar x2, const uchar x3, const uchar x4,
-                                                      const uchar x5, const uchar x6, const uchar x7, const uchar x8)
+__device__ __forceinline__ bool petrosino_salvi_second_pass(const uchar x1, const uchar x2, const uchar x3,
+                                                            const uchar x4,
+                                                            const uchar x5, const uchar x6, const uchar x7,
+                                                            const uchar x8)
 {
 	const int s0 = (x3 && x7) || (x5 && x1);
 
@@ -37,11 +42,11 @@ __device__ __forceinline__ bool petrosino_salvi_second_pass(const uchar x1, cons
 	const int r = (x3 && ((x1 && !x8) || (x5 && !x6))) ||
 		(x7 && ((!x5 && !x8) || (!x1 && !x6)));
 
-	return (!s0 && s1 && r == 0 && b >= 3);
+	return !s0 && s1 && r == 0 && b >= 3;
 }
 
 
-__global__ void petrosino_salvi_iteration_kernel_opt(
+__global__ void petrosino_salvi_iteration_kernel(
 	const cv::cuda::PtrStep<uchar> src,
 	cv::cuda::PtrStep<uchar> dst,
 	const int num_rows,
@@ -132,6 +137,6 @@ extern inline void petrosino_salvi_iteration(
 {
 	const size_t shared_mem = compute_shared_mem_size(block, halo);
 
-	petrosino_salvi_iteration_kernel_opt << <grid, block, shared_mem >> >(src, dst, src.rows, src.cols, first_pass,
-	                                                                      d_changed, halo);
+	petrosino_salvi_iteration_kernel << <grid, block, shared_mem >> >(src, dst, src.rows, src.cols, first_pass,
+	                                                                  d_changed, halo);
 }

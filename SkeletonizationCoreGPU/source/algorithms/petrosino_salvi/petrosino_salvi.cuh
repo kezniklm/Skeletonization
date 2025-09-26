@@ -1,8 +1,6 @@
 #pragma once
 
-#include "../gpu_common.cuh"
 
-#include <cuda_runtime.h>
 #include "opencv2/core.hpp"
 
 void petrosino_salvi_iteration(
@@ -12,4 +10,4 @@ void petrosino_salvi_iteration(
 	int* d_changed,
 	dim3 grid,
 	dim3 block,
-	int halo = DEFAULT_HALO);
+	int halo);

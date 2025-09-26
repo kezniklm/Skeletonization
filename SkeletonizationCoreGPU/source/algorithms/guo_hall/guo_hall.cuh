@@ -1,8 +1,5 @@
 #pragma once
 
-#include "../gpu_common.cuh"
-
-#include <cuda_runtime.h>
 #include "opencv2/core.hpp"
 
 void guo_hall_iteration(
@@ -12,4 +9,4 @@ void guo_hall_iteration(
 	int* d_changed,
 	dim3 grid,
 	dim3 block,
-	int halo = DEFAULT_HALO);
+	int halo);

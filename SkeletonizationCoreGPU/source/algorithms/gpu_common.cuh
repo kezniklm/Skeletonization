@@ -3,8 +3,6 @@
 #include <cuda_runtime.h>
 #include "opencv2/core/cuda_types.hpp"
 
-constexpr int DEFAULT_HALO = 1;
-
 __device__ __forceinline__ int shared_index(const int local_x, const int local_y, const int shared_stride,
                                             const int halo)
 {

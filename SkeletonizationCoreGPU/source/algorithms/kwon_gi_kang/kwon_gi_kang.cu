@@ -1,4 +1,4 @@
-﻿#include "kwon_gi_kang.cuh"
+﻿#include "../gpu_common.cuh"
 
 #include <cuda_runtime.h>
 #include "opencv2/core.hpp"
@@ -6,7 +6,7 @@
 #include "opencv2/core/cuda_types.hpp"
 #include "opencv2/core/hal/interface.h"
 
-__global__ void kwon_gi_kang_iteration_kernel_opt(
+__global__ void kwon_gi_kang_iteration_kernel(
 	const cv::cuda::PtrStep<uchar> src,
 	cv::cuda::PtrStep<uchar> dst,
 	const int num_rows,
@@ -163,8 +163,8 @@ extern inline void kwon_gi_kang_iteration(
 {
 	const size_t shared_mem = compute_shared_mem_size(block, halo);
 
-	kwon_gi_kang_iteration_kernel_opt << <grid, block, shared_mem >> >(src, dst, src.rows, src.cols, first_pass,
-	                                                                   d_changed, halo);
+	kwon_gi_kang_iteration_kernel << <grid, block, shared_mem >> >(src, dst, src.rows, src.cols, first_pass,
+	                                                               d_changed, halo);
 }
 
 extern inline void cleanup_oblique_corners(

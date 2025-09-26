@@ -12,14 +12,14 @@ import :core;
 
 export namespace skeletonizer::gpu::algorithms
 {
-	export class guo_hall_gpu final : public ::skeletonizer::algorithms::guo_hall, public skeletonizer_gpu
+	class guo_hall_gpu final : public ::skeletonizer::algorithms::guo_hall, public skeletonizer_gpu<14, 14>
 	{
 		void apply(cv::Mat& binary_image) const override
 		{
 			cv::cuda::GpuMat gpu_src(binary_image);
 			cv::cuda::GpuMat gpu_dst(binary_image.size(), gpu_src.type());
 
-			constexpr dim3 block(block_dimension, block_dimension);
+			constexpr dim3 block(block_dimension_x, block_dimension_y);
 			const dim3 grid((gpu_src.cols + block.x - 1) / block.x,
 			                (gpu_src.rows + block.y - 1) / block.y);
 
@@ -33,11 +33,11 @@ export namespace skeletonizer::gpu::algorithms
 			{
 				cudaMemset(device_changed, 0, sizeof(int));
 
-				guo_hall_iteration(*src, *dst, true, device_changed, grid, block);
+				guo_hall_iteration(*src, *dst, true, device_changed, grid, block, halo);
 
 				std::swap(src, dst);
 
-				guo_hall_iteration(*src, *dst, false, device_changed, grid, block);
+				guo_hall_iteration(*src, *dst, false, device_changed, grid, block, halo);
 
 				std::swap(src, dst);
 

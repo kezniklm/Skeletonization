@@ -59,7 +59,7 @@ __device__ __forceinline__ bool has_critical_pairs(
 		(x2 && x4) || (x4 && x6) || (x6 && x8) || (x8 && x2);
 }
 
-__global__ void han_la_rhee_iteration_kernel_opt(
+__global__ void han_la_rhee_iteration_kernel(
 	cv::cuda::PtrStep<uchar> binary_image,
 	const cv::cuda::PtrStep<uchar> weight,
 	const int num_rows,
@@ -172,7 +172,8 @@ extern inline void han_la_rhee_iteration(
 	const dim3 grid,
 	const dim3 block)
 {
-	han_la_rhee_iteration_kernel_opt<<<grid, block>>>(binary_image, weight, binary_image.rows, binary_image.cols, d_changed);
+	han_la_rhee_iteration_kernel<<<grid, block>>>(binary_image, weight, binary_image.rows, binary_image.cols,
+	                                              d_changed);
 }
 
 extern inline void calculate_weight(const cv::cuda::GpuMat& image, cv::cuda::GpuMat& weight, const dim3 block,
