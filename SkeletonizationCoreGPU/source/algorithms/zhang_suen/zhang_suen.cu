@@ -56,9 +56,9 @@ __global__ void zhang_suen_iteration_kernel(
 	const auto p8 = shared_tile[shared_index(local_x - 1, local_y, shared_stride, halo)];
 	const auto p9 = shared_tile[shared_index(local_x - 1, local_y - 1, shared_stride, halo)];
 
-	if (p1 == 0)
+	if (p1 == background)
 	{
-		dst(global_y, global_x) = 0;
+		dst(global_y, global_x) = background;
 		return;
 	}
 
@@ -81,12 +81,12 @@ __global__ void zhang_suen_iteration_kernel(
 
 	if (a == 1 && b >= 2 && b <= 6 && step_condition_c == 0 && step_condition_d == 0)
 	{
-		dst(global_y, global_x) = 0;
+		dst(global_y, global_x) = background;
 		atomicExch(d_changed, 1);
 	}
 	else
 	{
-		dst(global_y, global_x) = 1;
+		dst(global_y, global_x) = skeleton;
 	}
 }
 

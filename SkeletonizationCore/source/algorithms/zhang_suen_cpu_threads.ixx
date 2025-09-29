@@ -48,7 +48,7 @@ export namespace skeletonizer::cpu::algorithms
 					{
 						const auto p1 = current[column];
 
-						if (p1 != 1)
+						if (p1 == background)
 						{
 							continue;
 						}
@@ -71,7 +71,9 @@ export namespace skeletonizer::cpu::algorithms
 						const int step_condition_d = p4 * p6 * p8;
 
 						if (a == 1 && b >= 2 && b <= 6 && step_condition_c == 0 && step_condition_d == 0)
-							marker_pointer[column] = 1;
+						{
+							marker_pointer[column] = skeleton;
+						}
 					}
 				}
 			});
@@ -96,7 +98,7 @@ export namespace skeletonizer::cpu::algorithms
 					{
 						const uchar p1 = current[column];
 
-						if (p1 != 1)
+						if (p1 == background)
 						{
 							continue;
 						}
@@ -120,7 +122,9 @@ export namespace skeletonizer::cpu::algorithms
 						const int step_condition_d = p2 * p6 * p8;
 
 						if (a == 1 && b >= 2 && b <= 6 && step_condition_c == 0 && step_condition_d == 0)
-							marker_pointer[column] = 1;
+						{
+							marker_pointer[column] = skeleton;
+						}
 					}
 				}
 			});

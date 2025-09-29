@@ -88,9 +88,9 @@ __global__ void petrosino_salvi_iteration_kernel(
 
 	const auto p1 = shared_tile[shared_index(local_x, local_y, shared_stride, halo)];
 
-	if (p1 == 0)
+	if (p1 == background)
 	{
-		dst(global_y, global_x) = 0;
+		dst(global_y, global_x) = background;
 		return;
 	}
 
@@ -106,9 +106,9 @@ __global__ void petrosino_salvi_iteration_kernel(
 	const auto y2 = shared_tile[shared_index(local_x, local_y + 2, shared_stride, halo)];
 	const auto y5 = shared_tile[shared_index(local_x + 2, local_y, shared_stride, halo)];
 
-	if (p1 == 0)
+	if (p1 == background)
 	{
-		dst(global_y, global_x) = 0;
+		dst(global_y, global_x) = background;
 		return;
 	}
 
@@ -118,11 +118,11 @@ __global__ void petrosino_salvi_iteration_kernel(
 
 	if (!delete_pixel)
 	{
-		dst(global_y, global_x) = 1;
+		dst(global_y, global_x) = skeleton;
 		return;
 	}
 
-	dst(global_y, global_x) = 0;
+	dst(global_y, global_x) = background;
 	atomicExch(d_changed, 1);
 }
 

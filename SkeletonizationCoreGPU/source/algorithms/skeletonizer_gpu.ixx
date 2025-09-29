@@ -9,7 +9,7 @@ import skeletonizer;
 namespace skeletonizer::gpu
 {
 	export template <int BlockDimensionX = 16, int BlockDimensionY = 16, int Halo = 1>
-	class skeletonizer_gpu : virtual public skeletonizer
+	class skeletonizer_gpu : virtual public skeletonizer<>
 	{
 	protected:
 		static constexpr int block_dimension_x = BlockDimensionX;

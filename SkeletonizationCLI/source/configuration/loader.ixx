@@ -20,7 +20,7 @@ import skeletonizer_cpu;
 import skeletonizer_gpu;
 import skeletonizer;
 
-using skeletonizer_creator = std::function<std::unique_ptr<skeletonizer::skeletonizer>()>;
+using skeletonizer_creator = std::function<std::unique_ptr<skeletonizer::skeletonizer<>>()>;
 
 using skeletonizer_map = std::map<skeletonizer::skeletonizer_type, std::vector<skeletonizer_creator>>;
 

@@ -46,8 +46,8 @@ export namespace skeletonizer::cpu::algorithms
 							                                   distance_maps.nearest_background_column_index,
 							                                   row, column, minimal_residual_distance,
 							                                   maximal_residual_distance)
-							                                   ? 1
-							                                   : 0;
+							                                   ? skeleton
+							                                   : background;
 					}
 				}
 			});
@@ -89,7 +89,7 @@ export namespace skeletonizer::cpu::algorithms
 
 					for (int x = 1; x < binary_image.cols - 1; ++x)
 					{
-						if (image_row[x] != 0) // background
+						if (image_row[x] == foreground)
 						{
 							continue;
 						}
@@ -136,9 +136,9 @@ export namespace skeletonizer::cpu::algorithms
 
 					for (int x = 1; x < binary_image.cols - 1; ++x)
 					{
-						if (image_row[x] == 0)
+						if (image_row[x] == background)
 						{
-							continue; // keep zeros for background
+							continue;
 						}
 
 						const auto label_id = label_row[x];

@@ -17,7 +17,7 @@ __global__ void build_label_to_background_point_lut_kernel(
 
 	if (is_out_of_bounds(x, y, binary_image_pointer.cols, binary_image_pointer.rows) ||
 		is_border_pixel(x, y, binary_image_pointer.cols, binary_image_pointer.rows) ||
-		binary_image_pointer(y, x) != 0)
+		binary_image_pointer(y, x) == foreground)
 	{
 		return;
 	}
@@ -73,7 +73,7 @@ __global__ void skeletonizer_kernel(
 	{
 		if (!is_out_of_bounds(gx, gy, out.cols, out.rows))
 		{
-			out(gy, gx) = 0;
+			out(gy, gx) = background;
 		}
 
 		return;
@@ -81,16 +81,16 @@ __global__ void skeletonizer_kernel(
 
 	const int sIdx = shared_index(lx, ly, shared_stride, halo);
 
-	if (binary_image_tile[sIdx] == 0)
+	if (binary_image_tile[sIdx] == background)
 	{
-		out(gy, gx) = 0;
+		out(gy, gx) = background;
 		return;
 	}
 
 	const int lid = label_tile[sIdx];
 	if (lid <= 0 || lid >= lut_size)
 	{
-		out(gy, gx) = 0;
+		out(gy, gx) = background;
 		return;
 	}
 
@@ -149,7 +149,7 @@ __global__ void skeletonizer_kernel(
 		break;
 	}
 
-	out(gy, gx) = keep ? 1 : 0;
+	out(gy, gx) = keep ? skeleton : background;
 }
 
 extern inline cv::cuda::GpuMat build_label_to_background_point_lut(

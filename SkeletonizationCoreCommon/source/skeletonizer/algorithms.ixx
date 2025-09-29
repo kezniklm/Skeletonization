@@ -9,7 +9,7 @@ import :core;
 
 namespace skeletonizer::algorithms
 {
-	export class zhang_suen : virtual public skeletonizer
+	export class zhang_suen : virtual public skeletonizer<>
 	{
 		std::string name() const final
 		{
@@ -17,7 +17,7 @@ namespace skeletonizer::algorithms
 		}
 	};
 
-	export class guo_hall : virtual public skeletonizer
+	export class guo_hall : virtual public skeletonizer<>
 	{
 	public:
 		std::string name() const final
@@ -26,7 +26,7 @@ namespace skeletonizer::algorithms
 		}
 	};
 
-	export class hesselink_roerdink : virtual public skeletonizer
+	export class hesselink_roerdink : virtual public skeletonizer<>
 	{
 		std::string name() const final
 		{
@@ -34,7 +34,7 @@ namespace skeletonizer::algorithms
 		}
 	};
 
-	export class kwon_gi_kang : virtual public skeletonizer
+	export class kwon_gi_kang : virtual public skeletonizer<>
 	{
 		std::string name() const final
 		{
@@ -42,7 +42,7 @@ namespace skeletonizer::algorithms
 		}
 	};
 
-	export class petrosino_salvi : virtual public skeletonizer
+	export class petrosino_salvi : virtual public skeletonizer<>
 	{
 		std::string name() const final
 		{
@@ -50,7 +50,7 @@ namespace skeletonizer::algorithms
 		}
 	};
 
-	export class han_la_rhee : virtual public skeletonizer
+	export class han_la_rhee : virtual public skeletonizer<>
 	{
 		std::string name() const final
 		{
@@ -142,7 +142,7 @@ namespace skeletonizer::algorithms
 		}
 	};
 
-	export class choi_lam_siu : virtual public skeletonizer
+	export class choi_lam_siu : virtual public skeletonizer<>
 	{
 		std::string name() const final
 		{

@@ -6,9 +6,9 @@ export module image_processing;
 
 import pipeline;
 
-export constexpr auto default_ratio = 255;
-export constexpr auto high = 255;
-export constexpr auto low = 0;
+constexpr auto default_ratio = 255;
+constexpr auto high = 255;
+constexpr auto low = 0;
 
 export inline cv::Mat read_image(const std::string& path)
 {

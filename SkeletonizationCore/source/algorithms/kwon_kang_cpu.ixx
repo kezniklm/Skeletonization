@@ -48,7 +48,7 @@ export namespace skeletonizer::cpu::algorithms
 				{
 					const auto pi = current[column];
 
-					if (pi != 1)
+					if (pi == background)
 					{
 						continue;
 					}
@@ -74,7 +74,7 @@ export namespace skeletonizer::cpu::algorithms
 
 					if (a == 1 && b >= 2 && b <= 6 && step_condition_c == 0 && step_condition_d == 0)
 					{
-						marker_pointer[column] = 1;
+						marker_pointer[column] = skeleton;
 					}
 				}
 			}
@@ -97,7 +97,7 @@ export namespace skeletonizer::cpu::algorithms
 				{
 					const auto pi = current[column];
 
-					if (pi != 1)
+					if (pi == background)
 					{
 						continue;
 					}
@@ -123,7 +123,7 @@ export namespace skeletonizer::cpu::algorithms
 
 					if (a == 1 && b >= 2 && b <= 6 && step_condition_c == 0 && step_condition_d == 0)
 					{
-						marker_pointer[column] = 1;
+						marker_pointer[column] = skeleton;
 					}
 				}
 			}
@@ -140,13 +140,13 @@ export namespace skeletonizer::cpu::algorithms
 				const uchar* prev = binary_image.ptr<uchar>(row - 1);
 				const uchar* curr = binary_image.ptr<uchar>(row);
 				const uchar* next = binary_image.ptr<uchar>(row + 1);
-				uchar* marker_ptr = marker.ptr<uchar>(row);
+				uchar* marker_pointer = marker.ptr<uchar>(row);
 
 				for (auto col = 1; col < binary_image.cols - 1; ++col)
 				{
 					const auto pi = curr[col];
 
-					if (pi != 1)
+					if (pi == background)
 					{
 						continue;
 					}
@@ -166,7 +166,7 @@ export namespace skeletonizer::cpu::algorithms
 
 					if (condition_1 || condition_2 || condition_3 || condition_4)
 					{
-						marker_ptr[col] = 1;
+						marker_pointer[col] = skeleton;
 					}
 				}
 			}

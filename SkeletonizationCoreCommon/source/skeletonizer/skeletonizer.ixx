@@ -6,7 +6,8 @@ export module skeletonizer:core;
 
 namespace skeletonizer
 {
-	export class skeletonizer
+	export template <int ForegroundValue = 1, int SkeletonValue = 1, int BackgroundValue = 0>
+	class skeletonizer
 	{
 	public:
 		virtual ~skeletonizer() = default;
@@ -14,6 +15,11 @@ namespace skeletonizer
 		virtual void apply(cv::Mat& binary_image) const = 0;
 
 		virtual std::string name() const = 0;
+
+	protected:
+		static constexpr int foreground = ForegroundValue;
+		static constexpr int background = BackgroundValue;
+		static constexpr int skeleton = SkeletonValue;
 
 		virtual bool has_changed(const cv::InputArray& difference) const
 		{
@@ -27,7 +33,6 @@ namespace skeletonizer
 			binary_image.col(0).setTo(0);
 			binary_image.col(binary_image.cols - 1).setTo(0);
 		}
-
 	};
 
 	export enum class skeletonizer_type

@@ -12,7 +12,10 @@ __device__ __forceinline__ bool any_greater_or_equal_than(const uchar threshold,
 	const uchar array[sizeof...(values)] = {static_cast<uchar>(values)...};
 	for (int i = 0; i < sizeof...(values); ++i)
 	{
-		if (array[i] >= threshold) return true;
+		if (array[i] >= threshold)
+		{
+			return true;
+		}
 	}
 	return false;
 }
@@ -23,7 +26,10 @@ __device__ __forceinline__ bool all_non_zero(Args... values)
 	const uchar array[sizeof...(values)] = {static_cast<uchar>(values)...};
 	for (int i = 0; i < sizeof...(values); ++i)
 	{
-		if (array[i] == 0) return false;
+		if (array[i] == 0)
+		{
+			return false;
+		}
 	}
 	return true;
 }
@@ -34,7 +40,10 @@ __device__ __forceinline__ bool any_equal_to(const uchar value, Args... values)
 	const uchar array[sizeof...(values)] = {static_cast<uchar>(values)...};
 	for (int i = 0; i < sizeof...(values); ++i)
 	{
-		if (array[i] == value) return true;
+		if (array[i] == value)
+		{
+			return true;
+		}
 	}
 	return false;
 }
@@ -46,7 +55,10 @@ __device__ __forceinline__ bool has_adjacent_non_zero(Args... values)
 	const int n = sizeof...(values);
 	for (int i = 0; i < n; ++i)
 	{
-		if (arr[i] != 0 && arr[(i + 1) % n] != 0) return true;
+		if (arr[i] != 0 && arr[(i + 1) % n] != 0)
+		{
+			return true;
+		}
 	}
 	return false;
 }
@@ -80,7 +92,7 @@ __global__ void han_la_rhee_iteration_kernel(
 
 	const auto xi = binary_image.ptr(row)[column];
 
-	if (xi != 1 || current_weight[column] <= 0 || current_weight[column] >= 8)
+	if (xi == background || current_weight[column] <= 0 || current_weight[column] >= 8)
 	{
 		return;
 	}
@@ -126,7 +138,7 @@ __global__ void han_la_rhee_iteration_kernel(
 
 	if (should_delete)
 	{
-		binary_image(row, column) = 0;
+		binary_image(row, column) = background;
 		atomicExch(d_changed, 1);
 	}
 }
@@ -148,7 +160,7 @@ __global__ void calculate_weight_kernel(const cv::cuda::PtrStep<uchar> image, cv
 
 	const auto xi = current[column];
 
-	if (xi != 1)
+	if (xi == background)
 	{
 		return;
 	}

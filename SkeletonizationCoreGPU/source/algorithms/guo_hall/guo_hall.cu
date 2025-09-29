@@ -47,9 +47,9 @@ __global__ void guo_hall_iteration_kernel(
 
 	const auto p1 = shared_tile[shared_index(local_x, local_y, shared_stride, halo)];
 
-	if (p1 != 1)
+	if (p1 == background)
 	{
-		dst(global_y, global_x) = 0;
+		dst(global_y, global_x) = background;
 		return;
 	}
 
@@ -95,14 +95,14 @@ __global__ void guo_hall_iteration_kernel(
 	// 2. Neighbor count between 2 and 3
 	// 3. Connectivity condition not violated (m == 0)
 	// ---------------------------
-	if (c == 1 && (n >= 2 && n <= 3) && m == 0)
+	if (c == 1 && n >= 2 && n <= 3 && m == 0)
 	{
-		dst(global_y, global_x) = 0;
+		dst(global_y, global_x) = background;
 		atomicExch(d_changed, 1);
 	}
 	else
 	{
-		dst(global_y, global_x) = 1;
+		dst(global_y, global_x) = skeleton;
 	}
 }
 

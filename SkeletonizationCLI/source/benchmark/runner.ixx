@@ -68,7 +68,7 @@ namespace skeletonization_benchmark
 		}
 
 	private:
-		void register_benchmark(const std::string& name, std::unique_ptr<skeletonizer::skeletonizer> skeletonizer)
+		void register_benchmark(const std::string& name, std::unique_ptr<skeletonizer::skeletonizer<>> skeletonizer)
 		{
 			const auto& arguments = global_arguments();
 

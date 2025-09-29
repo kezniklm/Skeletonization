@@ -47,9 +47,9 @@ __global__ void kwon_gi_kang_iteration_kernel(
 
 	const auto pi = shared_tile[shared_index(local_x, local_y, shared_stride, halo)];
 
-	if (pi == 0)
+	if (pi == background)
 	{
-		dst(global_y, global_x) = 0;
+		dst(global_y, global_x) = background;
 		return;
 	}
 
@@ -82,12 +82,12 @@ __global__ void kwon_gi_kang_iteration_kernel(
 
 	if (a == 1 && b >= 2 && b <= 6 && step_condition_c == 0 && step_condition_d == 0)
 	{
-		dst(global_y, global_x) = 0;
+		dst(global_y, global_x) = background;
 		atomicExch(d_changed, 1);
 	}
 	else
 	{
-		dst(global_y, global_x) = 1;
+		dst(global_y, global_x) = skeleton;
 	}
 }
 
@@ -130,9 +130,9 @@ __global__ void cleanup_oblique_corners_kernel_opt(
 
 	const auto pi = shared_tile[shared_index(local_x, local_y, shared_stride, halo)];
 
-	if (pi == 0)
+	if (pi == background)
 	{
-		dst(global_y, global_x) = 0;
+		dst(global_y, global_x) = background;
 		return;
 	}
 
@@ -149,7 +149,7 @@ __global__ void cleanup_oblique_corners_kernel_opt(
 	const auto condition_3 = p3 == 0 && p5 * p6 * p8 == 1;
 	const auto condition_4 = p1 == 0 && p4 * p6 * p7 == 1;
 
-	dst(global_y, global_x) = condition_1 || condition_2 || condition_3 || condition_4 ? 0 : 1;
+	dst(global_y, global_x) = condition_1 || condition_2 || condition_3 || condition_4 ? background : skeleton;
 }
 
 extern inline void kwon_gi_kang_iteration(

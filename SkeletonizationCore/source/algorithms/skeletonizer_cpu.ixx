@@ -4,7 +4,7 @@ import skeletonizer;
 
 namespace skeletonizer::cpu
 {
-	export class skeletonizer_cpu : virtual public skeletonizer
+	export class skeletonizer_cpu : virtual public skeletonizer<>
 	{
 	};
 }
