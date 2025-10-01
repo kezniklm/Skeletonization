@@ -1,4 +1,4 @@
-find_package(OpenCV REQUIRED)
+find_package(OpenCV CONFIG REQUIRED)
 
 target_include_directories(SkeletonizationCoreCommon PUBLIC ${OpenCV_INCLUDE_DIRS})
 

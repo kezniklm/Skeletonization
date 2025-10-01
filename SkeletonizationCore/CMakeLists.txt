@@ -10,9 +10,9 @@ file(GLOB_RECURSE CORE_SOURCES CONFIGURE_DEPENDS source/*.ixx)
 add_library(SkeletonizationCore)
 
 target_sources(SkeletonizationCore
-        PUBLIC
-        FILE_SET modules TYPE CXX_MODULES FILES
-        ${CORE_SOURCES})
+    PUBLIC
+    FILE_SET modules TYPE CXX_MODULES FILES
+    ${CORE_SOURCES})
 
 target_link_libraries(SkeletonizationCore PUBLIC SkeletonizationCoreCommon)
 

@@ -1,13 +1,17 @@
 ﻿# CMakeList.txt : SkeletonizationCoreGPU
 
+if(NOT SKELETONIZATION_ENABLE_GPU)
+    return()
+endif()
+
 cmake_minimum_required(VERSION 3.30)
 project(SkeletonizationCoreGPU)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/vcpkg-deps.cmake)
 
-file(GLOB_RECURSE GPU_MODULES CONFIGURE_DEPENDS source/*.ixx )
+file(GLOB_RECURSE GPU_MODULES CONFIGURE_DEPENDS source/*.ixx)
 
-file(GLOB_RECURSE GPU_CUDA_FILES CONFIGURE_DEPENDS source/*.cu )
+file(GLOB_RECURSE GPU_CUDA_FILES CONFIGURE_DEPENDS source/*.cu)
 
 set(CMAKE_CUDA_STANDARD 17)
 set(CMAKE_CUDA_STANDARD_REQUIRED ON)

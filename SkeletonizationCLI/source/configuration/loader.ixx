@@ -16,8 +16,11 @@ module;
 
 export module configuration:loader;
 
-import skeletonizer_cpu;
+#if SKELETONIZATION_WITH_GPU
 import skeletonizer_gpu;
+#endif
+
+import skeletonizer_cpu;
 import skeletonizer;
 
 using skeletonizer_creator = std::function<std::unique_ptr<skeletonizer::skeletonizer<>>()>;
@@ -64,7 +67,11 @@ namespace configuration
 
 		if (skeletonizer_type_string == "gpu")
 		{
+#if SKELETONIZATION_WITH_GPU
 			return skeletonizer::skeletonizer_type::gpu;
+#else
+			LOG(FATAL) << "GPU requested in configuration, but CUDA support is not compiled in.";
+#endif
 		}
 
 		throw std::runtime_error("Unknown skeletonizer type: " + skeletonizer_type_string);
@@ -92,13 +99,15 @@ namespace configuration
 					return std::make_unique<skeletonizer::cpu::algorithms::zhang_suen_cpu_threads>();
 				});
 			}
+#if SKELETONIZATION_WITH_GPU
 			else if (skeletonizer_type == skeletonizer::skeletonizer_type::gpu)
 			{
 				creators.push_back([]
-				{
-					return std::make_unique<skeletonizer::gpu::algorithms::zhang_suen_gpu>();
-				});
+					{
+						return std::make_unique<skeletonizer::gpu::algorithms::zhang_suen_gpu>();
+					});
 			}
+#endif
 		}
 		else if (algorithm == "guo_hall")
 		{
@@ -116,13 +125,16 @@ namespace configuration
 					return std::make_unique<skeletonizer::cpu::algorithms::guo_hall_cpu_threads>();
 				});
 			}
+
+#if SKELETONIZATION_WITH_GPU
 			else if (skeletonizer_type == skeletonizer::skeletonizer_type::gpu)
 			{
 				creators.push_back([]
-				{
-					return std::make_unique<skeletonizer::gpu::algorithms::guo_hall_gpu>();
-				});
+					{
+						return std::make_unique<skeletonizer::gpu::algorithms::guo_hall_gpu>();
+					});
 			}
+#endif
 		}
 		else if (algorithm == "hesselink_roerdink")
 		{
@@ -140,13 +152,15 @@ namespace configuration
 					return std::make_unique<skeletonizer::cpu::algorithms::hesselink_roerdink_cpu_threads>();
 				});
 			}
+#if SKELETONIZATION_WITH_GPU
 			else if (skeletonizer_type == skeletonizer::skeletonizer_type::gpu)
 			{
 				creators.push_back([]
-				{
-					return std::make_unique<skeletonizer::gpu::algorithms::hesselink_roerdink_gpu>();
-				});
+					{
+						return std::make_unique<skeletonizer::gpu::algorithms::hesselink_roerdink_gpu>();
+					});
 			}
+#endif
 		}
 
 		else if (algorithm == "kwon_gi_kang")
@@ -165,13 +179,15 @@ namespace configuration
 					return std::make_unique<skeletonizer::cpu::algorithms::kwon_gi_kang_cpu_threads>();
 				});
 			}
+#if SKELETONIZATION_WITH_GPU
 			else if (skeletonizer_type == skeletonizer::skeletonizer_type::gpu)
 			{
 				creators.push_back([]
-				{
-					return std::make_unique<skeletonizer::gpu::algorithms::kwon_gi_kang_gpu>();
-				});
+					{
+						return std::make_unique<skeletonizer::gpu::algorithms::kwon_gi_kang_gpu>();
+					});
 			}
+#endif
 		}
 
 		else if (algorithm == "petrosino_salvi")
@@ -190,6 +206,7 @@ namespace configuration
 					return std::make_unique<skeletonizer::cpu::algorithms::petrosino_salvi_thread>();
 				});
 			}
+#if SKELETONIZATION_WITH_GPU
 			else if (skeletonizer_type == skeletonizer::skeletonizer_type::gpu)
 			{
 				creators.push_back([]
@@ -197,6 +214,7 @@ namespace configuration
 					return std::make_unique<skeletonizer::gpu::algorithms::petrosino_salvi_gpu>();
 				});
 			}
+#endif
 		}
 
 		else if (algorithm == "han_la_rhee")
@@ -215,6 +233,7 @@ namespace configuration
 					return std::make_unique<skeletonizer::cpu::algorithms::han_la_rhee_cpu_threads>();
 				});
 			}
+#if SKELETONIZATION_WITH_GPU
 			else if (skeletonizer_type == skeletonizer::skeletonizer_type::gpu)
 			{
 				creators.push_back([]
@@ -222,6 +241,7 @@ namespace configuration
 					return std::make_unique<skeletonizer::gpu::algorithms::han_la_rhee_gpu>();
 				});
 			}
+#endif
 		}
 
 		else if (algorithm == "choi_lam_siu")
@@ -240,6 +260,7 @@ namespace configuration
 					return std::make_unique<skeletonizer::cpu::algorithms::choi_lam_siu_threads>();
 				});
 			}
+#if SKELETONIZATION_WITH_GPU
 			else if (skeletonizer_type == skeletonizer::skeletonizer_type::gpu)
 			{
 				creators.push_back([]
@@ -247,6 +268,7 @@ namespace configuration
 					return std::make_unique<skeletonizer::gpu::algorithms::choi_lam_siu_gpu>();
 				});
 			}
+#endif
 		}
 
 		if (creators.empty())

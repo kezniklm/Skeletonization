@@ -1,16 +1,27 @@
 {
-  "name": "skeletonization",
-  "version-string": "1.0.0",
-  "dependencies": [
-    "pybind11",
-    "benchmark",
-    "cuda",
-    {
-      "name": "opencv4",
-      "features": [ "cuda", "contrib" ]
-    },
-    "rapidjson",
-    "cli11",
-    "glog"
-  ]
+    "name": "skeletonization",
+    "version-string": "1.0.0",
+    "dependencies": [
+        "pybind11",
+        "benchmark",
+        "rapidjson",
+        "cli11",
+        "glog",
+        {
+            "name": "opencv4",
+            "features": ["contrib"]
+        }
+    ],
+    "features": {
+        "cuda": {
+            "description": "Enable CUDA support",
+            "dependencies": [
+                "cuda",
+                {
+                    "name": "opencv4",
+                    "features": ["cuda", "contrib"]
+                }
+            ]
+        }
+    }
 }
