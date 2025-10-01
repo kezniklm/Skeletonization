@@ -26,14 +26,6 @@ namespace skeletonizer::algorithms
 		}
 	};
 
-	export class hesselink_roerdink : virtual public skeletonizer<>
-	{
-		std::string name() const final
-		{
-			return "Hesselink-Roerdink";
-		}
-	};
-
 	export class kwon_gi_kang : virtual public skeletonizer<>
 	{
 		std::string name() const final

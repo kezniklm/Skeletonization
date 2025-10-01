@@ -136,32 +136,6 @@ namespace configuration
 			}
 #endif
 		}
-		else if (algorithm == "hesselink_roerdink")
-		{
-			if (skeletonizer_type == skeletonizer::skeletonizer_type::cpu)
-			{
-				creators.push_back([]
-				{
-					return std::make_unique<skeletonizer::cpu::algorithms::hesselink_roerdink_cpu>();
-				});
-			}
-			else if (skeletonizer_type == skeletonizer::skeletonizer_type::thread)
-			{
-				creators.push_back([]
-				{
-					return std::make_unique<skeletonizer::cpu::algorithms::hesselink_roerdink_cpu_threads>();
-				});
-			}
-#if SKELETONIZATION_WITH_GPU
-			else if (skeletonizer_type == skeletonizer::skeletonizer_type::gpu)
-			{
-				creators.push_back([]
-					{
-						return std::make_unique<skeletonizer::gpu::algorithms::hesselink_roerdink_gpu>();
-					});
-			}
-#endif
-		}
 
 		else if (algorithm == "kwon_gi_kang")
 		{
