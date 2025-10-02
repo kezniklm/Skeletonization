@@ -58,6 +58,40 @@
                 "VCPKG_MANIFEST_FEATURES": "cuda",
                 "SKELETONIZATION_ENABLE_GPU": "ON"
             }
+        },
+        {
+            "name": "x64-debug-windows",
+            "displayName": "Windows x64 Debug",
+            "inherits": "windows-base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "x64-debug-windows-cuda",
+            "displayName": "Windows x64 Debug (CUDA)",
+            "inherits": "x64-debug-windows",
+            "cacheVariables": {
+                "VCPKG_MANIFEST_FEATURES": "cuda",
+                "SKELETONIZATION_ENABLE_GPU": "ON"
+            }
+        },
+        {
+            "name": "x64-debug-linux",
+            "displayName": "Linux x64 Debug",
+            "inherits": "linux-base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "x64-debug-linux-cuda",
+            "displayName": "Linux x64 Debug (CUDA)",
+            "inherits": "x64-debug-linux",
+            "cacheVariables": {
+                "VCPKG_MANIFEST_FEATURES": "cuda",
+                "SKELETONIZATION_ENABLE_GPU": "ON"
+            }
         }
     ]
 }
