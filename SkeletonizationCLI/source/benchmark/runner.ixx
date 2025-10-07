@@ -90,8 +90,6 @@ namespace skeletonization_benchmark
 					                             skeletonizer->apply(image);
 
 					                             results_[name] = scale(image);
-
-					                             save_benchmarked_image(name, image);
 				                             }
 			                             })->Iterations(arguments.number_of_benchmark_iterations);
 		}
@@ -100,20 +98,6 @@ namespace skeletonization_benchmark
 		                                  const skeletonizer::skeletonizer_type type) const
 		{
 			return image_metadata_.name + "/" + skeletonizer_name + "/" + to_string(type);
-		}
-
-		static void save_benchmarked_image(std::string benchmark_name, const cv::Mat& image)
-		{
-			constexpr auto sanitize_filesystem_characters = [](const char c) noexcept
-			{
-				return c == '/' ? '_' : c;
-			};
-
-			std::string sanitized_name(benchmark_name.size(), '\0');
-
-			std::ranges::transform(benchmark_name, sanitized_name.begin(), sanitize_filesystem_characters);
-
-			cv::imwrite(sanitized_name + ".jpg", image);
 		}
 
 		static constexpr int max_algorithm_type_length = 5;
