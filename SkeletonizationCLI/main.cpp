@@ -16,13 +16,13 @@ int main(const int argc, const char* const * argv)
 
 	commandline_parser.parse();
 
-	skeletonization_benchmark::manager manager(argc, argv);
+	skeletonization_benchmark::manager manager;
 
 	manager.register_all();
 
-	manager.run_all();
+	const auto output_json = manager.run_all();
 
-	manager.show_results();
+	manager.show_results(output_json);
 
 	return 0;
 }

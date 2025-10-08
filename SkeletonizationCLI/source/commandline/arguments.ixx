@@ -17,8 +17,6 @@ namespace commandline
 
 		std::string benchmark_out;
 
-		std::string benchmark_out_format;
-
 		unsigned int number_of_benchmark_iterations = 1000;
 
 		std::vector<skeletonizer_config> skeletonizer_configuration;

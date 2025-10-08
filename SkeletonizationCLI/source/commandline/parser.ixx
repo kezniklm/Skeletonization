@@ -9,6 +9,39 @@ import :arguments;
 
 namespace commandline
 {
+	static std::string json_path_check(const std::string& s)
+	{
+		if (s.empty())
+		{
+			return {};
+		}
+		try
+		{
+			auto ext = std::filesystem::path(s).extension().string();
+
+			for (auto& c : ext)
+			{
+				c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+			}
+
+			return ext == ".json" ? std::string{} : std::string{"must end with .json"};
+		}
+		catch (...)
+		{
+			return "invalid path";
+		}
+	}
+
+	static void ensure_parent_exists(const std::string& p)
+	{
+		std::filesystem::path path{p};
+
+		if (path.has_parent_path())
+		{
+			create_directories(path.parent_path());
+		}
+	}
+
 	export class parser
 	{
 	public:
@@ -26,9 +59,25 @@ namespace commandline
 			   ->check(CLI::ExistingFile)
 			   ->default_val(default_configuration_path);
 
-			app.add_option("--benchmark_out", args.benchmark_out, "Path to benchmark file output");
+			app.add_option("--benchmark_out", args.benchmark_out, "Path to benchmark file output")
+			   ->default_val("benchmark.json");
 
-			app.add_option("--benchmark_out_format", args.benchmark_out_format, "Path to benchmark file output");
+			app.callback([&]
+			{
+				if (args.benchmark_out.empty())
+				{
+					throw CLI::ValidationError("--benchmark_out", "Path to benchmark file output cant be empty");
+				}
+
+				const auto msg = json_path_check(args.benchmark_out);
+
+				if (!msg.empty())
+				{
+					throw CLI::ValidationError("--benchmark_out", msg);
+				}
+
+				ensure_parent_exists(args.benchmark_out);
+			});
 
 			auto current_leaf = std::make_shared<skeletonizer_config>();
 
@@ -100,8 +149,7 @@ namespace commandline
 
 			const bool has_cli_leaves = !args.skeletonizer_configuration.empty();
 
-			const bool has_json_config = !args.configuration_path.empty() && args.configuration_path !=
-				default_configuration_path;
+			const bool has_json_config = !args.configuration_path.empty();
 
 			if (has_cli_leaves && has_json_config)
 			{

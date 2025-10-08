@@ -1,193 +1,156 @@
-module;
+﻿module;
 
-#include <opencv2/opencv.hpp>
-#include <vector>
+#include <chrono>
+#include <filesystem>
 #include <string>
-#include <algorithm>
+#include <vector>
+
+#include "glog/logging.h"
+#include "opencv2/opencv.hpp"
+#include <drogon/drogon.h>
 
 export module visual_inspector:visualiser;
 
+import commandline;
 import :image_container;
 
 namespace visual_inspector
 {
-	export class visualiser
+	static void open_in_browser(const std::string& url)
+	{
+#if defined(_WIN32)
+		std::string cmd = "start " + url;
+#elif defined(__APPLE__)
+		std::string cmd = "open " + url;
+#else
+		std::string cmd = "xdg-open " + url;
+#endif
+		std::system(cmd.c_str());
+	}
+
+	class visualizer_server final : public std::enable_shared_from_this<visualizer_server>
 	{
 	public:
-		explicit visualiser(const int cell_width = 300, const int cell_height = 300, const int header_height = 40,
-		                    const int name_col_width = 150)
-			: cell_width_(cell_width), cell_height_(cell_height),
-			  header_height_(header_height), name_col_width_(name_col_width)
+		visualizer_server(const std::filesystem::path& web_root, const uint16_t port)
+			: root_(std::filesystem::is_regular_file(web_root) ? web_root.parent_path() : web_root),
+			  port_(port)
 		{
-		}
-
-		void add_benchmark_image_container(const image_container& image_container)
-		{
-			benchmark_image_containers_.push_back(image_container);
-			max_cols_ = std::max(max_cols_, image_container.size());
-		}
-
-		void show(const std::string& window_name) const
-		{
-			if (benchmark_image_containers_.empty())
+			if (!std::filesystem::exists(root_))
 			{
-				return;
+				throw std::runtime_error("[visualizer_server] Root does not exist: " + root_.string());
 			}
 
-			const int rows = static_cast<int>(benchmark_image_containers_.size());
-			const int columns = static_cast<int>(max_cols_);
+			auto& app = drogon::app();
+			app.setDocumentRoot(root_.string());
+			app.addListener("127.0.0.1", port_);
 
-			const int canvas_width = name_col_width_ + columns * cell_width_;
-			const int canvas_height = header_height_ + rows * cell_height_;
 
-			cv::Mat canvas(canvas_height, canvas_width, CV_8UC3, background_color_);
+			app.setDefaultHandler([p = root_](const drogon::HttpRequestPtr& request,
+			                                  std::function<void(const drogon::HttpResponsePtr&)>&& callback)
+			{
+				const auto ends_with = [](const std::string_view s, const std::string_view suffix)
+				{
+					return s.size() >= suffix.size() && 0 == s.compare(s.size() - suffix.size(), suffix.size(), suffix);
+				};
 
-			draw_header_row(canvas, columns);
+				if (request->getMethod() != drogon::Get)
+				{
+					callback(drogon::HttpResponse::newNotFoundResponse());
+					return;
+				}
 
-			draw_benchmark_rows(canvas, rows, columns);
+				if (ends_with(request->path(), "benchmark_data.json"))
+				{
+					const auto response = drogon::HttpResponse::newFileResponse((p / "benchmark_data.json").string());
+					response->setStatusCode(drogon::k200OK);
+					response->setContentTypeCode(drogon::CT_APPLICATION_JSON);
 
-			cv::namedWindow(window_name, cv::WINDOW_NORMAL);
-			cv::resizeWindow(window_name, std::min(1920, canvas_width), std::min(1080, canvas_height));
-			cv::imshow(window_name, canvas);
-			cv::waitKey(0);
+					callback(response);
+					return;
+				}
+
+				const auto response = drogon::HttpResponse::newFileResponse((p / "index.html").string());
+				response->setStatusCode(drogon::k200OK);
+				response->setContentTypeCode(drogon::CT_TEXT_HTML);
+
+				callback(response);
+			});
+		}
+
+		void start() const
+		{
+			const auto url = "http://127.0.0.1:" + std::to_string(port_) + "/";
+#if defined(_WIN32)
+			ShellExecuteA(nullptr, "open", url.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+#elif defined(__APPLE__)
+			std::system(std::string("open \"" + url + "\"").c_str());
+#else
+			std::system(std::string("xdg-open \"" + url + "\"").c_str());
+#endif
+			drogon::app().run();
+		}
+
+		static void quit()
+		{
+			drogon::app().quit();
+		}
+
+		[[nodiscard]] std::string url() const
+		{
+			return "http://127.0.0.1:" + std::to_string(port_) + "/";
 		}
 
 	private:
-		const cv::Scalar background_color_ = cv::Scalar(30, 30, 30);
-		const cv::Scalar cell_border_color_ = cv::Scalar(80, 80, 80);
-		const cv::Scalar text_color_ = cv::Scalar(230, 230, 230);
-		const cv::Scalar text_shadow_color_ = cv::Scalar(0, 0, 0);
-		const cv::Scalar header_bg_color_ = cv::Scalar(50, 50, 50);
-		const cv::Scalar header_border_color_ = cv::Scalar(100, 100, 100);
+		std::filesystem::path root_;
+		uint16_t port_;
+	};
 
-		const int cell_width_;
-		const int cell_height_;
-		const int header_height_;
-		const int name_col_width_;
-		size_t max_cols_ = 0;
+	export struct image_metrics
+	{
+		// Google Benchmark specific fields
+		int64_t iterations = 0;
+		double real_time = 0.0; // nanoseconds
+		double cpu_time = 0.0; // nanoseconds
+		std::string time_unit = "ns"; // "ns", "us", "ms", "s"
+		double bytes_per_second = 0.0;
+		double items_per_second = 0.0;
 
+		double execution_time_ms = 0.0;
+		double memory_usage_mb = 0.0;
+		int pixel_count = 0;
+		int non_zero_pixels = 0;
+		double compression_ratio = 0.0;
+	};
+
+	export class visualiser
+	{
+	public:
+		void add_benchmark_image_container(const image_container& image_container)
+		{
+			benchmark_image_containers_.push_back(image_container);
+			container_metrics_.push_back({});
+		}
+
+		static void show(const std::filesystem::path& web_root_or_index, const uint16_t port = 8787)
+		{
+			const visualizer_server server(web_root_or_index, port);
+
+			try
+			{
+				LOG(INFO) << "Visualizer running at " << server.url();
+
+				server.start();
+			}
+			catch (const std::exception& e)
+			{
+				LOG(ERROR) << "Failed to start visualizer server at: " << server.url();
+
+				server.quit();
+			}
+		}
+
+	private:
 		std::vector<image_container> benchmark_image_containers_;
-
-		void draw_header_row(cv::Mat& canvas, const int columns) const
-		{
-			constexpr auto header_label = "Skeletonization Algorithms Comparison";
-
-			const auto total_width = columns * cell_width_;
-
-			draw_text_box(canvas, header_label, name_col_width_, 0, total_width, header_height_);
-		}
-
-		void draw_benchmark_rows(cv::Mat& canvas, const int rows, const int cols) const
-		{
-			for (int row = 0; row < rows; ++row)
-			{
-				const auto& benchmark_image_container = benchmark_image_containers_[row];
-				const auto y_offset = header_height_ + row * cell_height_;
-
-				draw_text_box(canvas, benchmark_image_container.name(), 0, y_offset, name_col_width_, cell_height_,
-				              true);
-
-				for (auto col = 0; col < cols; ++col)
-				{
-					const auto x_offset = name_col_width_ + col * cell_width_;
-
-					if (col < benchmark_image_container.size())
-					{
-						draw_image_cell(canvas, benchmark_image_container.image(col),
-						                benchmark_image_container.label(col), x_offset, y_offset);
-					}
-					else
-					{
-						draw_empty_cell(canvas, x_offset, y_offset);
-					}
-				}
-			}
-		}
-
-		void draw_text_box(cv::Mat& canvas, const std::string& text, const int x, const int y, const int width,
-		                   const int height,
-		                   const bool vertical_center = false) const
-		{
-			// Background & border
-			cv::rectangle(canvas, cv::Rect(x, y, width, height), header_bg_color_, cv::FILLED);
-			cv::rectangle(canvas, cv::Rect(x, y, width, height), header_border_color_, 1);
-
-			// Text positioning
-			auto baseline = 0;
-			constexpr int font = cv::FONT_HERSHEY_SIMPLEX;
-			constexpr auto font_scale = 0.7;
-			constexpr auto thickness = 1;
-
-			const auto text_size = cv::getTextSize(text, font, font_scale, thickness, &baseline);
-
-			const auto text_x = x + (width - text_size.width) / 2;
-			const auto text_y = vertical_center ? (y + (height + text_size.height) / 2) : (y + text_size.height + 5);
-
-			// Text shadow
-			cv::putText(canvas, text, {text_x + 1, text_y + 1}, font, font_scale, text_shadow_color_, thickness + 2);
-			cv::putText(canvas, text, {text_x, text_y}, font, font_scale, text_color_, thickness);
-		}
-
-		void draw_image_cell(cv::Mat& canvas, const cv::Mat& image, const std::string& label, int x, int y) const
-		{
-			constexpr auto label_height = 40;
-
-			const auto display_image = prepare_image_for_display(image);
-			cv::Mat resized_image;
-			cv::resize(display_image, resized_image, cv::Size(cell_width_, cell_height_ - label_height));
-
-			const cv::Rect img_rect(x, y, cell_width_, cell_height_ - label_height);
-			resized_image.copyTo(canvas(img_rect));
-
-			// Draw border around cell
-			cv::rectangle(canvas, cv::Rect(x, y, cell_width_, cell_height_), cell_border_color_, 1);
-
-			if (!label.empty())
-			{
-				draw_label(canvas, label, x, y + cell_height_ - label_height, cell_width_, label_height);
-			}
-		}
-
-		void draw_empty_cell(cv::Mat& canvas, const int x, const int y) const
-		{
-			constexpr auto label_height = 40;
-			cv::rectangle(canvas, cv::Rect(x, y, cell_width_, cell_height_), cell_border_color_, 1);
-
-			const cv::Rect img_rect(x, y, cell_width_, cell_height_ - label_height);
-			const cv::Mat empty_placeholder(img_rect.size(), CV_8UC3, cv::Scalar(60, 60, 60));
-			empty_placeholder.copyTo(canvas(img_rect));
-		}
-
-		static cv::Mat prepare_image_for_display(const cv::Mat& image)
-		{
-			if (image.channels() == 1)
-			{
-				cv::Mat rgb;
-				cv::cvtColor(image, rgb, cv::COLOR_GRAY2BGR);
-				return rgb;
-			}
-			return image;
-		}
-
-		void draw_label(cv::Mat& canvas, const std::string& label, const int x, const int y, const int width,
-		                const int height) const
-		{
-			// Background for label
-			cv::rectangle(canvas, cv::Rect(x, y, width, height), header_bg_color_, cv::FILLED);
-			cv::rectangle(canvas, cv::Rect(x, y, width, height), header_border_color_, 1);
-
-			auto baseline = 0;
-			constexpr int font = cv::FONT_HERSHEY_SIMPLEX;
-			constexpr auto font_scale = 0.6;
-			constexpr auto thickness = 1;
-
-			const auto text_size = cv::getTextSize(label, font, font_scale, thickness, &baseline);
-			const auto text_x = x + (width - text_size.width) / 2;
-			const auto text_y = y + (height + text_size.height) / 2;
-
-			// Text shadow
-			cv::putText(canvas, label, {text_x + 1, text_y + 1}, font, font_scale, text_shadow_color_, thickness + 2);
-			cv::putText(canvas, label, {text_x, text_y}, font, font_scale, text_color_, thickness);
-		}
+		std::vector<std::vector<image_metrics>> container_metrics_;
 	};
 }

@@ -1,12 +1,17 @@
 module;
 
+#include <cmath>
+#include <filesystem>
+#include <fstream>
+#include <limits>
 #include <memory>
-#include <string>
-#include <opencv2/opencv.hpp>
-#include <vector>
 #include <ranges>
+#include <string>
+#include <vector>
+#include <opencv2/opencv.hpp>
 
 #include "benchmark/benchmark.h"
+#include "glog/logging.h"
 
 export module benchmark:manager;
 
@@ -15,72 +20,15 @@ import visual_inspector;
 import commandline;
 
 import :runner;
+import :helpers;
+import :aggregator;
+import :exporter;
 
 namespace skeletonization_benchmark
 {
 	export class manager
 	{
 	public:
-		static void initialize_google_benchmark(const int argc, const char* const* argv)
-		{
-			std::vector<std::string> args(argv, argv + argc);
-
-			const auto has_user_output_flag = [](const std::vector<std::string>& arguments)
-			{
-				for (const auto& argument : arguments)
-				{
-					if (argument.find("--benchmark_out=") == 0)
-					{
-						return true;
-					}
-				}
-
-				return false;
-			};
-
-			if (!has_user_output_flag(args))
-			{
-				const auto default_benchmark_results_filename = []
-				{
-					auto t = std::time(nullptr);
-
-					std::tm tm{};
-#ifdef _WIN32
-					localtime_s(&tm, &t);
-#else
-					localtime_r(&t, &tm);
-#endif
-					std::ostringstream oss;
-					oss << "skeletonizers_benchmark_results_"
-						<< std::put_time(&tm, "%Y-%m-%d_%H-%M-%S")
-						<< ".json";
-
-					return oss.str();
-				};
-
-				args.push_back("--benchmark_out=" + default_benchmark_results_filename());
-				args.push_back("--benchmark_out_format=json");
-			}
-
-			std::vector<char*> mutable_argv;
-
-			mutable_argv.reserve(args.size());
-
-			for (auto& s : args)
-			{
-				mutable_argv.push_back(const_cast<char*>(s.c_str()));
-			}
-
-			int mutable_argc = static_cast<int>(mutable_argv.size());
-
-			benchmark::Initialize(&mutable_argc, mutable_argv.data());
-		}
-
-		manager(const int argc, const char* const* argv)
-		{
-			initialize_google_benchmark(argc, argv);
-		}
-
 		void register_all()
 		{
 			const auto& arguments = global_arguments();
@@ -95,11 +43,23 @@ namespace skeletonization_benchmark
 			}
 		}
 
-		static void run_all()
+		static std::string run_all()
 		{
 			std::cout << "Starting Skeletonization Algorithms Benchmarks\n\n" << std::endl;
-			benchmark::RunSpecifiedBenchmarks();
-			std::cout << "\n\nFinished Skeletonization Algorithms Benchmarks" << std::endl;
+			std::ostringstream output_json;
+
+			benchmark::JSONReporter json;
+			benchmark::ConsoleReporter console;
+
+			json.SetOutputStream(&output_json);
+
+			composite_reporter reporter(console, json);
+
+			benchmark::RunSpecifiedBenchmarks(&reporter);
+
+			std::cout << "\n\nFinished Skeletonization Algorithms Benchmarks\n\n" << std::endl;
+
+			return output_json.str();
 		}
 
 		void add_runner(const image_benchmark_metadata& image_metadata)
@@ -119,19 +79,34 @@ namespace skeletonization_benchmark
 			});
 		}
 
-		void show_results() const
+		void show_results(const std::string& benchmark_json) const
 		{
-			visual_inspector::visualiser visualiser;
-
-			std::ranges::for_each(std::views::values(runners_), [&visualiser](const auto& runner)
+			if (benchmark_json.empty())
 			{
-				auto benchmark_image_container = runner->process_benchmark_results();
-				visualiser.add_benchmark_image_container(benchmark_image_container);
-			});
+				LOG(WARNING) << "Empty benchmark JSON provided.";
+				return;
+			}
 
-			constexpr auto default_window_name = "Skeletonization algorithms comparison";
+			const auto metrics = parse_google_benchmark_output(benchmark_json);
 
-			visualiser.show(default_window_name);
+			const auto packages = aggregator::build(runners_, metrics);
+
+			const auto visualizer_path = std::filesystem::path(VISUALIZER_ASSETS_DIR);
+
+			const auto visualizer_index_path = std::filesystem::path(VISUALIZER_ASSETS_DIR) / "index.html";
+
+			const auto visualizer_output_json = visualizer_path / "benchmark_data.json";
+
+			const auto export_result = exporter::write_output_json(packages, visualizer_output_json) &&
+				exporter::write_output_json(packages, global_arguments().benchmark_out);
+
+			if (!export_result)
+			{
+				LOG(ERROR) << "Failed to export visualizer JSON: " << visualizer_output_json;
+				return;
+			}
+
+			visual_inspector::visualiser::show(visualizer_index_path);
 		}
 
 	private:
