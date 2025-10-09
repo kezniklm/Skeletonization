@@ -60,7 +60,7 @@ namespace commandline
 			   ->default_val(default_configuration_path);
 
 			app.add_option("--benchmark_out", args.benchmark_out, "Path to benchmark file output")
-			   ->default_val("benchmark.json");
+			   ->default_val("./benchmark.json");
 
 			app.callback([&]
 			{
