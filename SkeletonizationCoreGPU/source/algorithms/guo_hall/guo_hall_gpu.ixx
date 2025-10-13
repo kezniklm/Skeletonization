@@ -14,6 +14,7 @@ export namespace skeletonizer::gpu::algorithms
 {
 	class guo_hall_gpu final : public ::skeletonizer::algorithms::guo_hall, public skeletonizer_gpu<14, 14>
 	{
+	public:
 		void apply(cv::Mat& binary_image) const override
 		{
 			cv::cuda::GpuMat gpu_src(binary_image);

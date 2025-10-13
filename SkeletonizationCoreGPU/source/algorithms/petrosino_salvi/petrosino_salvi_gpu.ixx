@@ -15,6 +15,7 @@ export namespace skeletonizer::gpu::algorithms
 	class petrosino_salvi_gpu final : public ::skeletonizer::algorithms::petrosino_salvi,
 	                                  public skeletonizer_gpu<14, 14, 2>
 	{
+	public:
 		void apply(cv::Mat& binary_image) const override
 		{
 			cv::cuda::GpuMat gpu_src(binary_image);

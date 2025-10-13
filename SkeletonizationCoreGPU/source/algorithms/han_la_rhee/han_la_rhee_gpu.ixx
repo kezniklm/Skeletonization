@@ -14,6 +14,7 @@ export namespace skeletonizer::gpu::algorithms
 	class han_la_rhee_gpu final : public skeletonizer_gpu<>,
 	                              public ::skeletonizer::algorithms::han_la_rhee
 	{
+	public:
 		void apply(cv::Mat& binary_image) const override
 		{
 			cv::cuda::GpuMat gpu_binary_image(binary_image);

@@ -14,6 +14,7 @@ export namespace skeletonizer::gpu::algorithms
 {
 	class choi_lam_siu_gpu final : public ::skeletonizer::algorithms::choi_lam_siu, public skeletonizer_gpu<32>
 	{
+	public:
 		void apply(cv::Mat& binary_image) const override
 		{
 			cv::cuda::GpuMat gpu_binary_image(binary_image);

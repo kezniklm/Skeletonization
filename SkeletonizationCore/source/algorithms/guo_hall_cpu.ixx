@@ -10,6 +10,7 @@ export namespace skeletonizer::cpu::algorithms
 {
 	class guo_hall_cpu final : public skeletonizer_cpu, public ::skeletonizer::algorithms::guo_hall
 	{
+	public:
 		void apply(cv::Mat& binary_image) const override
 		{
 			cv::Mat previous(binary_image.size(), CV_8UC1, cv::Scalar(0));
@@ -31,6 +32,7 @@ export namespace skeletonizer::cpu::algorithms
 			clear_border(binary_image);
 		}
 
+	private:
 		static void first_iteration(cv::Mat& binary_image, cv::Mat& marker)
 		{
 			marker.setTo(0);

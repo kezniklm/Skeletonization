@@ -10,6 +10,7 @@ export namespace skeletonizer::cpu::algorithms
 {
 	class han_la_rhee_cpu final : public skeletonizer_cpu, public ::skeletonizer::algorithms::han_la_rhee
 	{
+	public:
 		void apply(cv::Mat& binary_image) const override
 		{
 			cv::Mat previous(binary_image.size(), CV_8UC1, cv::Scalar(0));
@@ -30,6 +31,7 @@ export namespace skeletonizer::cpu::algorithms
 			clear_border(binary_image);
 		}
 
+	private:
 		static void iteration(cv::Mat& binary_image, cv::Mat& marker, const cv::Mat& weight)
 		{
 			marker.setTo(0);

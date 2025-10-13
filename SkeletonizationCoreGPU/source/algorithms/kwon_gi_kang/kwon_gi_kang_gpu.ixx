@@ -15,6 +15,7 @@ export namespace skeletonizer::gpu::algorithms
 	class kwon_gi_kang_gpu final : public ::skeletonizer::algorithms::kwon_gi_kang,
 	                               public skeletonizer_gpu<14, 14>
 	{
+	public:
 		void apply(cv::Mat& binary_image) const override
 		{
 			cv::cuda::GpuMat gpu_src(binary_image);

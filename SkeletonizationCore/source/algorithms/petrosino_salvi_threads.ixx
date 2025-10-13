@@ -13,6 +13,7 @@ export namespace skeletonizer::cpu::algorithms
 	class petrosino_salvi_thread final : public skeletonizer_cpu,
 	                                     public ::skeletonizer::algorithms::petrosino_salvi
 	{
+	public:
 		void apply(cv::Mat& binary_image) const override
 		{
 			cv::Mat previous(binary_image.size(), CV_8UC1, cv::Scalar(0));
@@ -34,6 +35,7 @@ export namespace skeletonizer::cpu::algorithms
 			clear_border(binary_image);
 		}
 
+	private:
 		static void first_iteration(cv::Mat& binary_image, cv::Mat& marker)
 		{
 			marker.setTo(0);

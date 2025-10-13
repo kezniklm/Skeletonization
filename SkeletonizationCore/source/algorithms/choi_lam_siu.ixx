@@ -15,6 +15,7 @@ export namespace skeletonizer::cpu::algorithms
 	class choi_lam_siu_cpu final : public skeletonizer_cpu,
 	                               public ::skeletonizer::algorithms::choi_lam_siu
 	{
+	public:
 		void apply(cv::Mat& binary_image) const override
 		{
 			const xy_distance_maps distance_maps = get_distance_map(binary_image);
@@ -24,6 +25,7 @@ export namespace skeletonizer::cpu::algorithms
 			clear_border(binary_image);
 		}
 
+	private:
 		static inline void skeletonize(cv::Mat& binary_image, const xy_distance_maps& distance_maps,
 		                               const int minimal_residual_distance = 100,
 		                               const int maximal_residual_distance = INT_MAX)

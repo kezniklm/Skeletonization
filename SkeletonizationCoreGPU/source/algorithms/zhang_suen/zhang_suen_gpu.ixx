@@ -14,6 +14,7 @@ export namespace skeletonizer::gpu::algorithms
 {
 	class zhang_suen_gpu final : public ::skeletonizer::algorithms::zhang_suen, public skeletonizer_gpu<14, 14>
 	{
+	public:
 		void apply(cv::Mat& binary_image) const override
 		{
 			cv::cuda::GpuMat gpu_src(binary_image);
