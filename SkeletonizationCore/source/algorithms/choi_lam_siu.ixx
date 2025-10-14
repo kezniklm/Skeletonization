@@ -26,13 +26,16 @@ export namespace skeletonizer::cpu::algorithms
 		}
 
 	private:
-		static inline void skeletonize(cv::Mat& binary_image, const xy_distance_maps& distance_maps,
+		static inline void skeletonize(const cv::Mat& binary_image, const xy_distance_maps& distance_maps,
 		                               const int minimal_residual_distance = 100,
 		                               const int maximal_residual_distance = INT_MAX)
 		{
+			auto skeleton_output = binary_image.clone();
+
 			for (auto row = 1; row < binary_image.rows - 1; ++row)
 			{
 				const auto binary_image_row_pointer = binary_image.ptr<uchar>(row);
+				const auto skeleton_output_row_pointer = skeleton_output.ptr<uchar>(row);
 
 				for (auto column = 1; column < binary_image.cols - 1; ++column)
 				{
@@ -41,15 +44,17 @@ export namespace skeletonizer::cpu::algorithms
 						continue;
 					}
 
-					binary_image_row_pointer[column] = check_neighbourhood(
-						                                   distance_maps.nearest_background_row_index,
-						                                   distance_maps.nearest_background_column_index,
-						                                   row, column, minimal_residual_distance,
-						                                   maximal_residual_distance)
-						                                   ? skeleton
-						                                   : background;
+					skeleton_output_row_pointer[column] = check_neighbourhood(
+						                                      distance_maps.nearest_background_row_index,
+						                                      distance_maps.nearest_background_column_index,
+						                                      row, column, minimal_residual_distance,
+						                                      maximal_residual_distance)
+						                                      ? skeleton
+						                                      : background;
 				}
 			}
+
+			skeleton_output.copyTo(binary_image);
 		}
 
 		static inline xy_distance_maps get_distance_map(const cv::Mat& binary_image)
@@ -104,8 +109,8 @@ export namespace skeletonizer::cpu::algorithms
 		                                                            const std::vector<cv::Point>&
 		                                                            label_to_background_point_lut)
 		{
-			auto dy = cv::Mat(binary_image.size(), CV_32SC1);
-			auto dx = cv::Mat(binary_image.size(), CV_32SC1);
+			auto dy = cv::Mat(binary_image.size(), CV_32SC1, cv::Scalar(0));
+			auto dx = cv::Mat(binary_image.size(), CV_32SC1, cv::Scalar(0));
 
 			const auto lut_size = static_cast<int>(label_to_background_point_lut.size());
 
