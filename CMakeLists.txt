@@ -1,6 +1,7 @@
 ﻿# CMakeList.txt : Global project for Skeletonization
 
 cmake_minimum_required(VERSION 3.30)
+
 project(Skeletonization)
 
 # Enable Hot Reload for MSVC compilers if supported.
@@ -48,10 +49,7 @@ endif()
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_CXX_SCAN_FOR_MODULES ON CACHE BOOL "" FORCE)
-set(CMAKE_TRY_COMPILE_PLATFORM_VARIABLES
-    ${CMAKE_TRY_COMPILE_PLATFORM_VARIABLES}
-    CMAKE_CXX_SCAN_FOR_MODULES)
+set(CMAKE_CXX_SCAN_FOR_MODULES ON)
 
 add_compile_definitions(SKELETONIZATION_WITH_GPU=$<BOOL:${SKELETONIZATION_ENABLE_GPU}>)
 
@@ -70,4 +68,5 @@ endif()
 
 add_subdirectory(SkeletonizationPython)
 add_subdirectory(SkeletonizationVisualizer)
+add_subdirectory(SkeletonizationTests)
 add_subdirectory(SkeletonizationCLI)

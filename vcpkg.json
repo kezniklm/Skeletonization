@@ -7,6 +7,7 @@
         "rapidjson",
         "cli11",
         "glog",
+        "gtest",
         "drogon",
         {
             "name": "opencv4",
