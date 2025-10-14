@@ -51,7 +51,7 @@ export namespace skeletonizer::gpu::algorithms
 
 			cleanup_oblique_corners(*src, *dst, grid, block, halo);
 
-			src->download(binary_image);
+			dst->download(binary_image);
 
 			clear_border(binary_image);
 
