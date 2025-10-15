@@ -191,4 +191,12 @@ namespace skeletonizer::algorithms
 			return "KMM";
 		}
 	};
+
+	export class k3m : virtual public skeletonizer<>
+	{
+		std::string name() const final
+		{
+			return "K3M";
+		}
+	};
 }
