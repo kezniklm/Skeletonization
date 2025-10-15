@@ -245,6 +245,18 @@ namespace configuration
 #endif
 		}
 
+		else if (algorithm == "kmm")
+		{
+			if (skeletonizer_type == skeletonizer::skeletonizer_type::cpu)
+			{
+				creators.push_back([]
+				{
+					return std::make_unique<skeletonizer::cpu::algorithms::kmm_cpu>();
+				});
+			}
+		}
+
+
 		if (creators.empty())
 		{
 			throw std::runtime_error(

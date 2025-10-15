@@ -13,3 +13,4 @@ export import :han_la_rhee;
 export import :han_la_rhee_threads;
 export import :choi_lam_siu;
 export import :choi_lam_siu_threads;
+export import :kmm;
