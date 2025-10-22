@@ -15,3 +15,4 @@ export import :choi_lam_siu;
 export import :choi_lam_siu_threads;
 export import :kmm;
 export import :k3m;
+export import :tarabek_cpu;

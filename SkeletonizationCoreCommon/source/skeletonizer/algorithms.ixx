@@ -199,4 +199,12 @@ namespace skeletonizer::algorithms
 			return "K3M";
 		}
 	};
+	
+	export class tarabek : virtual public skeletonizer<>
+	{
+		std::string name() const final
+		{
+			return "Tarabek";
+		}
+	};
 }

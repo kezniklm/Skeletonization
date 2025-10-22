@@ -266,6 +266,16 @@ namespace configuration
 				});
 			}
 		}
+		else if (algorithm == "tarabek")
+		{
+			if (skeletonizer_type == skeletonizer::skeletonizer_type::cpu)
+			{
+				creators.push_back([]
+				{
+					return std::make_unique<skeletonizer::cpu::algorithms::tarabek_cpu>();
+				});
+			}
+			}
 
 		if (creators.empty())
 		{
