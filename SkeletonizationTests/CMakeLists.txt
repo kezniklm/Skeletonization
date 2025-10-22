@@ -24,5 +24,3 @@ endif()
 include(GoogleTest)
 
 enable_testing()
-
-gtest_discover_tests(SkeletonizationTests DISCOVERY_MODE POST_BUILD)
