@@ -170,7 +170,7 @@ export const StatsDashboard: React.FC<StatsProps> = ({ data }) => {
               key={algorithm.name}
               className={`flex flex-col gap-3 p-4 md:flex-row md:items-center ${theme === "dark" ? "border-gray-700 bg-gradient-to-r from-[rgba(102,126,234,0.1)] to-[rgba(102,126,234,0.1)] hover:from-[rgba(102,126,234,0.15)] hover:to-[rgba(102,126,234,0.15)]" : "border-[rgba(102,126,234,0.15)] bg-gradient-to-r from-[rgba(102,126,234,0.03)] to-[rgba(139,155,255,0.02)] hover:from-[rgba(102,126,234,0.08)] hover:to-[rgba(139,155,255,0.06)]"} rounded-xl border transition-all hover:translate-x-2 hover:shadow-[0_4px_15px_rgba(102,126,234,0.12)]`}
             >
-              <div className="w-12 flex-shrink-0 text-center text-2xl">
+              <div className={`w-12 flex-shrink-0 text-center text-2xl ${themeClasses.text}`}>
                 {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : `${index + 1}.`}
               </div>
               <div className="min-w-0 flex-1">
