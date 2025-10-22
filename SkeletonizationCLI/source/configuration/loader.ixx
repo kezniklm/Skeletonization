@@ -103,9 +103,9 @@ namespace configuration
 			else if (skeletonizer_type == skeletonizer::skeletonizer_type::gpu)
 			{
 				creators.push_back([]
-					{
-						return std::make_unique<skeletonizer::gpu::algorithms::zhang_suen_gpu>();
-					});
+				{
+					return std::make_unique<skeletonizer::gpu::algorithms::zhang_suen_gpu>();
+				});
 			}
 #endif
 		}
@@ -130,9 +130,9 @@ namespace configuration
 			else if (skeletonizer_type == skeletonizer::skeletonizer_type::gpu)
 			{
 				creators.push_back([]
-					{
-						return std::make_unique<skeletonizer::gpu::algorithms::guo_hall_gpu>();
-					});
+				{
+					return std::make_unique<skeletonizer::gpu::algorithms::guo_hall_gpu>();
+				});
 			}
 #endif
 		}
@@ -157,9 +157,9 @@ namespace configuration
 			else if (skeletonizer_type == skeletonizer::skeletonizer_type::gpu)
 			{
 				creators.push_back([]
-					{
-						return std::make_unique<skeletonizer::gpu::algorithms::kwon_gi_kang_gpu>();
-					});
+				{
+					return std::make_unique<skeletonizer::gpu::algorithms::kwon_gi_kang_gpu>();
+				});
 			}
 #endif
 		}
@@ -266,6 +266,7 @@ namespace configuration
 				});
 			}
 		}
+
 		else if (algorithm == "tarabek")
 		{
 			if (skeletonizer_type == skeletonizer::skeletonizer_type::cpu)
@@ -275,7 +276,14 @@ namespace configuration
 					return std::make_unique<skeletonizer::cpu::algorithms::tarabek_cpu>();
 				});
 			}
+			else if (skeletonizer_type == skeletonizer::skeletonizer_type::thread)
+			{
+				creators.push_back([]
+				{
+					return std::make_unique<skeletonizer::cpu::algorithms::tarabek_threads>();
+				});
 			}
+		}
 
 		if (creators.empty())
 		{
