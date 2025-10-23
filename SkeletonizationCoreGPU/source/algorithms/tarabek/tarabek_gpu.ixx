@@ -50,6 +50,8 @@ export namespace skeletonizer::gpu::algorithms
 
 			tarabek_postprocessing(*src, *dst, grid, block, halo);
 
+			std::swap(src, dst);
+
 			src->download(binary_image);
 
 			clear_border(binary_image);
