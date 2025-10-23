@@ -7,3 +7,4 @@ export import :kwon_gi_kang;
 export import :petrosino_salvi;
 export import :han_la_rhee;
 export import :choi_lam_siu;
+export import :tarabek;

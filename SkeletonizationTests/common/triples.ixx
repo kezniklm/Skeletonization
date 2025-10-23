@@ -35,10 +35,10 @@ export namespace skeltest
 	>
 	inline triple make_triple(std::string name)
 	{
-		runner < CpuT > rcpu;
-		runner < MtT > rmt;
+		runner<CpuT> rcpu;
+		runner<MtT> rmt;
 #if defined(SKELETONIZATION_ENABLE_GPU) || defined(SKELETONIZATION_WITH_GPU)
-		runner < GpuT > rgpu;
+		runner<GpuT> rgpu;
 		return triple{
 			std::move(name),
 			[rcpu](const cv::Mat& m) { return rcpu(m); },
@@ -46,11 +46,11 @@ export namespace skeltest
 			std::optional{std::function<cv::Mat(const cv::Mat&)>{[rgpu](const cv::Mat& m) { return rgpu(m); }}}
 		};
 #else
-        return Triple{
-            std::move(name),
-            [rcpu](const cv::Mat& m) { return rcpu(m); },
-            [rmt](const cv::Mat& m) { return rmt(m);  }
-        };
+		return Triple{
+			std::move(name),
+			[rcpu](const cv::Mat& m) { return rcpu(m); },
+			[rmt](const cv::Mat& m) { return rmt(m); }
+		};
 #endif
 	}
 
@@ -68,7 +68,8 @@ export namespace skeltest
 		using KGK_MT = kwon_gi_kang_cpu_threads;
 		using PS_CPU = petrosino_salvi_cpu;
 		using PS_MT = petrosino_salvi_thread;
-
+		using TA_CPU = tarabek_cpu;
+		using TA_MT = tarabek_threads;
 		using ZS_CPU = zhang_suen_cpu;
 		using ZS_MT = zhang_suen_cpu_threads;
 
@@ -80,6 +81,7 @@ export namespace skeltest
 		using HLR_GPU = han_la_rhee_gpu;
 		using KGK_GPU = kwon_gi_kang_gpu;
 		using PS_GPU = petrosino_salvi_gpu;
+		using TA_GPU = tarabek_gpu;
 		using ZS_GPU = zhang_suen_gpu;
 
 #endif
@@ -94,6 +96,7 @@ export namespace skeltest
 			triples.emplace_back(make_triple<HLR_CPU, HLR_MT, HLR_GPU>("HanLaRhee"));
 			triples.emplace_back(make_triple<KGK_CPU, KGK_MT, KGK_GPU>("KwonGiKang"));
 			triples.emplace_back(make_triple<PS_CPU, PS_MT, PS_GPU>("PetrosinoSalvi"));
+			triples.emplace_back(make_triple<TA_CPU, TA_MT, TA_GPU>("Tarabek"));
 			triples.emplace_back(make_triple<ZS_CPU, ZS_MT, ZS_GPU>("ZhangSuen"));
 #else
 			triples.emplace_back(make_triple<CLS_CPU, CLS_MT>("ChoiLamSiu"));
@@ -101,6 +104,7 @@ export namespace skeltest
 			triples.emplace_back(make_triple<HLR_CPU, HLR_MT>("HanLaRhee"));
 			triples.emplace_back(make_triple<KGK_CPU, KGK_MT>("KwonGiKang"));
 			triples.emplace_back(make_triple<PS_CPU, PS_MT>("PetrosinoSalvi"));
+			triples.emplace_back(make_triple<TA_CPU, TA_MT>("Tarabek"));
 			triples.emplace_back(make_triple<ZS_CPU, ZS_MT>("ZhangSuen"));
 #endif
 			return triples;

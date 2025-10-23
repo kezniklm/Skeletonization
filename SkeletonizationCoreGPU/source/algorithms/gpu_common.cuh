@@ -5,7 +5,7 @@
 
 constexpr auto background = 0;
 constexpr auto foreground = 1;
-constexpr auto skeleton = 1;
+constexpr auto skeleton = foreground;
 
 __device__ __forceinline__ int shared_index(const int local_x, const int local_y, const int shared_stride,
                                             const int halo)
