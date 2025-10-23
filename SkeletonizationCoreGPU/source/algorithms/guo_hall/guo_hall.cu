@@ -39,7 +39,7 @@ __global__ void guo_hall_iteration_kernel(
 		return;
 	}
 
-	if (is_border_pixel(global_x, global_y, num_cols, num_rows))
+	if (is_border_pixel(global_x, global_y, num_cols, num_rows, halo))
 	{
 		dst(global_y, global_x) = src(global_y, global_x);
 		return;

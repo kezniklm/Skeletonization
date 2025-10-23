@@ -31,8 +31,9 @@ export namespace skeletonizer::gpu::algorithms
 
 			const auto lut_size = max_label + 1;
 
-			const auto lut = build_label_to_background_point_lut(gpu_binary_image, label_matrix_gpu, block, grid,
-			                                                     lut_size);
+			const auto lut = build_label_to_background_point_lut(gpu_binary_image, label_matrix_gpu,
+			                                                     block, grid,
+			                                                     lut_size, halo);
 
 			skeletonize(gpu_binary_image, label_matrix_gpu, lut, block, grid, halo);
 

@@ -8,9 +8,8 @@
 extern inline cv::cuda::GpuMat build_label_to_background_point_lut(
 	const cv::cuda::GpuMat& binary_image,
 	const cv::cuda::GpuMat& label_matrix,
-	dim3 block,
-	dim3 grid,
-	int lut_size);
+	dim3 block, dim3 grid,
+	int lut_size, int halo);
 
 void skeletonize(
 	cv::cuda::GpuMat& binary_image,

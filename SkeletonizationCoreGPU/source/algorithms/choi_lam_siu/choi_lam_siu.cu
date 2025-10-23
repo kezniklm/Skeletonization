@@ -10,13 +10,13 @@ __device__ __constant__ int8_t dy8[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
 __global__ void build_label_to_background_point_lut_kernel(
 	cv::cuda::PtrStepSz<uchar> binary_image_pointer,
 	cv::cuda::PtrStepSz<int> label_pointer,
-	int2* __restrict__ lut, const int lut_size)
+	int2* __restrict__ lut, const int lut_size, const int halo)
 {
 	const int x = global_index_x(blockIdx.x, threadIdx.x, blockDim.x);
 	const int y = global_index_y(blockIdx.y, threadIdx.y, blockDim.y);
 
 	if (is_out_of_bounds(x, y, binary_image_pointer.cols, binary_image_pointer.rows) ||
-		is_border_pixel(x, y, binary_image_pointer.cols, binary_image_pointer.rows) ||
+		is_border_pixel(x, y, binary_image_pointer.cols, binary_image_pointer.rows, halo) ||
 		binary_image_pointer(y, x) == foreground)
 	{
 		return;
@@ -69,7 +69,7 @@ __global__ void skeletonizer_kernel(
 	__syncthreads();
 
 	if (is_out_of_bounds(gx, gy, binary_image.cols, binary_image.rows) || is_border_pixel(
-		gx, gy, binary_image.cols, binary_image.rows))
+		gx, gy, binary_image.cols, binary_image.rows, halo))
 	{
 		if (!is_out_of_bounds(gx, gy, out.cols, out.rows))
 		{
@@ -155,14 +155,13 @@ __global__ void skeletonizer_kernel(
 extern inline cv::cuda::GpuMat build_label_to_background_point_lut(
 	const cv::cuda::GpuMat& binary_image,
 	const cv::cuda::GpuMat& label_matrix,
-	const dim3 block,
-	const dim3 grid,
-	const int lut_size)
+	const dim3 block, const dim3 grid,
+	const int lut_size, const int halo)
 {
 	cv::cuda::GpuMat lut(1, lut_size, CV_32SC2, cv::Scalar::all(-1));
 
 	build_label_to_background_point_lut_kernel << <grid, block >> >(
-		binary_image, label_matrix, lut.ptr<int2>(), lut_size);
+		binary_image, label_matrix, lut.ptr<int2>(), lut_size, halo);
 
 	return lut;
 }

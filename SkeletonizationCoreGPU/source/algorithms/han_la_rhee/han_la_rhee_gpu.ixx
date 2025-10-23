@@ -32,9 +32,9 @@ export namespace skeletonizer::gpu::algorithms
 			{
 				cudaMemset(device_changed, 0, sizeof(int));
 
-				calculate_weight(gpu_binary_image, weight, block, grid);
+				calculate_weight(gpu_binary_image, weight, block, grid, halo);
 
-				han_la_rhee_iteration(gpu_binary_image, weight, device_changed, grid, block);
+				han_la_rhee_iteration(gpu_binary_image, weight, device_changed, grid, block, halo);
 
 				cudaMemcpy(&host_changed, device_changed, sizeof(int), cudaMemcpyDeviceToHost);
 			}

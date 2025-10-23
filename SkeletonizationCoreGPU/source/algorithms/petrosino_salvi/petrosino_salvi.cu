@@ -80,7 +80,7 @@ __global__ void petrosino_salvi_iteration_kernel(
 		return;
 	}
 
-	if (is_border_pixel(global_x, global_y, num_cols, num_rows))
+	if (is_border_pixel(global_x, global_y, num_cols, num_rows, halo))
 	{
 		dst(global_y, global_x) = src(global_y, global_x);
 		return;
@@ -105,12 +105,6 @@ __global__ void petrosino_salvi_iteration_kernel(
 
 	const auto y2 = shared_tile[shared_index(local_x, local_y + 2, shared_stride, halo)];
 	const auto y5 = shared_tile[shared_index(local_x + 2, local_y, shared_stride, halo)];
-
-	if (p1 == background)
-	{
-		dst(global_y, global_x) = background;
-		return;
-	}
 
 	const bool delete_pixel = first_pass
 		                          ? petrosino_salvi_first_pass(x1, x2, x3, x4, x5, x6, x7, x8, y2, y5)

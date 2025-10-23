@@ -40,7 +40,7 @@ __global__ void tarabek_iteration_kernel(
 		return;
 	}
 
-	if (is_border_pixel(global_x, global_y, num_cols, num_rows))
+	if (is_border_pixel(global_x, global_y, num_cols, num_rows, halo))
 	{
 		dst(global_y, global_x) = src(global_y, global_x);
 		return;
@@ -247,7 +247,7 @@ __global__ void tarabek_postprocessing_kernel(
 		return;
 	}
 
-	if (is_border_pixel(gx, gy, num_cols, num_rows))
+	if (is_border_pixel(gx, gy, num_cols, num_rows, halo))
 	{
 		dst(gy, gx) = src(gy, gx);
 		return;

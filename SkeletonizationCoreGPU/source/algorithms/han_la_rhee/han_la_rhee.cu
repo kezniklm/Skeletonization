@@ -74,14 +74,13 @@ __device__ __forceinline__ bool has_critical_pairs(
 __global__ void han_la_rhee_iteration_kernel(
 	cv::cuda::PtrStep<uchar> binary_image,
 	const cv::cuda::PtrStep<uchar> weight,
-	const int num_rows,
-	const int num_cols,
-	int* d_changed)
+	const int num_rows, const int num_cols,
+	int* d_changed, const int halo)
 {
 	const auto row = blockIdx.y * blockDim.y + threadIdx.y;
 	const auto column = blockIdx.x * blockDim.x + threadIdx.x;
 
-	if (is_border_pixel(row, column, num_rows, num_cols))
+	if (is_border_pixel(row, column, num_rows, num_cols, halo))
 	{
 		return;
 	}
@@ -144,12 +143,12 @@ __global__ void han_la_rhee_iteration_kernel(
 }
 
 __global__ void calculate_weight_kernel(const cv::cuda::PtrStep<uchar> image, cv::cuda::PtrStep<uchar> weight,
-                                        const int num_rows, const int num_cols)
+                                        const int num_rows, const int num_cols, const int halo)
 {
 	const auto row = blockIdx.y * blockDim.y + threadIdx.y;
 	const auto column = blockIdx.x * blockDim.x + threadIdx.x;
 
-	if (is_border_pixel(row, column, num_rows, num_cols))
+	if (is_border_pixel(row, column, num_rows, num_cols, halo))
 	{
 		return;
 	}
@@ -180,18 +179,17 @@ __global__ void calculate_weight_kernel(const cv::cuda::PtrStep<uchar> image, cv
 extern inline void han_la_rhee_iteration(
 	const cv::cuda::GpuMat& binary_image,
 	const cv::cuda::PtrStep<uchar> weight,
-	int* d_changed,
-	const dim3 grid,
-	const dim3 block)
+	int* d_changed, const dim3 grid,
+	const dim3 block, const int halo)
 {
 	han_la_rhee_iteration_kernel<<<grid, block>>>(binary_image, weight, binary_image.rows, binary_image.cols,
-	                                              d_changed);
+	                                              d_changed, halo);
 }
 
 extern inline void calculate_weight(const cv::cuda::GpuMat& image, cv::cuda::GpuMat& weight, const dim3 block,
-                                    const dim3 grid)
+                                    const dim3 grid, const int halo)
 {
 	weight.setTo(cv::Scalar(0));
 
-	calculate_weight_kernel<<<grid, block>>>(image, weight, image.rows, image.cols);
+	calculate_weight_kernel<<<grid, block>>>(image, weight, image.rows, image.cols, halo);
 }

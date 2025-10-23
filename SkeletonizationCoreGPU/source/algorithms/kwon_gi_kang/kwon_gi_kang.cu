@@ -39,7 +39,7 @@ __global__ void kwon_gi_kang_iteration_kernel(
 		return;
 	}
 
-	if (is_border_pixel(global_x, global_y, num_cols, num_rows))
+	if (is_border_pixel(global_x, global_y, num_cols, num_rows, halo))
 	{
 		dst(global_y, global_x) = src(global_y, global_x);
 		return;
@@ -122,7 +122,7 @@ __global__ void cleanup_oblique_corners_kernel_opt(
 		return;
 	}
 
-	if (is_border_pixel(global_x, global_y, num_cols, num_rows))
+	if (is_border_pixel(global_x, global_y, num_cols, num_rows, halo))
 	{
 		dst(global_y, global_x) = src(global_y, global_x);
 		return;
