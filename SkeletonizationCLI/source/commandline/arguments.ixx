@@ -20,6 +20,8 @@ namespace commandline
 		unsigned int number_of_benchmark_iterations = 1000;
 
 		std::vector<skeletonizer_config> skeletonizer_configuration;
+
+		bool run_image_preprocessing;
 	};
 }
 

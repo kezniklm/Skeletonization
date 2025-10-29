@@ -26,7 +26,7 @@ namespace skeletonization_benchmark
 		explicit runner(const image_benchmark_metadata& image_metadata)
 			: image_metadata_(image_metadata),
 			  input_image_(read_image(image_metadata.path)),
-			  binary_image_(preprocess_image(input_image_))
+			  binary_image_(global_arguments().run_image_preprocessing ? preprocess_image(input_image_) : input_image_)
 		{
 		}
 

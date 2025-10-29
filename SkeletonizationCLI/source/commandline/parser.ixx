@@ -62,6 +62,9 @@ namespace commandline
 			app.add_option("--benchmark_out", args.benchmark_out, "Path to benchmark file output")
 			   ->default_val("./benchmark.json");
 
+			app.add_option("--run_image_preprocessing", args.run_image_preprocessing, "Enables image preprocessing")
+				->default_val(true);
+
 			app.callback([&]
 			{
 				if (args.benchmark_out.empty())
