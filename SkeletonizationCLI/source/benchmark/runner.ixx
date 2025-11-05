@@ -23,7 +23,7 @@ namespace skeletonization_benchmark
 	export class runner
 	{
 	public:
-		explicit runner(const image_benchmark_metadata& image_metadata)
+		explicit runner(const configuration::image_benchmark_metadata& image_metadata)
 			: image_metadata_(image_metadata),
 			  input_image_(read_image(image_metadata.path)),
 			  binary_image_(global_arguments().run_image_preprocessing ? preprocess_image(input_image_) : input_image_)
@@ -38,7 +38,7 @@ namespace skeletonization_benchmark
 				{
 					auto skeletonizer = creator();
 
-					const std::string name = create_benchmark_name(skeletonizer->name(), type);
+					const auto name = create_benchmark_name(skeletonizer->name(), type);
 
 					register_benchmark(name, std::move(skeletonizer));
 				}
@@ -109,7 +109,7 @@ namespace skeletonization_benchmark
 		static constexpr int max_total_algorithm_name_length = user_algorithm_name_length + max_algorithm_author_length
 			+ max_algorithm_type_length;
 
-		image_benchmark_metadata image_metadata_;
+		configuration::image_benchmark_metadata image_metadata_;
 		cv::Mat input_image_;
 		cv::Mat binary_image_;
 		std::map<std::string, cv::Mat> results_;

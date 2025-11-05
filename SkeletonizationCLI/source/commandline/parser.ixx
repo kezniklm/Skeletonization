@@ -63,7 +63,7 @@ namespace commandline
 			   ->default_val("./benchmark.json");
 
 			app.add_option("--run_image_preprocessing", args.run_image_preprocessing, "Enables image preprocessing")
-				->default_val(true);
+			   ->default_val(true);
 
 			app.callback([&]
 			{
@@ -82,16 +82,16 @@ namespace commandline
 				ensure_parent_exists(args.benchmark_out);
 			});
 
-			auto current_leaf = std::make_shared<skeletonizer_config>();
+			auto current_leaf = std::make_shared<configuration::skeletonizer_config>();
 
-			std::vector<skeletonizer_config> skeletonizer_configurations;
+			std::vector<configuration::skeletonizer_config> skeletonizer_configurations;
 
 			const auto finalize_current_leaf = [&]
 			{
 				if (!current_leaf->name.empty() || !current_leaf->path.empty() || !current_leaf->skeletonizers.empty())
 				{
 					skeletonizer_configurations.push_back(*current_leaf);
-					current_leaf = std::make_shared<skeletonizer_config>();
+					current_leaf = std::make_shared<configuration::skeletonizer_config>();
 				}
 			};
 

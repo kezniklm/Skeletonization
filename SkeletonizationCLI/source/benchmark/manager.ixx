@@ -62,7 +62,7 @@ namespace skeletonization_benchmark
 			return output_json.str();
 		}
 
-		void add_runner(const image_benchmark_metadata& image_metadata)
+		void add_runner(const configuration::image_benchmark_metadata& image_metadata)
 		{
 			auto benchmark_runner = std::make_unique<runner>(image_metadata);
 
