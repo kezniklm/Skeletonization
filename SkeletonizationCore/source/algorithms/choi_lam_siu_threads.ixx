@@ -7,12 +7,12 @@
 
 export module skeletonizer_cpu:choi_lam_siu_threads;
 
-import :core;
+import :threads_core;
 import image_processing;
 
 export namespace skeletonizer::cpu::algorithms
 {
-	class choi_lam_siu_threads final : public skeletonizer_cpu,
+	class choi_lam_siu_threads final : public skeletonizer_threads,
 	                                   public ::skeletonizer::algorithms::choi_lam_siu
 	{
 	public:

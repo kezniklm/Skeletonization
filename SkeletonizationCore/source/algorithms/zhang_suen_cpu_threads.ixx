@@ -4,11 +4,11 @@ module;
 
 export module skeletonizer_cpu:zhang_suen_threads;
 
-import :core;
+import :threads_core;
 
 export namespace skeletonizer::cpu::algorithms
 {
-	class zhang_suen_cpu_threads final : public skeletonizer_cpu, public ::skeletonizer::algorithms::zhang_suen
+	class zhang_suen_cpu_threads final : public skeletonizer_threads, public ::skeletonizer::algorithms::zhang_suen
 	{
 	public:
 		void apply(cv::Mat& binary_image) const override

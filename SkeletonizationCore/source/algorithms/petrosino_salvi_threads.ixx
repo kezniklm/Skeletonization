@@ -6,11 +6,11 @@ export module skeletonizer_cpu:petrosino_salvi_threads;
 
 import image_processing;
 
-import :core;
+import :threads_core;
 
 export namespace skeletonizer::cpu::algorithms
 {
-	class petrosino_salvi_thread final : public skeletonizer_cpu,
+	class petrosino_salvi_thread final : public skeletonizer_threads,
 	                                     public ::skeletonizer::algorithms::petrosino_salvi
 	{
 	public:

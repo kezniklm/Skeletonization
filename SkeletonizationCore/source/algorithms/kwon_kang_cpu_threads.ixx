@@ -4,11 +4,11 @@ module;
 
 export module skeletonizer_cpu:kwon_gi_kang_threads;
 
-import :core;
+import :threads_core;
 
 export namespace skeletonizer::cpu::algorithms
 {
-	class kwon_gi_kang_cpu_threads final : public skeletonizer_cpu,
+	class kwon_gi_kang_cpu_threads final : public skeletonizer_threads,
 	                                       public ::skeletonizer::algorithms::kwon_gi_kang
 	{
 	public:

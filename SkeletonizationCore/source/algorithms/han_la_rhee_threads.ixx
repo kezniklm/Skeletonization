@@ -4,11 +4,11 @@
 
 export module skeletonizer_cpu:han_la_rhee_threads;
 
-import :core;
+import :threads_core;
 
 export namespace skeletonizer::cpu::algorithms
 {
-	class han_la_rhee_cpu_threads final : public skeletonizer_cpu, public ::skeletonizer::algorithms::han_la_rhee
+	class han_la_rhee_cpu_threads final : public skeletonizer_threads, public ::skeletonizer::algorithms::han_la_rhee
 	{
 	public:
 		void apply(cv::Mat& binary_image) const override

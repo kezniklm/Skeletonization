@@ -7,11 +7,11 @@
 
 export module skeletonizer_cpu:tarabek_threads;
 
-import :core;
+import :threads_core;
 
 export namespace skeletonizer::cpu::algorithms
 {
-	class tarabek_threads final : public skeletonizer_cpu, public ::skeletonizer::algorithms::tarabek
+	class tarabek_threads final : public skeletonizer_threads, public ::skeletonizer::algorithms::tarabek
 	{
 	public:
 		void apply(cv::Mat& binary_image) const override

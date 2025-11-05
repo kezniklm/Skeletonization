@@ -4,11 +4,11 @@ module;
 
 export module skeletonizer_cpu:guo_hall_threads;
 
-import :core;
+import :threads_core;
 
 export namespace skeletonizer::cpu::algorithms
 {
-	class guo_hall_cpu_threads final : public skeletonizer_cpu, public ::skeletonizer::algorithms::guo_hall
+	class guo_hall_cpu_threads final : public skeletonizer_threads, public ::skeletonizer::algorithms::guo_hall
 	{
 	public:
 		void apply(cv::Mat& binary_image) const override
