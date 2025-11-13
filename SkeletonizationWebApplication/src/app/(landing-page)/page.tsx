@@ -1,0 +1,40 @@
+import { headers } from "next/headers";
+
+import { auth } from "@/auth";
+
+import { landingPageFeatures } from "./branding/landing-page-features";
+import { AlgorithmShowcase } from "./branding/algorithm-showcase";
+import { Branding } from "./branding/branding";
+import { Feature } from "./branding/feature";
+import { WelcomeBack } from "./branding/welcome-back";
+import { SignInCard } from "./sign-in/sign-in-card";
+
+const LandingPage = async () => {
+  const session = await auth.api.getSession({ headers: await headers() });
+
+  const isLoggedIn = session?.user ? true : false;
+
+  return (
+    <main className="flex flex-col items-center justify-center px-4 py-16 sm:px-6 lg:flex-row lg:px-8">
+      <div className="mb-12 max-w-xl lg:mr-16 lg:mb-0 lg:w-1/2">
+        <Branding />
+
+        <section className="space-y-4" aria-label="Key features">
+          {landingPageFeatures.map((feature) => (
+            <Feature key={feature.title} icon={feature.icon} title={feature.title} description={feature.description} />
+          ))}
+        </section>
+
+        <AlgorithmShowcase />
+      </div>
+
+      {isLoggedIn ? (
+        <WelcomeBack className="w-full max-w-md lg:w-auto" userName={session?.user.name} />
+      ) : (
+        <SignInCard />
+      )}
+    </main>
+  );
+};
+
+export default LandingPage;
