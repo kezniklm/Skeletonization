@@ -15,7 +15,7 @@ const LandingPage = async () => {
   const isLoggedIn = session?.user ? true : false;
 
   return (
-    <main className="flex flex-col items-center justify-center px-4 py-16 sm:px-6 lg:flex-row lg:px-8">
+    <div className="flex flex-col items-center justify-center px-4 sm:px-6 lg:flex-row lg:px-8">
       <div className="mb-12 max-w-xl lg:mr-16 lg:mb-0 lg:w-1/2">
         <Branding />
 
@@ -33,7 +33,7 @@ const LandingPage = async () => {
       ) : (
         <SignInCard />
       )}
-    </main>
+    </div>
   );
 };
 
