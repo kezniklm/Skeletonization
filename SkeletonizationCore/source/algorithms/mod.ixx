@@ -18,3 +18,5 @@ export import :kmm;
 export import :k3m;
 export import :tarabek_cpu;
 export import :tarabek_threads;
+export import :liu_zhang;
+export import :liu_zhang_threads;

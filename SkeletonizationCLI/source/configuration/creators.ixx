@@ -90,6 +90,10 @@ namespace configuration
 				skeletonizer::gpu::algorithms::tarabek_gpu
 #endif
 			>("tarabek")
+			make_entry<
+				skeletonizer::cpu::algorithms::liu_zhang_cpu,
+				skeletonizer::cpu::algorithms::liu_zhang_threads
+			>("liu_zhang"),
 		};
 
 		std::vector<skeletonizer_creator> creators;

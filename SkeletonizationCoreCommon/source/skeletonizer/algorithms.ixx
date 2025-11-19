@@ -311,4 +311,12 @@ namespace skeletonizer::algorithms
 			);
 		}
 	};
+
+	export class liu_zhang : virtual public skeletonizer<>
+	{
+		std::string name() const final
+		{
+			return "Liu_Zhang";
+		}
+	};
 }

@@ -95,6 +95,7 @@ export namespace skeltest
 			triples.emplace_back(make_triple<GH_CPU, GH_MT, GH_GPU>("GuoHall"));
 			triples.emplace_back(make_triple<HLR_CPU, HLR_MT, HLR_GPU>("HanLaRhee"));
 			triples.emplace_back(make_triple<KGK_CPU, KGK_MT, KGK_GPU>("KwonGiKang"));
+			triples.emplace_back(make_triple<LZ_CPU, LZ_MT>("LiuZhang"));
 			triples.emplace_back(make_triple<PS_CPU, PS_MT, PS_GPU>("PetrosinoSalvi"));
 			triples.emplace_back(make_triple<TA_CPU, TA_MT, TA_GPU>("Tarabek"));
 			triples.emplace_back(make_triple<ZS_CPU, ZS_MT, ZS_GPU>("ZhangSuen"));
@@ -103,6 +104,7 @@ export namespace skeltest
 			triples.emplace_back(make_triple<GH_CPU, GH_MT>("GuoHall"));
 			triples.emplace_back(make_triple<HLR_CPU, HLR_MT>("HanLaRhee"));
 			triples.emplace_back(make_triple<KGK_CPU, KGK_MT>("KwonGiKang"));
+			triples.emplace_back(make_triple<LZ_CPU, LZ_MT>("LiuZhang"));
 			triples.emplace_back(make_triple<PS_CPU, PS_MT>("PetrosinoSalvi"));
 			triples.emplace_back(make_triple<TA_CPU, TA_MT>("Tarabek"));
 			triples.emplace_back(make_triple<ZS_CPU, ZS_MT>("ZhangSuen"));
