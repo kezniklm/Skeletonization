@@ -40,18 +40,18 @@ export const WelcomeBack = ({ className, userName }: WelcomeBackProps) => (
           <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" aria-hidden="true" />
         </NavigationLink>
 
-        <div className="space-y-3 rounded-xl bg-gradient-to-r from-cyan-50 to-blue-50 p-4 dark:from-gray-900 dark:to-gray-800">
+        <div className="space-y-3 rounded-xl border border-cyan-100 bg-gradient-to-br from-cyan-50/80 to-blue-50/80 p-4 backdrop-blur-sm dark:border-gray-700 dark:from-gray-800/50 dark:to-gray-900/50">
           <p className="text-center text-sm font-medium text-gray-700 dark:text-gray-300">Quick Actions</p>
           <div className="space-y-2">
             <NavigationLink
               href="/upload"
-              className="block w-full rounded-lg bg-white px-4 py-2 text-center text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+              className="block w-full rounded-lg border border-cyan-200 bg-white/80 px-4 py-2.5 text-center text-sm font-medium text-gray-700 shadow-sm backdrop-blur-sm transition-all hover:border-cyan-300 hover:bg-white hover:shadow-md dark:border-gray-600 dark:bg-gray-700/80 dark:text-gray-200 dark:hover:border-gray-500 dark:hover:bg-gray-700"
             >
               Upload New Image
             </NavigationLink>
             <NavigationLink
               href="/history"
-              className="block w-full rounded-lg bg-white px-4 py-2 text-center text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+              className="block w-full rounded-lg border border-blue-200 bg-white/80 px-4 py-2.5 text-center text-sm font-medium text-gray-700 shadow-sm backdrop-blur-sm transition-all hover:border-blue-300 hover:bg-white hover:shadow-md dark:border-gray-600 dark:bg-gray-700/80 dark:text-gray-200 dark:hover:border-gray-500 dark:hover:bg-gray-700"
             >
               View Processing History
             </NavigationLink>

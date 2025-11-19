@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 
+import { useCompactMode } from "@/contexts/compact-mode-context";
+
 type AnimatedBackgroundProviderProps = {
   children: ReactNode;
 };
@@ -35,13 +37,38 @@ const ANIMATION_CONFIG = {
 const VISUAL_CONFIG = {
   connectionLineWidth: 1.5,
   maxConnectionOpacity: 0.3,
-  nodeGlowOpacityDark: 0.5,
-  nodeGlowOpacityLight: 0.6,
-  nodeCoreOpacityDark: 0.7,
-  nodeCoreOpacityLight: 0.8
+  dark: {
+    nodeGlowOpacity: 0.5,
+    nodeCoreOpacity: 0.7,
+    nodeColor: { r: 255, g: 255, b: 255 },
+    connectionColor: { r: 255, g: 255, b: 255 }
+  },
+  light: {
+    nodeGlowOpacity: 0.35,
+    nodeCoreOpacity: 0.5,
+    nodeColor: { r: 6, g: 182, b: 212 }, // cyan-500
+    connectionColor: { r: 59, g: 130, b: 246 } // blue-500
+  }
 } as const;
 
 const isDarkMode = (): boolean => document.documentElement.classList.contains("dark");
+
+const observeThemeChanges = (callback: () => void): MutationObserver => {
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.attributeName === "class") {
+        callback();
+      }
+    });
+  });
+
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["class"]
+  });
+
+  return observer;
+};
 
 const calculateConnectionProbability = (distance: number, maxDistance: number): number =>
   ANIMATION_CONFIG.connectionProbability * (1 - distance / maxDistance);
@@ -141,9 +168,10 @@ const updateNodes = (nodes: Node[], canvas: HTMLCanvasElement) => {
   });
 };
 
-const drawConnections = (ctx: CanvasRenderingContext2D, nodes: Node[]): void => {
+const drawConnections = (ctx: CanvasRenderingContext2D, nodes: Node[], dark: boolean): void => {
   const { maxConnectionDistance } = ANIMATION_CONFIG;
   const { connectionLineWidth, maxConnectionOpacity } = VISUAL_CONFIG;
+  const color = dark ? VISUAL_CONFIG.dark.connectionColor : VISUAL_CONFIG.light.connectionColor;
 
   nodes.forEach((node) => {
     node.connections.forEach((targetIndex) => {
@@ -166,8 +194,8 @@ const drawConnections = (ctx: CanvasRenderingContext2D, nodes: Node[]): void => 
 
       const endOpacity = opacity * 0.5;
 
-      gradient.addColorStop(0, `rgba(255,255,255,${opacity})`);
-      gradient.addColorStop(1, `rgba(255,255,255,${endOpacity})`);
+      gradient.addColorStop(0, `rgba(${color.r},${color.g},${color.b},${opacity})`);
+      gradient.addColorStop(1, `rgba(${color.r},${color.g},${color.b},${endOpacity})`);
 
       ctx.strokeStyle = gradient;
       ctx.lineWidth = connectionLineWidth;
@@ -181,24 +209,21 @@ const drawConnections = (ctx: CanvasRenderingContext2D, nodes: Node[]): void => 
 
 const drawNodes = (ctx: CanvasRenderingContext2D, nodes: Node[], dark: boolean): void => {
   const { nodeRadius, coreRadius } = ANIMATION_CONFIG;
-  const { nodeGlowOpacityDark, nodeGlowOpacityLight, nodeCoreOpacityDark, nodeCoreOpacityLight } = VISUAL_CONFIG;
+  const config = dark ? VISUAL_CONFIG.dark : VISUAL_CONFIG.light;
+  const color = config.nodeColor;
 
   nodes.forEach((node) => {
     const gradient = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, nodeRadius);
 
-    const glowOpacity = dark ? nodeGlowOpacityDark : nodeGlowOpacityLight;
-
-    gradient.addColorStop(0, `rgba(255,255,255,${glowOpacity})`);
-    gradient.addColorStop(1, "rgba(255,255,255,0)");
+    gradient.addColorStop(0, `rgba(${color.r},${color.g},${color.b},${config.nodeGlowOpacity})`);
+    gradient.addColorStop(1, `rgba(${color.r},${color.g},${color.b},0)`);
 
     ctx.fillStyle = gradient;
     ctx.beginPath();
     ctx.arc(node.x, node.y, nodeRadius, 0, Math.PI * 2);
     ctx.fill();
 
-    const coreOpacity = dark ? nodeCoreOpacityDark : nodeCoreOpacityLight;
-
-    ctx.fillStyle = `rgba(255,255,255,${coreOpacity})`;
+    ctx.fillStyle = `rgba(${color.r},${color.g},${color.b},${config.nodeCoreOpacity})`;
     ctx.beginPath();
     ctx.arc(node.x, node.y, coreRadius, 0, Math.PI * 2);
     ctx.fill();
@@ -207,8 +232,11 @@ const drawNodes = (ctx: CanvasRenderingContext2D, nodes: Node[], dark: boolean):
 
 export const AnimatedBackgroundProvider = ({ children }: AnimatedBackgroundProviderProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { compactMode } = useCompactMode();
 
   useEffect(() => {
+    if (compactMode) return;
+
     const canvas = canvasRef.current;
 
     if (!canvas) {
@@ -236,7 +264,7 @@ export const AnimatedBackgroundProvider = ({ children }: AnimatedBackgroundProvi
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       updateNodes(nodes, canvas);
-      drawConnections(ctx, nodes);
+      drawConnections(ctx, nodes, dark);
       drawNodes(ctx, nodes, dark);
 
       animationFrameId = window.requestAnimationFrame(animate);
@@ -244,17 +272,25 @@ export const AnimatedBackgroundProvider = ({ children }: AnimatedBackgroundProvi
 
     animationFrameId = window.requestAnimationFrame(animate);
 
+    // Observe theme changes and trigger re-render
+    const themeObserver = observeThemeChanges(() => {
+      // Theme changed, canvas will re-render on next animation frame
+    });
+
     return () => {
       window.removeEventListener("resize", resizeCanvas);
       if (animationFrameId !== null) {
         window.cancelAnimationFrame(animationFrameId);
       }
+      themeObserver.disconnect();
     };
-  }, []);
+  }, [compactMode]);
 
   return (
     <>
-      <canvas ref={canvasRef} className="pointer-events-none fixed inset-0 z-0" style={{ mixBlendMode: "normal" }} />
+      {!compactMode && (
+        <canvas ref={canvasRef} className="pointer-events-none fixed inset-0 z-0" style={{ mixBlendMode: "normal" }} />
+      )}
       {children}
     </>
   );

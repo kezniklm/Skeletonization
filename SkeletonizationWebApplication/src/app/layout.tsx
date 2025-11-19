@@ -6,6 +6,7 @@ import { Providers } from "@/components/layout/providers";
 import { PrivateLayout } from "@/components/layout/private-layout";
 import { PublicLayout } from "@/components/layout/public-layout";
 import { auth } from "@/auth";
+import { getUserPreferences } from "@/repositories/preferences";
 
 export const metadata: Metadata = {
   title: "Skeletonization Web Application"
@@ -20,10 +21,15 @@ const RootLayout = async ({
 
   const isLoggedIn = session?.user ? true : false;
 
+  const userPreferences = session?.user ? await getUserPreferences(session.user.id) : null;
+
   return (
     <html lang="en">
       <body className="flex min-h-full flex-col bg-gray-50 dark:bg-gray-950">
-        <Providers>
+        <Providers
+          initialTheme={userPreferences?.theme ?? "system"}
+          compactMode={userPreferences?.compactMode ?? false}
+        >
           {isLoggedIn ? <PrivateLayout>{children}</PrivateLayout> : <PublicLayout>{children}</PublicLayout>}
         </Providers>
       </body>

@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import { FormSelect, FormToggle } from "@/components/form";
 import { type UserPreferences, userPreferencesSchema, defaultPreferences } from "@/database/zod/preferences";
 import { updatePreferencesAction } from "@/server-actions/preferences";
+import { useTheme } from "@/contexts/theme-context";
+import { useCompactMode } from "@/contexts/compact-mode-context";
 
 import { SettingsCard } from "./settings-card";
 
@@ -17,6 +19,9 @@ type SettingsFormProps = {
 };
 
 export const SettingsForm = ({ userId, initialPreferences }: SettingsFormProps) => {
+  const { setTheme } = useTheme();
+  const { setCompactMode } = useCompactMode();
+
   const methods = useForm<UserPreferences>({
     resolver: zodResolver(userPreferencesSchema),
     defaultValues: initialPreferences ?? defaultPreferences
@@ -31,6 +36,8 @@ export const SettingsForm = ({ userId, initialPreferences }: SettingsFormProps) 
   const onSubmit = async (data: UserPreferences) => {
     try {
       await updatePreferencesAction(data, userId);
+      setTheme(data.theme);
+      setCompactMode(data.compactMode);
       toast.success("Settings saved successfully!");
     } catch (error) {
       toast.error("Failed to save settings. Please try again.");
@@ -40,7 +47,7 @@ export const SettingsForm = ({ userId, initialPreferences }: SettingsFormProps) 
 
   const handleReset = () => {
     reset(defaultPreferences);
-    toast.info("Settings reset to defaults");
+    toast.info("Settings reset to defaults.");
   };
 
   return (
@@ -59,9 +66,9 @@ export const SettingsForm = ({ userId, initialPreferences }: SettingsFormProps) 
                   <FormSelect
                     name="theme"
                     options={[
-                      { value: "system", label: "System" },
-                      { value: "light", label: "Light" },
-                      { value: "dark", label: "Dark" }
+                      { value: "system", label: "🖥️ System" },
+                      { value: "light", label: "☀️ Light" },
+                      { value: "dark", label: "🌙 Dark" }
                     ]}
                   />
                 )
