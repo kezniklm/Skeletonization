@@ -12,7 +12,7 @@ import :runner;
 
 import skeletonizer_cpu;
 
-#if defined(SKELETONIZATION_WITH_GPU)
+#if SKELETONIZATION_WITH_GPU
 import skeletonizer_gpu;
 #endif
 
@@ -23,13 +23,13 @@ export namespace skeltest
 		std::string name;
 		std::function<cv::Mat(const cv::Mat&)> cpu;
 		std::function<cv::Mat(const cv::Mat&)> mt;
-#if defined(SKELETONIZATION_ENABLE_GPU) || defined(SKELETONIZATION_WITH_GPU)
+#if SKELETONIZATION_WITH_GPU
 		std::optional<std::function<cv::Mat(const cv::Mat&)>> gpu;
 #endif
 	};
 
 	template <class CpuT, class MtT
-#if defined(SKELETONIZATION_ENABLE_GPU) || defined(SKELETONIZATION_WITH_GPU)
+#if SKELETONIZATION_WITH_GPU
 	          , class GpuT
 #endif
 	>
@@ -37,7 +37,7 @@ export namespace skeltest
 	{
 		runner<CpuT> rcpu;
 		runner<MtT> rmt;
-#if defined(SKELETONIZATION_ENABLE_GPU) || defined(SKELETONIZATION_WITH_GPU)
+#if SKELETONIZATION_WITH_GPU
 		runner<GpuT> rgpu;
 		return triple{
 			std::move(name),
@@ -46,7 +46,7 @@ export namespace skeltest
 			std::optional{std::function<cv::Mat(const cv::Mat&)>{[rgpu](const cv::Mat& m) { return rgpu(m); }}}
 		};
 #else
-		return Triple{
+		return triple{
 			std::move(name),
 			[rcpu](const cv::Mat& m) { return rcpu(m); },
 			[rmt](const cv::Mat& m) { return rmt(m); }
@@ -66,6 +66,8 @@ export namespace skeltest
 		using HLR_MT = han_la_rhee_cpu_threads;
 		using KGK_CPU = kwon_gi_kang_cpu;
 		using KGK_MT = kwon_gi_kang_cpu_threads;
+		using LZ_CPU = liu_zhang_cpu;
+		using LZ_MT = liu_zhang_threads;
 		using PS_CPU = petrosino_salvi_cpu;
 		using PS_MT = petrosino_salvi_thread;
 		using TA_CPU = tarabek_cpu;
@@ -73,7 +75,7 @@ export namespace skeltest
 		using ZS_CPU = zhang_suen_cpu;
 		using ZS_MT = zhang_suen_cpu_threads;
 
-#if defined(SKELETONIZATION_ENABLE_GPU) || defined(SKELETONIZATION_WITH_GPU)
+#if SKELETONIZATION_WITH_GPU
 		using namespace skeletonizer::gpu::algorithms;
 
 		using CLS_GPU = choi_lam_siu_gpu;
@@ -90,7 +92,7 @@ export namespace skeltest
 		{
 			std::vector<triple> triples;
 
-#if defined(SKELETONIZATION_ENABLE_GPU) || defined(SKELETONIZATION_WITH_GPU)
+#if SKELETONIZATION_WITH_GPU
 			triples.emplace_back(make_triple<CLS_CPU, CLS_MT, CLS_GPU>("ChoiLamSiu"));
 			triples.emplace_back(make_triple<GH_CPU, GH_MT, GH_GPU>("GuoHall"));
 			triples.emplace_back(make_triple<HLR_CPU, HLR_MT, HLR_GPU>("HanLaRhee"));

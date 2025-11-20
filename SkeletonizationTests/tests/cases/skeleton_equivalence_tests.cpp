@@ -29,7 +29,7 @@ TEST_P(per_image_per_triple, CpuMtGpu_Identical)
 	EXPECT_TRUE(mat_equal01(reference_implementation, threaded_implementation))
         << "CPU vs MT mismatch (" << triple.name << ", img " << ii << ", " << size_str(img.size()) << ")";
 
-#if defined(SKELETONIZATION_WITH_GPU)
+#if SKELETONIZATION_WITH_GPU
 	if (!triple.gpu.has_value())
 	{
 		return;

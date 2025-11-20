@@ -1,10 +1,16 @@
 module;
 
+#if SKELETONIZATION_WITH_GPU
+
 #include "opencv2/cudaarithm.hpp"
+
+#endif
 
 export module skeletonizer_gpu:core;
 
 import skeletonizer;
+
+#if SKELETONIZATION_WITH_GPU
 
 namespace skeletonizer::gpu
 {
@@ -26,3 +32,5 @@ namespace skeletonizer::gpu
 		return result;
 	}
 }
+
+#endif

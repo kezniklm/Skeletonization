@@ -29,47 +29,47 @@ namespace configuration
 		constexpr auto entries = std::tuple{
 			make_entry<
 				skeletonizer::cpu::algorithms::zhang_suen_cpu,
-				skeletonizer::cpu::algorithms::zhang_suen_cpu_threads,
+				skeletonizer::cpu::algorithms::zhang_suen_cpu_threads
 #if SKELETONIZATION_WITH_GPU
-				skeletonizer::gpu::algorithms::zhang_suen_gpu
+				,skeletonizer::gpu::algorithms::zhang_suen_gpu
 #endif
 			>("zhang_suen"),
 
 			make_entry<
 				skeletonizer::cpu::algorithms::guo_hall_cpu,
-				skeletonizer::cpu::algorithms::guo_hall_cpu_threads,
+				skeletonizer::cpu::algorithms::guo_hall_cpu_threads
 #if SKELETONIZATION_WITH_GPU
-				skeletonizer::gpu::algorithms::guo_hall_gpu
+				, skeletonizer::gpu::algorithms::guo_hall_gpu
 #endif
 			>("guo_hall"),
 
 			make_entry<
 				skeletonizer::cpu::algorithms::kwon_gi_kang_cpu,
-				skeletonizer::cpu::algorithms::kwon_gi_kang_cpu_threads,
+				skeletonizer::cpu::algorithms::kwon_gi_kang_cpu_threads
 #if SKELETONIZATION_WITH_GPU
-				skeletonizer::gpu::algorithms::kwon_gi_kang_gpu
+				, skeletonizer::gpu::algorithms::kwon_gi_kang_gpu
 #endif
 			>("kwon_gi_kang"),
 
 			make_entry<
 				skeletonizer::cpu::algorithms::petrosino_salvi_cpu,
-				skeletonizer::cpu::algorithms::petrosino_salvi_thread,
+				skeletonizer::cpu::algorithms::petrosino_salvi_thread
 #if SKELETONIZATION_WITH_GPU
-				skeletonizer::gpu::algorithms::petrosino_salvi_gpu
+				, skeletonizer::gpu::algorithms::petrosino_salvi_gpu
 #endif
 			>("petrosino_salvi"),
 
 			make_entry<
 				skeletonizer::cpu::algorithms::han_la_rhee_cpu,
-				skeletonizer::cpu::algorithms::han_la_rhee_cpu_threads,
+				skeletonizer::cpu::algorithms::han_la_rhee_cpu_threads
 #if SKELETONIZATION_WITH_GPU
-				skeletonizer::gpu::algorithms::han_la_rhee_gpu
+				, skeletonizer::gpu::algorithms::han_la_rhee_gpu
 #endif
 			>("han_la_rhee"),
 
 			make_entry<
 				skeletonizer::cpu::algorithms::choi_lam_siu_cpu,
-				skeletonizer::cpu::algorithms::choi_lam_siu_threads,
+				skeletonizer::cpu::algorithms::choi_lam_siu_threads
 #if SKELETONIZATION_WITH_GPU
 				skeletonizer::gpu::algorithms::choi_lam_siu_gpu
 #endif
@@ -85,11 +85,12 @@ namespace configuration
 
 			make_entry<
 				skeletonizer::cpu::algorithms::tarabek_cpu,
-				skeletonizer::cpu::algorithms::tarabek_threads,
+				skeletonizer::cpu::algorithms::tarabek_threads
 #if SKELETONIZATION_WITH_GPU
-				skeletonizer::gpu::algorithms::tarabek_gpu
+				,skeletonizer::gpu::algorithms::tarabek_gpu
 #endif
-			>("tarabek")
+			>("tarabek"),
+
 			make_entry<
 				skeletonizer::cpu::algorithms::liu_zhang_cpu,
 				skeletonizer::cpu::algorithms::liu_zhang_threads
