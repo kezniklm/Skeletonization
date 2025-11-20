@@ -6,10 +6,9 @@ export const themeEnum = ["system", "light", "dark"] as const;
 export const defaultOutputFormatEnum = ["PNG", "JPEG", "TIFF", "BMP"] as const;
 
 export const userPreferences = pgTable("user_preferences", {
-  id: text("id").primaryKey(),
   userId: text("user_id")
+    .primaryKey()
     .notNull()
-    .unique()
     .references(() => user.id, { onDelete: "cascade" }),
 
   // Appearance

@@ -11,13 +11,7 @@ export const getUserPreferences = async (userId: string) => {
 };
 
 export const createUserPreferences = async (userId: string) => {
-  const [newPreferences] = await db
-    .insert(userPreferences)
-    .values({
-      id: crypto.randomUUID(),
-      userId
-    })
-    .returning();
+  const [newPreferences] = await db.insert(userPreferences).values({ userId }).returning();
 
   return newPreferences;
 };
