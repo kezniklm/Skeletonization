@@ -71,7 +71,7 @@ namespace configuration
 				skeletonizer::cpu::algorithms::choi_lam_siu_cpu,
 				skeletonizer::cpu::algorithms::choi_lam_siu_threads
 #if SKELETONIZATION_WITH_GPU
-				skeletonizer::gpu::algorithms::choi_lam_siu_gpu
+				, skeletonizer::gpu::algorithms::choi_lam_siu_gpu
 #endif
 			>("choi_lam_siu"),
 
