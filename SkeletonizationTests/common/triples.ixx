@@ -82,6 +82,7 @@ export namespace skeltest
 		using GH_GPU = guo_hall_gpu;
 		using HLR_GPU = han_la_rhee_gpu;
 		using KGK_GPU = kwon_gi_kang_gpu;
+		using LZ_GPU = liu_zhang_gpu;
 		using PS_GPU = petrosino_salvi_gpu;
 		using TA_GPU = tarabek_gpu;
 		using ZS_GPU = zhang_suen_gpu;
@@ -97,7 +98,7 @@ export namespace skeltest
 			triples.emplace_back(make_triple<GH_CPU, GH_MT, GH_GPU>("GuoHall"));
 			triples.emplace_back(make_triple<HLR_CPU, HLR_MT, HLR_GPU>("HanLaRhee"));
 			triples.emplace_back(make_triple<KGK_CPU, KGK_MT, KGK_GPU>("KwonGiKang"));
-			triples.emplace_back(make_triple<LZ_CPU, LZ_MT>("LiuZhang"));
+			triples.emplace_back(make_triple<LZ_CPU, LZ_MT, LZ_GPU>("LiuZhang"));
 			triples.emplace_back(make_triple<PS_CPU, PS_MT, PS_GPU>("PetrosinoSalvi"));
 			triples.emplace_back(make_triple<TA_CPU, TA_MT, TA_GPU>("Tarabek"));
 			triples.emplace_back(make_triple<ZS_CPU, ZS_MT, ZS_GPU>("ZhangSuen"));
