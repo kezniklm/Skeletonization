@@ -33,5 +33,5 @@ private:
 	T value_;
 };
 
-template <typename U>
+export template <typename U>
 pipeline(U&&) -> pipeline<std::decay_t<U>>;
