@@ -1,0 +1,209 @@
+"use client";
+
+import { useCallback, useMemo, useState } from "react";
+import { toast } from "sonner";
+
+import { type FilterType, type ImageFormat, type SizeFilter, type SortOption } from "@/app/images/types";
+import type { SelectImage } from "@/database/zod/image";
+import { deleteImageAction } from "@/server-actions/images";
+
+export const useImageGallery = (initialImages: SelectImage[]) => {
+  const [images, setImages] = useState<SelectImage[]>(initialImages);
+  const [selectedFilter, setSelectedFilter] = useState<FilterType>("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [imageToDelete, setImageToDelete] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<SortOption>("date-desc");
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(20);
+
+  const [selectedFormats, setSelectedFormats] = useState<Set<ImageFormat>>(new Set());
+  const [selectedSizes, setSelectedSizes] = useState<Set<SizeFilter>>(new Set());
+
+  const toggleFormat = useCallback((format: ImageFormat) => {
+    setSelectedFormats((prev) => {
+      const next = new Set(prev);
+      if (next.has(format)) next.delete(format);
+      else next.add(format);
+      return next;
+    });
+    setPage(1);
+  }, []);
+
+  const toggleSize = useCallback((size: SizeFilter) => {
+    setSelectedSizes((prev) => {
+      const next = new Set(prev);
+      if (next.has(size)) next.delete(size);
+      else next.add(size);
+      return next;
+    });
+    setPage(1);
+  }, []);
+
+  const clearAllFilters = useCallback(() => {
+    setSelectedFormats(new Set());
+    setSelectedSizes(new Set());
+    setSearchQuery("");
+    setPage(1);
+  }, []);
+
+  const handleSearchChange = useCallback((query: string) => {
+    setSearchQuery(query);
+    setPage(1);
+  }, []);
+
+  const handleSortChange = useCallback((sort: SortOption) => {
+    setSortBy(sort);
+    setPage(1);
+  }, []);
+
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (selectedFormats.size > 0) count++;
+    if (selectedSizes.size > 0) count++;
+    return count;
+  }, [selectedFormats, selectedSizes]);
+
+  const filteredImages = useMemo(() => {
+    let filtered = [...images];
+
+    if (selectedFilter !== "all") {
+      filtered = filtered.filter((img) => img.status === selectedFilter);
+    }
+
+    if (selectedFormats.size > 0) {
+      filtered = filtered.filter((img) => {
+        const format = img.mime.split("/")[1]?.toLowerCase() as ImageFormat | undefined;
+        return format ? selectedFormats.has(format) : false;
+      });
+    }
+
+    if (selectedSizes.size > 0) {
+      filtered = filtered.filter((img) => {
+        const pixels = img.width * img.height;
+        const size: SizeFilter =
+          pixels < 1_000_000 ? "small" : pixels < 4_000_000 ? "medium" : pixels < 10_000_000 ? "large" : "xlarge";
+        return selectedSizes.has(size);
+      });
+    }
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      filtered = filtered.filter((img) => img.originalFilename.toLowerCase().includes(q));
+    }
+
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case "date-desc":
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        case "date-asc":
+          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        case "name-asc":
+          return a.originalFilename.localeCompare(b.originalFilename);
+        case "name-desc":
+          return b.originalFilename.localeCompare(a.originalFilename);
+        default:
+          return 0;
+      }
+    });
+
+    return filtered;
+  }, [images, searchQuery, selectedFilter, selectedFormats, selectedSizes, sortBy]);
+
+  const totalPages = useMemo(() => Math.ceil(filteredImages.length / pageSize), [filteredImages.length, pageSize]);
+
+  const paginatedImages = useMemo(() => {
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return filteredImages.slice(startIndex, endIndex);
+  }, [filteredImages, page, pageSize]);
+
+  const filterOptions = useMemo(
+    () => [
+      { value: "all" as const, label: "All Images", count: images.length },
+      {
+        value: "uploaded" as const,
+        label: "Uploaded",
+        count: images.filter((img) => img.status === "uploaded").length
+      },
+      {
+        value: "validated" as const,
+        label: "Validated",
+        count: images.filter((img) => img.status === "validated").length
+      },
+      {
+        value: "archived" as const,
+        label: "Archived",
+        count: images.filter((img) => img.status === "archived").length
+      },
+      {
+        value: "derived" as const,
+        label: "Derived",
+        count: images.filter((img) => img.status === "derived").length
+      }
+    ],
+    [images]
+  );
+
+  const handleUploadComplete = useCallback((newImage: SelectImage) => {
+    setImages((prev) => [newImage, ...prev]);
+  }, []);
+
+  const handleRename = useCallback((imageId: string, newFilename: string) => {
+    setImages((prev) => prev.map((img) => (img.id === imageId ? { ...img, originalFilename: newFilename } : img)));
+  }, []);
+
+  const openDeleteDialog = useCallback((imageId: string) => {
+    setImageToDelete(imageId);
+    setDeleteDialogOpen(true);
+  }, []);
+
+  const handleDelete = useCallback(async () => {
+    if (!imageToDelete) return;
+
+    try {
+      await deleteImageAction(imageToDelete);
+      setImages((prev) => prev.filter((img) => img.id !== imageToDelete));
+      toast.success("Image deleted");
+      setDeleteDialogOpen(false);
+      setImageToDelete(null);
+    } catch (error) {
+      console.error("Delete error:", error);
+      toast.error("Failed to delete image");
+    }
+  }, [imageToDelete]);
+
+  return {
+    // data
+    images,
+    filteredImages,
+    paginatedImages,
+    filterOptions,
+    selectedFilter,
+    searchQuery,
+    selectedFormats,
+    selectedSizes,
+    deleteDialogOpen,
+    sortBy,
+    page,
+    pageSize,
+    totalPages,
+
+    // derived
+    activeFilterCount,
+
+    // setters / actions
+    setSelectedFilter,
+    setSearchQuery: handleSearchChange,
+    setDeleteDialogOpen,
+    setSortBy: handleSortChange,
+    setPage,
+    toggleFormat,
+    toggleSize,
+    clearAllFilters,
+    handleUploadComplete,
+    handleRename,
+    openDeleteDialog,
+    handleDelete
+  };
+};
