@@ -1,0 +1,135 @@
+@startuml
+skinparam linetype ortho
+
+entity user {
+  id: uuid <<PK>>
+  name: text
+  email: text <<UNIQUE>>
+  emailVerified: integer (timestamp_ms)
+  image: text
+  created_at: timestamp
+}
+
+entity account {
+  userId: uuid <<FK to user.id>>
+  type: text
+  provider: text
+  providerAccountId: text
+  refresh_token: text
+  access_token: text
+  expires_at: integer
+  token_type: text
+  scope: text
+  id_token: text
+  session_state: text
+  --
+  primary key (provider, providerAccountId)
+}
+
+entity session {
+  sessionToken: text <<PK>>
+  userId: uuid <<FK to user.id>>
+  expires: timestamp_ms
+}
+
+entity user_preferences {
+  id: text <<PK>>
+  user_id: uuid <<FK to user.id>> <<UNIQUE>>
+  theme: text("system"|"light"|"dark") <<DEFAULT=system>>
+  compact_mode: boolean <<DEFAULT=false>>
+  email_notifications: boolean <<DEFAULT=true>>
+  push_notifications: boolean <<DEFAULT=false>>
+  timezone: text <<DEFAULT=UTC>>
+  auto_save_results: boolean <<DEFAULT=true>>
+  default_output_format: text("PNG"|"JPEG"|"TIFF"|"BMP") <<DEFAULT=PNG>>
+}
+
+entity image {
+  id: uuid <<PK>>
+  user_id: uuid <<FK to user.id>>
+  original_filename: text
+  storage_path: text
+  url: text
+  mime: text
+  width: integer
+  height: integer
+  size_bytes: bigint
+  checksum: text
+  status: text           -- uploaded/validated/archived/derived
+  parent_image_id: uuid  -- nullable, points to original image if derived
+  processing_run_id: uuid -- nullable, run that produced this derived image
+  created_at: timestamp
+}
+
+entity algorithm {
+  id: uuid <<PK>>
+  name: text
+  description: text
+  created_at: timestamp
+}
+
+entity run {
+  id: uuid <<PK>>
+  user_id: uuid <<FK to user.id>>
+  name: text
+  algorithm_id: uuid <<FK to algorithm.id>>
+  params: jsonb
+  status: text        -- pending/running/failed/completed/cancelled
+  created_at: timestamp
+  started_at: timestamp
+  completed_at: timestamp
+}
+
+entity run_image {
+  id: uuid <<PK>>
+  run_id: uuid <<FK to run.id>>
+  image_id: uuid <<FK to image.id>>
+  ordinal: integer
+  params: jsonb
+  status: text
+  attempt: integer
+  created_at: timestamp
+  processed_at: timestamp
+}
+
+entity output {
+  id: uuid <<PK>>
+  run_image_id: uuid <<FK to run_image.id>>
+  type: text          -- original, thumbnail, preprocessed, skeleton, skeleton_overlay, binary_mask, vector, metrics_json, etc.
+  storage_path: text
+  url: text
+  mime: text
+  metrics: jsonb
+  created_at: timestamp
+  size_bytes: bigint
+}
+
+entity job {
+  id: uuid <<PK>>
+  run_image_id: uuid <<FK to run_image.id>>
+  worker_id: text
+  status: text
+  attempts: integer
+  last_error: text
+  logs: text
+  started_at: timestamp
+  finished_at: timestamp
+}
+
+' Relationships
+user ||-left-o{ session : has
+user ||-down--o{ account : has
+user ||--down--o{ user_preferences : has preferences
+user ||--down--o{ image : owns
+user ||--down--o{ run : created
+algorithm ||--o{ run : used_by
+run ||--o{ run_image : contains
+image ||--o{ run_image : used_in
+run_image ||--o{ output : generates
+run_image ||--o{ job : processed_by
+
+' New relationships for provenance
+image }o--|| image : parent_of
+run ||--o{ image : creates
+
+@enduml
