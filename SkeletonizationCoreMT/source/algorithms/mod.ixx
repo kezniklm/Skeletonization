@@ -1,4 +1,4 @@
-export module skeletonizer_gpu;
+export module skeletonizer_mt;
 
 export import :zhang_suen;
 export import :guo_hall;

@@ -1,18 +1,14 @@
 ﻿module;
 
 #include <algorithm>
-#include <array>
 #include <chrono>
-#include <cstdint>
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
 #include <ios>
-#include <optional>
 #include <sstream>
 #include <string>
 #include <string_view>
-#include <utility>
 #include <vector>
 
 #include "opencv2/imgcodecs.hpp"
@@ -50,8 +46,8 @@ namespace skeletonization_benchmark
 	{
 	public:
 		[[nodiscard]] static bool write_output_json(const std::vector<aggregator::package>& packages,
-		                                                const std::filesystem::path& out_json_path,
-		                                                const exporter_options& opts = {})
+		                                            const std::filesystem::path& out_json_path,
+		                                            const exporter_options& opts = {})
 		{
 			if (out_json_path.empty())
 			{

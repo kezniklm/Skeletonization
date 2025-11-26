@@ -176,7 +176,7 @@ void liu_zhang_iteration(
 {
 	const auto shared_mem = compute_shared_mem_size(block, halo);
 
-	liu_zhang_iteration_kernel << <grid, block, shared_mem >> > (
+	liu_zhang_iteration_kernel << <grid, block, shared_mem >> >(
 		src, dst,
 		src.rows, src.cols,
 		first_pass,
@@ -192,7 +192,7 @@ void delete_patterns_ghij_gpu(
 	dim3 block,
 	const int halo)
 {
-	delete_patterns_ghij_kernel << <grid, block >> > (
+	delete_patterns_ghij_kernel << <grid, block >> >(
 		src, dst,
 		src.rows, src.cols,
 		halo);

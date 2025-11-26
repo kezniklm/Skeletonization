@@ -15,7 +15,7 @@ target_sources(SkeletonizationTests
     ${TEST_MODULES}
 )
 
-target_link_libraries(SkeletonizationTests PRIVATE SkeletonizationCore GTest::gtest_main)
+target_link_libraries(SkeletonizationTests PRIVATE SkeletonizationCoreCPU SkeletonizationCoreMT GTest::gtest_main)
 
 if(SKELETONIZATION_ENABLE_GPU)
     target_link_libraries(SkeletonizationTests PRIVATE SkeletonizationCoreGPU)

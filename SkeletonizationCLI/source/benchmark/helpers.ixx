@@ -31,7 +31,7 @@ namespace skeletonization_benchmark
 		case 'n': return time_unit::ns;
 		case 'u': return time_unit::us;
 		case 'm': return time_unit::ms;
-		default: return time_unit::unknown;;
+		default: return time_unit::unknown;
 		}
 	}
 
@@ -133,17 +133,17 @@ namespace skeletonization_benchmark
 
 			const auto read_time_unit = [&](const char* key, std::string& out)
 			{
-				if (object.HasMember(json_time_unit_section) && object[json_time_unit_section].IsString())
+				if (object.HasMember(key) && object[key].IsString())
 				{
-					out = object[json_time_unit_section].GetString();
+					out = object[key].GetString();
 				}
 			};
 
 			const auto read_real_time = [&](const char* key, double& out)
 			{
-				if (object.HasMember(json_real_time_section) && object[json_real_time_section].IsNumber())
+				if (object.HasMember(key) && object[key].IsNumber())
 				{
-					metrics.execution_time_ms = to_milliseconds(metrics.real_time, metrics.time_unit);
+					out = to_milliseconds(metrics.real_time, metrics.time_unit);
 				}
 			};
 

@@ -19,7 +19,7 @@ target_sources(SkeletonizationCLI
 
 target_include_directories(SkeletonizationCLI PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-target_link_libraries(SkeletonizationCLI PRIVATE SkeletonizationCore SkeletonizationVisualizer benchmark::benchmark CLI11::CLI11 RapidJSON rapidjson glog::glog Drogon::Drogon)
+target_link_libraries(SkeletonizationCLI PRIVATE SkeletonizationCore SkeletonizationCoreCPU SkeletonizationCoreMT SkeletonizationVisualizer benchmark::benchmark CLI11::CLI11 RapidJSON rapidjson glog::glog Drogon::Drogon)
 
 if(SKELETONIZATION_ENABLE_GPU)
     target_link_libraries(SkeletonizationCLI PRIVATE SkeletonizationCoreGPU)

@@ -25,11 +25,11 @@ export namespace skeltest
 		return o.str();
 	}
 
-	[[nodiscard]] inline ::testing::AssertionResult is_binary01(const cv::Mat& m) noexcept
+	[[nodiscard]] inline testing::AssertionResult is_binary01(const cv::Mat& m) noexcept
 	{
 		if (!is_cv8u1(m))
 		{
-			return ::testing::AssertionFailure() << "Expected CV_8UC1, got type=" << m.type() << " channels=" << m.
+			return testing::AssertionFailure() << "Expected CV_8UC1, got type=" << m.type() << " channels=" << m.
 				channels();
 		}
 
@@ -38,20 +38,20 @@ export namespace skeltest
 		cv::compare(m, 1, gt1, cv::CMP_GT);
 
 		return cv::countNonZero(gt1) != 0
-			       ? ::testing::AssertionFailure() << "Values > 1 present (expected binary {0,1})."
-			       : ::testing::AssertionSuccess();
+			       ? testing::AssertionFailure() << "Values > 1 present (expected binary {0,1})."
+			       : testing::AssertionSuccess();
 	}
 
-	[[nodiscard]] inline ::testing::AssertionResult mat_equal01(const cv::Mat& a, const cv::Mat& b) noexcept
+	[[nodiscard]] inline testing::AssertionResult mat_equal01(const cv::Mat& a, const cv::Mat& b) noexcept
 	{
 		if (a.size() != b.size())
 		{
-			return ::testing::AssertionFailure() << "Size mismatch: " << a.cols << "x" << a.rows << " vs " << b.cols <<
+			return testing::AssertionFailure() << "Size mismatch: " << a.cols << "x" << a.rows << " vs " << b.cols <<
 				"x" << b.rows;
 		}
 		if (a.type() != b.type())
 		{
-			return ::testing::AssertionFailure() << "Type mismatch: " << a.type() << " vs " << b.type();
+			return testing::AssertionFailure() << "Type mismatch: " << a.type() << " vs " << b.type();
 		}
 
 		cv::Mat diff;
@@ -61,7 +61,7 @@ export namespace skeltest
 
 		if (nz == 0)
 		{
-			return ::testing::AssertionSuccess();
+			return testing::AssertionSuccess();
 		}
 
 		std::vector<cv::Point> idx;
@@ -70,7 +70,7 @@ export namespace skeltest
 
 		if (idx.empty())
 		{
-			return ::testing::AssertionFailure() << "Matrices differ (" << nz << " pixels).";
+			return testing::AssertionFailure() << "Matrices differ (" << nz << " pixels).";
 		}
 
 		const cv::Point p = idx[0];
@@ -85,19 +85,19 @@ export namespace skeltest
 			<< " a=" << av << " b=" << bv
 			<< " (total diffs=" << nz << ")";
 
-		return ::testing::AssertionFailure() << oss.str();
+		return testing::AssertionFailure() << oss.str();
 	}
 
-	[[nodiscard]] inline ::testing::AssertionResult subset01(const cv::Mat& sk01, const cv::Mat& in01) noexcept
+	[[nodiscard]] inline testing::AssertionResult subset01(const cv::Mat& sk01, const cv::Mat& in01) noexcept
 	{
 		if (sk01.size() != in01.size())
 		{
-			return ::testing::AssertionFailure() << "Size mismatch in subset check.";
+			return testing::AssertionFailure() << "Size mismatch in subset check.";
 		}
 
 		if (sk01.type() != in01.type())
 		{
-			return ::testing::AssertionFailure() << "Type mismatch in subset check.";
+			return testing::AssertionFailure() << "Type mismatch in subset check.";
 		}
 
 		cv::Mat not_in;
@@ -110,7 +110,7 @@ export namespace skeltest
 
 		if (nz == 0)
 		{
-			return ::testing::AssertionSuccess();
+			return testing::AssertionSuccess();
 		}
 
 		std::vector<cv::Point> idx;
@@ -119,12 +119,12 @@ export namespace skeltest
 
 		if (idx.empty())
 		{
-			return ::testing::AssertionFailure() << "Skeleton leaks outside input (" << nz << " pixels).";
+			return testing::AssertionFailure() << "Skeleton leaks outside input (" << nz << " pixels).";
 		}
 
 		const cv::Point p = idx[0];
 
-		return ::testing::AssertionFailure()
+		return testing::AssertionFailure()
 			<< "Skeleton leaks outside input at (" << p.x << "," << p.y
 			<< "), total leaks=" << nz;
 	}

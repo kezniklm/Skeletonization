@@ -15,7 +15,7 @@ export namespace configuration
 	skeletonizer::skeletonizer_type parse_type(std::string& skeletonizer_type_string)
 	{
 		std::ranges::transform(skeletonizer_type_string,
-		                       skeletonizer_type_string.begin(), ::tolower);
+		                       skeletonizer_type_string.begin(), tolower);
 
 		if (skeletonizer_type_string == "cpu")
 		{
@@ -71,8 +71,8 @@ export namespace configuration
 
 			auto& existing = metadata.skeletonizers[type_enum];
 			existing.insert(existing.end(),
-				std::make_move_iterator(creators.begin()),
-				std::make_move_iterator(creators.end()));
+			                std::make_move_iterator(creators.begin()),
+			                std::make_move_iterator(creators.end()));
 		}
 
 		return metadata;

@@ -15,6 +15,7 @@ import :creators_common;
 import skeletonizer;
 
 import skeletonizer_cpu;
+import skeletonizer_mt;
 
 #if SKELETONIZATION_WITH_GPU
 import skeletonizer_gpu;
@@ -28,72 +29,72 @@ namespace configuration
 	{
 		constexpr auto entries = std::tuple{
 			make_entry<
-				skeletonizer::cpu::algorithms::zhang_suen_cpu,
-				skeletonizer::cpu::algorithms::zhang_suen_cpu_threads
+				skeletonizer::cpu::algorithms::zhang_suen,
+				skeletonizer::mt::algorithms::zhang_suen
 #if SKELETONIZATION_WITH_GPU
-				,skeletonizer::gpu::algorithms::zhang_suen_gpu
+				, skeletonizer::gpu::algorithms::zhang_suen
 #endif
 			>("zhang_suen"),
 
 			make_entry<
-				skeletonizer::cpu::algorithms::guo_hall_cpu,
-				skeletonizer::cpu::algorithms::guo_hall_cpu_threads
+				skeletonizer::cpu::algorithms::guo_hall,
+				skeletonizer::mt::algorithms::guo_hall
 #if SKELETONIZATION_WITH_GPU
-				, skeletonizer::gpu::algorithms::guo_hall_gpu
+				, skeletonizer::gpu::algorithms::guo_hall
 #endif
 			>("guo_hall"),
 
 			make_entry<
-				skeletonizer::cpu::algorithms::kwon_gi_kang_cpu,
-				skeletonizer::cpu::algorithms::kwon_gi_kang_cpu_threads
+				skeletonizer::cpu::algorithms::kwon_gi_kang,
+				skeletonizer::mt::algorithms::kwon_gi_kang
 #if SKELETONIZATION_WITH_GPU
-				, skeletonizer::gpu::algorithms::kwon_gi_kang_gpu
+				, skeletonizer::gpu::algorithms::kwon_gi_kang
 #endif
 			>("kwon_gi_kang"),
 
 			make_entry<
-				skeletonizer::cpu::algorithms::petrosino_salvi_cpu,
-				skeletonizer::cpu::algorithms::petrosino_salvi_thread
+				skeletonizer::cpu::algorithms::petrosino_salvi,
+				skeletonizer::mt::algorithms::petrosino_salvi
 #if SKELETONIZATION_WITH_GPU
-				, skeletonizer::gpu::algorithms::petrosino_salvi_gpu
+				, skeletonizer::gpu::algorithms::petrosino_salvi
 #endif
 			>("petrosino_salvi"),
 
 			make_entry<
-				skeletonizer::cpu::algorithms::han_la_rhee_cpu,
-				skeletonizer::cpu::algorithms::han_la_rhee_cpu_threads
+				skeletonizer::cpu::algorithms::han_la_rhee,
+				skeletonizer::mt::algorithms::han_la_rhee
 #if SKELETONIZATION_WITH_GPU
-				, skeletonizer::gpu::algorithms::han_la_rhee_gpu
+				, skeletonizer::gpu::algorithms::han_la_rhee
 #endif
 			>("han_la_rhee"),
 
 			make_entry<
-				skeletonizer::cpu::algorithms::choi_lam_siu_cpu,
-				skeletonizer::cpu::algorithms::choi_lam_siu_threads
+				skeletonizer::cpu::algorithms::choi_lam_siu,
+				skeletonizer::mt::algorithms::choi_lam_siu
 #if SKELETONIZATION_WITH_GPU
-				, skeletonizer::gpu::algorithms::choi_lam_siu_gpu
+				, skeletonizer::gpu::algorithms::choi_lam_siu
 #endif
 			>("choi_lam_siu"),
 
 			make_entry<
-				skeletonizer::cpu::algorithms::kmm_cpu
+				skeletonizer::cpu::algorithms::kmm
 			>("kmm"),
 
 			make_entry<
-				skeletonizer::cpu::algorithms::k3m_cpu
+				skeletonizer::cpu::algorithms::k3m
 			>("k3m"),
 
 			make_entry<
-				skeletonizer::cpu::algorithms::tarabek_cpu,
-				skeletonizer::cpu::algorithms::tarabek_threads
+				skeletonizer::cpu::algorithms::tarabek,
+				skeletonizer::mt::algorithms::tarabek
 #if SKELETONIZATION_WITH_GPU
-				,skeletonizer::gpu::algorithms::tarabek_gpu
+				, skeletonizer::gpu::algorithms::tarabek
 #endif
 			>("tarabek"),
 
 			make_entry<
-				skeletonizer::cpu::algorithms::liu_zhang_cpu,
-				skeletonizer::cpu::algorithms::liu_zhang_threads
+				skeletonizer::cpu::algorithms::liu_zhang,
+				skeletonizer::mt::algorithms::liu_zhang
 			>("liu_zhang"),
 		};
 

@@ -27,4 +27,4 @@ target_sources(SkeletonizationCoreGPU
     ${GPU_CUDA_FILES}
 )
 
-target_link_libraries(SkeletonizationCoreGPU PUBLIC SkeletonizationCoreCommon)
+target_link_libraries(SkeletonizationCoreGPU PUBLIC SkeletonizationCore)

@@ -34,7 +34,8 @@ __device__ __forceinline__ bool is_out_of_bounds(const int global_x, const int g
 	return global_x >= num_cols || global_y >= num_rows;
 }
 
-__device__ __forceinline__ bool is_border_pixel(const int x, const int y, const int num_cols, const int num_rows, const int halo)
+__device__ __forceinline__ bool is_border_pixel(const int x, const int y, const int num_cols, const int num_rows,
+                                                const int halo)
 {
 	return x < halo || y < halo || x >= num_cols - halo || y >= num_rows - halo;
 }

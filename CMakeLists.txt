@@ -32,16 +32,51 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
     message(STATUS "Enabling Release optimizations for performance")
 
     if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-        add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-O3 -march=native>)
+        add_compile_options(
+            $<$<COMPILE_LANGUAGE:CXX>:-O3>
+            $<$<COMPILE_LANGUAGE:CXX>:-march=native>
+            $<$<COMPILE_LANGUAGE:CXX>:-funroll-loops>
+            $<$<COMPILE_LANGUAGE:CXX>:-Wpedantic>
+        )
     elseif(MSVC)
-        add_compile_options($<$<COMPILE_LANGUAGE:CXX>:/arch:AVX2>)
-        add_compile_options($<$<COMPILE_LANGUAGE:CXX>:/O2>)
+        add_compile_options(
+            $<$<COMPILE_LANGUAGE:CXX>:/O2>
+            $<$<COMPILE_LANGUAGE:CXX>:/Ot>
+            $<$<COMPILE_LANGUAGE:CXX>:/GL>
+            $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX2>
+            $<$<COMPILE_LANGUAGE:CXX>:/W4>
+            $<$<COMPILE_LANGUAGE:CXX>:/WX>
+            $<$<COMPILE_LANGUAGE:CXX>:/permissive->
+            $<$<COMPILE_LANGUAGE:CXX>:/Zc:__cplusplus>
+            $<$<COMPILE_LANGUAGE:CXX>:/Zc:alignedNew>
+            $<$<COMPILE_LANGUAGE:CXX>:/Zc:auto>
+            $<$<COMPILE_LANGUAGE:CXX>:/Zc:char8_t>
+            $<$<COMPILE_LANGUAGE:CXX>:/Zc:externConstexpr>
+            $<$<COMPILE_LANGUAGE:CXX>:/Zc:forScope>
+            $<$<COMPILE_LANGUAGE:CXX>:/Zc:gotoScope>
+            $<$<COMPILE_LANGUAGE:CXX>:/Zc:hiddenFriend>
+            $<$<COMPILE_LANGUAGE:CXX>:/Zc:implicitNoexcept>
+            $<$<COMPILE_LANGUAGE:CXX>:/Zc:inline>
+            $<$<COMPILE_LANGUAGE:CXX>:/Zc:noexceptTypes>
+            $<$<COMPILE_LANGUAGE:CXX>:/Zc:preprocessor>
+            $<$<COMPILE_LANGUAGE:CXX>:/Zc:referenceBinding>
+            $<$<COMPILE_LANGUAGE:CXX>:/Zc:rvalueCast>
+            $<$<COMPILE_LANGUAGE:CXX>:/Zc:sizedDealloc>
+            $<$<COMPILE_LANGUAGE:CXX>:/Zc:strictStrings>
+            $<$<COMPILE_LANGUAGE:CXX>:/Zc:ternary>
+            $<$<COMPILE_LANGUAGE:CXX>:/Zc:throwingNew>
+            $<$<COMPILE_LANGUAGE:CXX>:/Zc:tlsGuards>
+            $<$<COMPILE_LANGUAGE:CXX>:/Zc:trigraphs->
+            $<$<COMPILE_LANGUAGE:CXX>:/volatile:iso>
+        )
     endif()
 
     if(CMAKE_CUDA_COMPILER)
-        add_compile_options($<$<COMPILE_LANGUAGE:CUDA>:-O3>)
-        add_compile_options($<$<COMPILE_LANGUAGE:CUDA>:--use_fast_math>)
-        add_compile_options($<$<COMPILE_LANGUAGE:CUDA>:--restrict>)
+        add_compile_options(
+            $<$<COMPILE_LANGUAGE:CUDA>:-O3>
+            $<$<COMPILE_LANGUAGE:CUDA>:--restrict>
+            $<$<COMPILE_LANGUAGE:CUDA>:--ptxas-options=-O3>
+        )
     endif()
 endif()
 
@@ -54,6 +89,8 @@ set(CMAKE_CXX_SCAN_FOR_MODULES ON)
 add_compile_definitions(SKELETONIZATION_WITH_GPU=$<BOOL:${SKELETONIZATION_ENABLE_GPU}>)
 
 add_subdirectory(SkeletonizationCore)
+add_subdirectory(SkeletonizationCoreCPU)
+add_subdirectory(SkeletonizationCoreMT)
 
 if(SKELETONIZATION_ENABLE_GPU)
     find_package(CUDAToolkit REQUIRED)

@@ -16,14 +16,14 @@ import :image_container;
 
 namespace visual_inspector
 {
-	static void open_in_browser(const std::string& url)
+	void open_in_browser(const std::string& url)
 	{
 #if defined(_WIN32)
-		std::string cmd = "start " + url;
+		const std::string cmd = "start " + url;
 #elif defined(__APPLE__)
-		std::string cmd = "open " + url;
+		const std::string cmd = "open " + url;
 #else
-		std::string cmd = "xdg-open " + url;
+		const std::string cmd = "xdg-open " + url;
 #endif
 		std::system(cmd.c_str());
 	}
@@ -141,7 +141,7 @@ namespace visual_inspector
 
 				server.start();
 			}
-			catch (const std::exception& e)
+			catch (const std::exception)
 			{
 				LOG(ERROR) << "Failed to start visualizer server at: " << server.url();
 

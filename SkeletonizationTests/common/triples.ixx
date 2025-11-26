@@ -11,6 +11,7 @@ export module tests_common:triples;
 import :runner;
 
 import skeletonizer_cpu;
+import skeletonizer_mt;
 
 #if SKELETONIZATION_WITH_GPU
 import skeletonizer_gpu;
@@ -33,7 +34,7 @@ export namespace skeltest
 	          , class GpuT
 #endif
 	>
-	inline triple make_triple(std::string name)
+	triple make_triple(std::string name)
 	{
 		runner<CpuT> rcpu;
 		runner<MtT> rmt;
@@ -56,37 +57,33 @@ export namespace skeltest
 
 	export inline const std::vector<triple>& triples()
 	{
-		using namespace skeletonizer::cpu::algorithms;
+		using CLS_CPU = skeletonizer::cpu::algorithms::choi_lam_siu;
+		using GH_CPU = skeletonizer::cpu::algorithms::guo_hall;
+		using HLR_CPU = skeletonizer::cpu::algorithms::han_la_rhee;
+		using KGK_CPU = skeletonizer::cpu::algorithms::kwon_gi_kang;
+		using LZ_CPU = skeletonizer::cpu::algorithms::liu_zhang;
+		using PS_CPU = skeletonizer::cpu::algorithms::petrosino_salvi;
+		using TA_CPU = skeletonizer::cpu::algorithms::tarabek;
+		using ZS_CPU = skeletonizer::cpu::algorithms::zhang_suen;
 
-		using CLS_CPU = choi_lam_siu_cpu;
-		using CLS_MT = choi_lam_siu_threads;
-		using GH_CPU = guo_hall_cpu;
-		using GH_MT = guo_hall_cpu_threads;
-		using HLR_CPU = han_la_rhee_cpu;
-		using HLR_MT = han_la_rhee_cpu_threads;
-		using KGK_CPU = kwon_gi_kang_cpu;
-		using KGK_MT = kwon_gi_kang_cpu_threads;
-		using LZ_CPU = liu_zhang_cpu;
-		using LZ_MT = liu_zhang_threads;
-		using PS_CPU = petrosino_salvi_cpu;
-		using PS_MT = petrosino_salvi_thread;
-		using TA_CPU = tarabek_cpu;
-		using TA_MT = tarabek_threads;
-		using ZS_CPU = zhang_suen_cpu;
-		using ZS_MT = zhang_suen_cpu_threads;
+		using CLS_MT = skeletonizer::mt::algorithms::choi_lam_siu;
+		using GH_MT = skeletonizer::mt::algorithms::guo_hall;
+		using HLR_MT = skeletonizer::mt::algorithms::han_la_rhee;
+		using KGK_MT = skeletonizer::mt::algorithms::kwon_gi_kang;
+		using LZ_MT = skeletonizer::mt::algorithms::liu_zhang;
+		using PS_MT = skeletonizer::mt::algorithms::petrosino_salvi;
+		using TA_MT = skeletonizer::mt::algorithms::tarabek;
+		using ZS_MT = skeletonizer::mt::algorithms::zhang_suen;
 
 #if SKELETONIZATION_WITH_GPU
-		using namespace skeletonizer::gpu::algorithms;
-
-		using CLS_GPU = choi_lam_siu_gpu;
-		using GH_GPU = guo_hall_gpu;
-		using HLR_GPU = han_la_rhee_gpu;
-		using KGK_GPU = kwon_gi_kang_gpu;
-		using LZ_GPU = liu_zhang_gpu;
-		using PS_GPU = petrosino_salvi_gpu;
-		using TA_GPU = tarabek_gpu;
-		using ZS_GPU = zhang_suen_gpu;
-
+		using CLS_GPU = skeletonizer::gpu::algorithms::choi_lam_siu;
+		using GH_GPU = skeletonizer::gpu::algorithms::guo_hall;
+		using HLR_GPU = skeletonizer::gpu::algorithms::han_la_rhee;
+		using KGK_GPU = skeletonizer::gpu::algorithms::kwon_gi_kang;
+		using LZ_GPU = skeletonizer::gpu::algorithms::liu_zhang;
+		using PS_GPU = skeletonizer::gpu::algorithms::petrosino_salvi;
+		using TA_GPU = skeletonizer::gpu::algorithms::tarabek;
+		using ZS_GPU = skeletonizer::gpu::algorithms::zhang_suen;
 #endif
 
 		static const std::vector<triple> v = []

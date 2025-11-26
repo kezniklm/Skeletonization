@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-#include <cstdint>
 #include <opencv2/core.hpp>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>

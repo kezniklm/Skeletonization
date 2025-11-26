@@ -5,7 +5,7 @@ import tests_common;
 
 using namespace skeltest;
 
-class per_image_per_triple : public ::testing::TestWithParam<param>
+class per_image_per_triple : public testing::TestWithParam<param>
 {
 };
 
@@ -47,12 +47,12 @@ TEST_P(per_image_per_triple, CpuMtGpu_Identical)
 INSTANTIATE_TEST_SUITE_P(
 	AllTriplesAllImages,
 	per_image_per_triple,
-	::testing::ValuesIn(all_params(triples().size(), test_images().size())),
+	::testing::ValuesIn(all_params( static_cast<int>(triples().size()), static_cast<int>(test_images().size()) )),
 	[](const ::testing::TestParamInfo<param>& info) -> std::string {
 	const auto& imgs = test_images();
 	const auto& trs = triples();
 	const int ti = info.param.first;
 	const int ii = info.param.second;
-	return param_name(trs.at(ti).name, ii, imgs.at(ii).cols, imgs.at(ii).rows);
+	return param_name(trs.at(ti).name, ii, static_cast<int>(imgs.at(ii).cols), static_cast<int>(imgs.at(ii).rows));
 	}
 );

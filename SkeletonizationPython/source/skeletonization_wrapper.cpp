@@ -2,42 +2,40 @@
 
 import skeletonizer_cpu;
 
-using namespace skeletonizer::cpu::algorithms;
+import skeletonizer_mt;
 
 #if SKELETONIZATION_WITH_GPU
 import skeletonizer_gpu;
-
-using namespace skeletonizer::gpu::algorithms;
 #endif
 
 PYBIND11_MODULE(skeletonization, m)
 {
 	m.doc() = "Pybind11 wrapper for SkeletonizationCore";
 
-	register_skeletonizer<zhang_suen_cpu>(m, "Zhang–Suen");
-	register_skeletonizer<zhang_suen_cpu_threads>(m, "Multithreaded Zhang–Suen");
+	register_skeletonizer<skeletonizer::cpu::algorithms::zhang_suen>(m, "Zhang–Suen");
+	register_skeletonizer<skeletonizer::mt::algorithms::zhang_suen>(m, "Multithreaded Zhang–Suen");
 
-	register_skeletonizer<guo_hall_cpu>(m, "Guo–Hall");
-	register_skeletonizer<guo_hall_cpu_threads>(m, "Multithreaded Guo–Hall");
+	register_skeletonizer<skeletonizer::cpu::algorithms::guo_hall>(m, "Guo–Hall");
+	register_skeletonizer<skeletonizer::mt::algorithms::guo_hall>(m, "Multithreaded Guo–Hall");
 
-	register_skeletonizer<kwon_gi_kang_cpu>(m, "Kwon–Gi–Kang");
-	register_skeletonizer<kwon_gi_kang_cpu_threads>(m, "Multithreaded Kwon–Gi–Kang");
+	register_skeletonizer<skeletonizer::cpu::algorithms::kwon_gi_kang>(m, "Kwon–Gi–Kang");
+	register_skeletonizer<skeletonizer::mt::algorithms::kwon_gi_kang>(m, "Multithreaded Kwon–Gi–Kang");
 
-	register_skeletonizer<han_la_rhee_cpu>(m, "Han-La-Rhee");
-	register_skeletonizer<han_la_rhee_cpu_threads>(m, "Multithreaded Han-La-Rhee");
+	register_skeletonizer<skeletonizer::cpu::algorithms::han_la_rhee>(m, "Han-La-Rhee");
+	register_skeletonizer<skeletonizer::mt::algorithms::han_la_rhee>(m, "Multithreaded Han-La-Rhee");
 
-	register_skeletonizer<petrosino_salvi_cpu>(m, "Petrosino-Salvi");
-	register_skeletonizer<petrosino_salvi_thread>(m, "Multithreaded Petrosino-Salvi");
+	register_skeletonizer<skeletonizer::cpu::algorithms::petrosino_salvi>(m, "Petrosino-Salvi");
+	register_skeletonizer<skeletonizer::mt::algorithms::petrosino_salvi>(m, "Multithreaded Petrosino-Salvi");
 
 #if SKELETONIZATION_WITH_GPU
-	register_skeletonizer<zhang_suen_gpu>(m, "Parallelized Zhang–Suen");
+	register_skeletonizer<skeletonizer::gpu::algorithms::zhang_suen>(m, "Parallelized Zhang–Suen");
 
-	register_skeletonizer<guo_hall_gpu>(m, "Parallelized Guo–Hall");
+	register_skeletonizer<skeletonizer::gpu::algorithms::guo_hall>(m, "Parallelized Guo–Hall");
 
-	register_skeletonizer<kwon_gi_kang_gpu>(m, "Parallelized Kwon–Gi–Kang");
+	register_skeletonizer<skeletonizer::gpu::algorithms::kwon_gi_kang>(m, "Parallelized Kwon–Gi–Kang");
 
-	register_skeletonizer<han_la_rhee_gpu>(m, "Parallelized Han-La-Rhee");
+	register_skeletonizer<skeletonizer::gpu::algorithms::han_la_rhee>(m, "Parallelized Han-La-Rhee");
 
-	register_skeletonizer<petrosino_salvi_gpu>(m, "Parallelized Petrosino-Salvi");
+	register_skeletonizer<skeletonizer::gpu::algorithms::petrosino_salvi>(m, "Parallelized Petrosino-Salvi");
 #endif
 }
