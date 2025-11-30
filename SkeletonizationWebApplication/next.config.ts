@@ -16,7 +16,8 @@ const nextConfig: NextConfig = {
         pathname: "/u/**"
       }
     ]
-  }
+  },
+  reactCompiler: true
 };
 
 module.exports = nextConfig;

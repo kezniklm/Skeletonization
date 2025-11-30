@@ -1,7 +1,7 @@
 "use client";
 
 import { Upload, X } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import type { SelectImage } from "@/database/zod/image";
@@ -22,96 +22,87 @@ export const ImageUpload = ({ onUploadComplete, compact = false, fullWidth = fal
   const [totalFiles, setTotalFiles] = useState(0);
   const [uploadedFiles, setUploadedFiles] = useState(0);
 
-  const uploadFile = useCallback(
-    async (file: File) => {
-      try {
-        const image = await uploadImageAction(file);
-        onUploadComplete(image as SelectImage);
-        setUploadedFiles((prev) => prev + 1);
-        return { success: true, file };
-      } catch (error) {
-        console.error("Upload error:", error);
-        const errorMessage = error instanceof Error ? error.message : "Unknown error";
-        toast.error(`Failed to upload "${file.name}": ${errorMessage}`);
-        return { success: false, file, error: errorMessage };
-      }
-    },
-    [onUploadComplete]
-  );
+  const uploadFile = async (file: File) => {
+    try {
+      const image = await uploadImageAction(file);
+      onUploadComplete(image as SelectImage);
+      setUploadedFiles((prev) => prev + 1);
+      return { success: true, file };
+    } catch (error) {
+      console.error("Upload error:", error);
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      toast.error(`Failed to upload "${file.name}": ${errorMessage}`);
+      return { success: false, file, error: errorMessage };
+    }
+  };
 
-  const uploadFiles = useCallback(
-    async (files: File[]) => {
-      if (files.length === 0) return;
+  const uploadFiles = async (files: File[]) => {
+    if (files.length === 0) return;
 
-      setIsUploading(true);
+    setIsUploading(true);
+    setUploadProgress(0);
+    setTotalFiles(files.length);
+    setUploadedFiles(0);
+
+    const progressInterval = setInterval(() => {
+      setUploadProgress((prev) => {
+        const target = (uploadedFiles / files.length) * 90;
+        return Math.min(prev + 5, target);
+      });
+    }, 100);
+
+    const results = await Promise.allSettled(files.map((file) => uploadFile(file)));
+
+    clearInterval(progressInterval);
+    setUploadProgress(100);
+
+    const successCount = results.filter((r) => r.status === "fulfilled" && r.value.success).length;
+    const failureCount = files.length - successCount;
+
+    if (failureCount === 0) {
+      toast.success(
+        files.length === 1 ? "Image uploaded successfully!" : `All ${files.length} images uploaded successfully!`
+      );
+    } else if (successCount === 0) {
+      toast.error(files.length === 1 ? "Failed to upload image" : `Failed to upload all ${files.length} images`);
+    } else {
+      toast.warning(
+        `${successCount} of ${files.length} images uploaded successfully. ${failureCount} failed to upload.`
+      );
+    }
+
+    setTimeout(() => {
+      setIsUploading(false);
       setUploadProgress(0);
-      setTotalFiles(files.length);
+      setTotalFiles(0);
       setUploadedFiles(0);
+    }, 500);
+  };
 
-      const progressInterval = setInterval(() => {
-        setUploadProgress((prev) => {
-          const target = (uploadedFiles / files.length) * 90;
-          return Math.min(prev + 5, target);
-        });
-      }, 100);
-
-      const results = await Promise.allSettled(files.map((file) => uploadFile(file)));
-
-      clearInterval(progressInterval);
-      setUploadProgress(100);
-
-      const successCount = results.filter((r) => r.status === "fulfilled" && r.value.success).length;
-      const failureCount = files.length - successCount;
-
-      if (failureCount === 0) {
-        toast.success(
-          files.length === 1 ? "Image uploaded successfully!" : `All ${files.length} images uploaded successfully!`
-        );
-      } else if (successCount === 0) {
-        toast.error(files.length === 1 ? "Failed to upload image" : `Failed to upload all ${files.length} images`);
-      } else {
-        toast.warning(
-          `${successCount} of ${files.length} images uploaded successfully. ${failureCount} failed to upload.`
-        );
-      }
-
-      setTimeout(() => {
-        setIsUploading(false);
-        setUploadProgress(0);
-        setTotalFiles(0);
-        setUploadedFiles(0);
-      }, 500);
-    },
-    [uploadFile, uploadedFiles]
-  );
-
-  const handleDrop = useCallback(
-    (e: React.DragEvent) => {
-      e.preventDefault();
-      setIsDragging(false);
-
-      const files = Array.from(e.dataTransfer.files);
-      const imageFiles = files.filter((file) => file.type.startsWith("image/"));
-
-      if (imageFiles.length === 0) {
-        toast.error("Please drop image files only");
-        return;
-      }
-
-      uploadFiles(imageFiles);
-    },
-    [uploadFiles]
-  );
-
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  }, []);
-
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
+  const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-  }, []);
+
+    const files = Array.from(e.dataTransfer.files);
+    const imageFiles = files.filter((file) => file.type.startsWith("image/"));
+
+    if (imageFiles.length === 0) {
+      toast.error("Please drop image files only");
+      return;
+    }
+
+    uploadFiles(imageFiles);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -127,9 +118,9 @@ export const ImageUpload = ({ onUploadComplete, compact = false, fullWidth = fal
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
-          className={`relative flex w-full cursor-pointer flex-col items-center justify-center rounded-lg transition-all ${fullWidth ? "py-16" : "aspect-video"} ${
-            isUploading ? "pointer-events-none opacity-50" : ""
-          }`}
+          className={`relative flex w-full cursor-pointer flex-col items-center justify-center rounded-lg transition-all ${
+            fullWidth ? "py-16" : "aspect-video"
+          } ${isUploading ? "pointer-events-none opacity-50" : ""}`}
         >
           <input
             type="file"
@@ -143,7 +134,9 @@ export const ImageUpload = ({ onUploadComplete, compact = false, fullWidth = fal
 
           <label
             htmlFor="image-upload-compact"
-            className={`flex h-full w-full cursor-pointer flex-col items-center justify-center text-center ${fullWidth ? "px-4 py-8" : "px-3 py-4"}`}
+            className={`flex h-full w-full cursor-pointer flex-col items-center justify-center text-center ${
+              fullWidth ? "px-4 py-8" : "px-3 py-4"
+            }`}
           >
             {isUploading ? (
               <div className={`w-full space-y-3 ${fullWidth ? "px-4" : "px-2"}`}>
@@ -166,7 +159,9 @@ export const ImageUpload = ({ onUploadComplete, compact = false, fullWidth = fal
             ) : (
               <>
                 <div
-                  className={`rounded-full bg-linear-to-r from-cyan-500 to-blue-500 ${fullWidth ? "mb-3 p-4" : "mb-2 p-3"}`}
+                  className={`rounded-full bg-linear-to-r from-cyan-500 to-blue-500 ${
+                    fullWidth ? "mb-3 p-4" : "mb-2 p-3"
+                  }`}
                 >
                   <Upload className={`text-white ${fullWidth ? "h-8 w-8" : "h-5 w-5"}`} />
                 </div>
@@ -228,7 +223,9 @@ export const ImageUpload = ({ onUploadComplete, compact = false, fullWidth = fal
               }`}
             >
               <Upload
-                className={`h-8 w-8 ${isDragging ? "text-cyan-600 dark:text-cyan-400" : "text-gray-400 dark:text-gray-500"}`}
+                className={`h-8 w-8 ${
+                  isDragging ? "text-cyan-600 dark:text-cyan-400" : "text-gray-400 dark:text-gray-500"
+                }`}
               />
             </div>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useMemo, type PropsWithChildren } from "react";
+import { createContext, useContext, useState, type PropsWithChildren } from "react";
 
 type CompactModeContextType = {
   compactMode: boolean;
@@ -16,9 +16,7 @@ type CompactModeProviderProps = PropsWithChildren<{
 export const CompactModeProvider = ({ children, initialCompactMode = false }: CompactModeProviderProps) => {
   const [compactMode, setCompactMode] = useState(initialCompactMode);
 
-  const value = useMemo(() => ({ compactMode, setCompactMode }), [compactMode]);
-
-  return <CompactModeContext.Provider value={value}>{children}</CompactModeContext.Provider>;
+  return <CompactModeContext.Provider value={{ compactMode, setCompactMode }}>{children}</CompactModeContext.Provider>;
 };
 
 export const useCompactMode = () => {

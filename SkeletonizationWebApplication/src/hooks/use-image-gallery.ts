@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { type FilterType, type ImageFormat, type SizeFilter, type SortOption } from "@/app/images/types";
@@ -10,17 +10,17 @@ import { deleteImageAction } from "@/server-actions/images";
 export const useImageGallery = (initialImages: SelectImage[]) => {
   const [images, setImages] = useState<SelectImage[]>(initialImages);
   const [selectedFilter, setSelectedFilter] = useState<FilterType>("all");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQueryState] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [imageToDelete, setImageToDelete] = useState<string | null>(null);
-  const [sortBy, setSortBy] = useState<SortOption>("date-desc");
+  const [sortBy, setSortByState] = useState<SortOption>("date-desc");
   const [page, setPage] = useState(1);
   const [pageSize] = useState(20);
 
   const [selectedFormats, setSelectedFormats] = useState<Set<ImageFormat>>(new Set());
   const [selectedSizes, setSelectedSizes] = useState<Set<SizeFilter>>(new Set());
 
-  const toggleFormat = useCallback((format: ImageFormat) => {
+  const toggleFormat = (format: ImageFormat) => {
     setSelectedFormats((prev) => {
       const next = new Set(prev);
       if (next.has(format)) next.delete(format);
@@ -28,9 +28,9 @@ export const useImageGallery = (initialImages: SelectImage[]) => {
       return next;
     });
     setPage(1);
-  }, []);
+  };
 
-  const toggleSize = useCallback((size: SizeFilter) => {
+  const toggleSize = (size: SizeFilter) => {
     setSelectedSizes((prev) => {
       const next = new Set(prev);
       if (next.has(size)) next.delete(size);
@@ -38,33 +38,33 @@ export const useImageGallery = (initialImages: SelectImage[]) => {
       return next;
     });
     setPage(1);
-  }, []);
+  };
 
-  const clearAllFilters = useCallback(() => {
+  const clearAllFilters = () => {
     setSelectedFormats(new Set());
     setSelectedSizes(new Set());
-    setSearchQuery("");
+    setSearchQueryState("");
     setPage(1);
-  }, []);
+  };
 
-  const handleSearchChange = useCallback((query: string) => {
-    setSearchQuery(query);
+  const handleSearchChange = (query: string) => {
+    setSearchQueryState(query);
     setPage(1);
-  }, []);
+  };
 
-  const handleSortChange = useCallback((sort: SortOption) => {
-    setSortBy(sort);
+  const handleSortChange = (sort: SortOption) => {
+    setSortByState(sort);
     setPage(1);
-  }, []);
+  };
 
-  const activeFilterCount = useMemo(() => {
+  const activeFilterCount = (() => {
     let count = 0;
     if (selectedFormats.size > 0) count++;
     if (selectedSizes.size > 0) count++;
     return count;
-  }, [selectedFormats, selectedSizes]);
+  })();
 
-  const filteredImages = useMemo(() => {
+  const filteredImages = (() => {
     let filtered = [...images];
 
     if (selectedFilter !== "all") {
@@ -108,57 +108,54 @@ export const useImageGallery = (initialImages: SelectImage[]) => {
     });
 
     return filtered;
-  }, [images, searchQuery, selectedFilter, selectedFormats, selectedSizes, sortBy]);
+  })();
 
-  const totalPages = useMemo(() => Math.ceil(filteredImages.length / pageSize), [filteredImages.length, pageSize]);
+  const totalPages = Math.ceil(filteredImages.length / pageSize);
 
-  const paginatedImages = useMemo(() => {
+  const paginatedImages = (() => {
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     return filteredImages.slice(startIndex, endIndex);
-  }, [filteredImages, page, pageSize]);
+  })();
 
-  const filterOptions = useMemo(
-    () => [
-      { value: "all" as const, label: "All Images", count: images.length },
-      {
-        value: "uploaded" as const,
-        label: "Uploaded",
-        count: images.filter((img) => img.status === "uploaded").length
-      },
-      {
-        value: "validated" as const,
-        label: "Validated",
-        count: images.filter((img) => img.status === "validated").length
-      },
-      {
-        value: "archived" as const,
-        label: "Archived",
-        count: images.filter((img) => img.status === "archived").length
-      },
-      {
-        value: "derived" as const,
-        label: "Derived",
-        count: images.filter((img) => img.status === "derived").length
-      }
-    ],
-    [images]
-  );
+  const filterOptions = [
+    { value: "all" as const, label: "All Images", count: images.length },
+    {
+      value: "uploaded" as const,
+      label: "Uploaded",
+      count: images.filter((img) => img.status === "uploaded").length
+    },
+    {
+      value: "validated" as const,
+      label: "Validated",
+      count: images.filter((img) => img.status === "validated").length
+    },
+    {
+      value: "archived" as const,
+      label: "Archived",
+      count: images.filter((img) => img.status === "archived").length
+    },
+    {
+      value: "derived" as const,
+      label: "Derived",
+      count: images.filter((img) => img.status === "derived").length
+    }
+  ];
 
-  const handleUploadComplete = useCallback((newImage: SelectImage) => {
+  const handleUploadComplete = (newImage: SelectImage) => {
     setImages((prev) => [newImage, ...prev]);
-  }, []);
+  };
 
-  const handleRename = useCallback((imageId: string, newFilename: string) => {
+  const handleRename = (imageId: string, newFilename: string) => {
     setImages((prev) => prev.map((img) => (img.id === imageId ? { ...img, originalFilename: newFilename } : img)));
-  }, []);
+  };
 
-  const openDeleteDialog = useCallback((imageId: string) => {
+  const openDeleteDialog = (imageId: string) => {
     setImageToDelete(imageId);
     setDeleteDialogOpen(true);
-  }, []);
+  };
 
-  const handleDelete = useCallback(async () => {
+  const handleDelete = async () => {
     if (!imageToDelete) return;
 
     try {
@@ -171,7 +168,7 @@ export const useImageGallery = (initialImages: SelectImage[]) => {
       console.error("Delete error:", error);
       toast.error("Failed to delete image");
     }
-  }, [imageToDelete]);
+  };
 
   return {
     // data
