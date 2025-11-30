@@ -17,7 +17,7 @@ const ImagesPage = async () => {
   const userImages = await getImagesByUserId(session.user.id);
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8">
+    <div className="mx-auto max-w-6xl space-y-8 px-4 sm:px-6 lg:px-8">
       <ImagesHeader />
 
       <ImageGallery initialImages={userImages} />
