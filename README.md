@@ -1,5 +1,9 @@
 # Skeletonization
 
+[![CI - SkeletonizationWebApplication](https://github.com/kezniklm/Skeletonization/actions/workflows/CI-SkeletonizationWebApplication.yml/badge.svg?branch=master)](https://github.com/kezniklm/Skeletonization/actions/workflows/CI-SkeletonizationWebApplication.yml)
+[![CI - SkeletonizationVisualizer](https://github.com/kezniklm/Skeletonization/actions/workflows/CI-SkeletonizationVisualizer.yml/badge.svg?branch=master)](https://github.com/kezniklm/Skeletonization/actions/workflows/CI-SkeletonizationVisualizer.yml)
+[![CI - C++](https://github.com/kezniklm/Skeletonization/actions/workflows/CI-C++.yml/badge.svg?branch=master)](https://github.com/kezniklm/Skeletonization/actions/workflows/CI-C++.yml)
+
 ## Overview
 
 This project is part of diploma thesis **Analysis and Efficient Implementation of Skeletonization Algorithms for Digital Image Processing** – the process of reducing shapes in images to their simplified skeletal form while preserving structural and topological properties.  
@@ -26,22 +30,23 @@ The goal is to **implement, optimize, and compare skeletonization algorithms** a
 
 ```
 Skeletonization/
-├── SkeletonizationCore/         # Core skeletonization logic
-├── SkeletonizationCoreCommon/   # Shared utilities, configs, and helpers
-├── SkeletonizationCoreGPU/      # GPU accelerated code (CUDA / OpenCL)
-├── SkeletonizationCLI/          # Command-line interface for running experiments
-├── SkeletonizationPython/       # Python bindings / scripts
-├── SkeletonizationVisualizer/   # Visualization of skeletonization results
-├── docs/                        # Documentation and thesis-related notes (optional)
-├── out/                         # Build / output directory
-├── .gitattributes
-├── .gitignore
+├── SkeletonizationCLI/              # Command-line interface for running experiments
+├── SkeletonizationCore/             # Core skeletonization logic
+├── SkeletonizationCoreCPU/          # Single-threaded CPU implementations
+├── SkeletonizationCoreGPU/          # GPU accelerated code (CUDA)
+├── SkeletonizationCoreMT/           # Multi-threaded CPU implementations
+├── SkeletonizationPython/           # Python bindings
+├── SkeletonizationTests/            # Unit and integration tests
+├── SkeletonizationVisualizer/       # Web-based visualization tool (Vite + React)
+├── SkeletonizationWebApplication/   # Full-stack web application (Next.js)
+├── SkeletonizationWorker/           # Background worker service
 ├── CMakeLists.txt
 ├── CMakePresets.json
+├── Folder.DotSettings
 ├── LICENSE.txt
 ├── README.md
-├── skeletonizer_config.json     # Default config file
-├── vcpkg.json                   # vcpkg package dependencies
+├── skeletonizer_config.json         # Default config file
+├── vcpkg.json                       # vcpkg package dependencies
 ├── vcpkg-configuration.json
 ```
 
@@ -51,41 +56,41 @@ Skeletonization/
 -   **CMake ≥ 3.30**
 -   **vcpkg** (for dependency management)
 -   **OpenCV ≥ 4.0** (image I/O and visualization)
--   **CUDA Toolkit ≥ 11.0** or **OpenCL 2.0+** (for GPU acceleration)
+-   **CUDA Toolkit ≥ 12.9** (for GPU acceleration)
 -   **Python ≥ 3.12** (if using `SkeletonizationPython`)
 
 ## Building with CMake Presets
 
-This project provides ready-to-use **CMake presets** (`CMakePresets.json`) for **Windows** and **Linux**.
+This repository ships a `CMakePresets.json` that defines platform-specific base presets and several derived presets, including CUDA-enabled variants. Presets place build artifacts under `out/build/<preset>` and install artifacts under `out/install/<preset>`.
 
-### Base Presets
+### Presets Included
 
--   **`windows-base`** – Base preset for Windows (MSVC, Ninja).
--   **`linux-base`** – Base preset for Linux (GCC, Ninja).
+- **Base (hidden):** `windows-base`, `linux-base` (MSVC/GCC + Ninja).
+- **Release:** `x64-release-windows`, `x64-release-linux`.
+- **Debug:** `x64-debug-windows`, `x64-debug-linux`.
+- **CUDA-enabled variants:** `x64-release-windows-cuda`, `x64-debug-windows-cuda`, `x64-release-linux-cuda`, `x64-debug-linux-cuda`.
 
-### Derived Presets
+These CUDA presets set `VCPKG_MANIFEST_FEATURES=cuda` and `SKELETONIZATION_ENABLE_GPU=ON` so GPU targets are compiled when available.
 
--   **`x64-debug`** – Standard Debug build.
--   **`x64-release`** – Optimized Release build.
+### Example Commands (PowerShell)
 
-All presets:
+Configure (Release, Windows CUDA):
 
--   Output build artifacts to `out/build/<preset>` and install into `out/install/<preset>`.
--   Automatically configure compilers depending on host OS.
--   Integrate with **vcpkg** via `$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake`.
-
-### Example Usage
-
-Configure with a preset:
-
-```
-cmake --preset=x64-release
+```powershell
+cmake --preset=x64-release-windows-cuda
 ```
 
-Build:
+Build (use the corresponding build preset):
 
+```powershell
+cmake --build --preset=x64-release-windows-cuda
 ```
-cmake --build --preset=x64-release
+
+Run tests for a preset:
+
+```powershell
+cmake --preset=x64-debug-windows-cuda --build
+ctest --build-config Debug --test-dir out/build/x64-debug-windows-cuda
 ```
 
 ## Running the CLI
