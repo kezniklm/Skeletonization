@@ -163,7 +163,7 @@ export const SettingsForm = ({ userId, initialPreferences }: SettingsFormProps) 
           <button
             type="submit"
             disabled={isSubmitting}
-            className="rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 px-6 py-2 text-sm font-medium text-white transition-all hover:from-cyan-600 hover:to-blue-600 hover:shadow-md focus:ring-2 focus:ring-cyan-500/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-lg bg-linear-to-r from-cyan-500 to-blue-500 px-6 py-2 text-sm font-medium text-white transition-all hover:from-cyan-600 hover:to-blue-600 hover:shadow-md focus:ring-2 focus:ring-cyan-500/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isSubmitting ? "Saving..." : "Save Changes"}
           </button>

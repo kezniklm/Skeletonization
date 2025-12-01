@@ -1,0 +1,161 @@
+name: CI - C++
+
+on:
+    push:
+        branches: [master]
+    pull_request:
+        branches: [master]
+
+jobs:
+    build:
+        name: Build ${{ matrix.os }}-${{ matrix.arch }} (C++${{ matrix.cpp }})
+        runs-on: ${{ matrix.runs-on }}
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    # Linux
+                    # - os: ubuntu
+                    #   arch: x64
+                    #   runs-on: ubuntu-latest
+                    #   preset: x64-release-linux
+                    #   cpp: 23
+                    # - os: ubuntu-22.04 -> Not available, it is only in preview and not available in the Github repository
+                    #   arch: arm64
+                    #   runs-on: ubuntu-22.04
+                    #   preset: x64-release
+                    #   cpp: 23
+
+                    # Windows
+                    - os: windows
+                      arch: x64
+                      runs-on: windows-latest
+                      preset: x64-release-windows
+                      cpp: 23
+                    # - os: windows-2022  -> Not available, it is only in preview and not available in the Github repository
+                    #   arch: arm64
+                    #   runs-on: windows-2022
+                    #   preset: x64-release
+                    #   cpp: 23
+
+                    # macOS
+                    # - os: macos
+                    #   arch: x64
+                    #   runs-on: macos-latest-large
+                    #   preset: x64-release-linux
+                    #   cpp: 23
+                    # - os: macos
+                    #   arch: arm64
+                    #   runs-on: macos-latest
+                    #   preset: x64-release-linux
+                    #   cpp: 23
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Cleanup runner (Linux)
+              if: runner.os == 'Linux'
+              run: |
+                  # Remove Java (JDKs)
+                  sudo rm -rf /usr/lib/jvm
+
+                  # Remove .NET SDKs
+                  sudo rm -rf /usr/share/dotnet
+
+                  # Remove Swift toolchain
+                  sudo rm -rf /usr/share/swift
+
+                  # Remove Haskell (GHC)
+                  sudo rm -rf /usr/local/.ghcup
+
+                  # Remove Julia
+                  sudo rm -rf /usr/local/julia*
+
+                  # Remove Android SDKs
+                  sudo rm -rf /usr/local/lib/android
+
+                  # Remove Chromium (optional if not using for browser tests)
+                  sudo rm -rf /usr/local/share/chromium
+
+                  # Remove Microsoft/Edge and Google Chrome builds
+                  sudo rm -rf /opt/microsoft /opt/google
+
+                  # Remove Azure CLI
+                  sudo rm -rf /opt/az
+
+                  # Remove PowerShell
+                  sudo rm -rf /usr/local/share/powershell
+
+                  # Remove CodeQL and other toolcaches
+                  sudo rm -rf /opt/hostedtoolcache
+
+                  docker system prune -af || true
+                  docker builder prune -af || true
+                  df -h
+
+            - name: Install CMake and Ninja
+              uses: lukka/get-cmake@latest
+
+            - name: Cache vcpkg binary cache
+              uses: actions/cache@v4
+              with:
+                  path: ${{ github.workspace }}/.vcpkg-bincache
+                  key: vcpkg-bincache-${{ runner.os }}-${{ hashFiles('**/vcpkg.json') }}
+                  restore-keys: |
+                      vcpkg-bincache-${{ runner.os }}-
+
+            - name: Cache vcpkg installed libs
+              uses: actions/cache@v4
+              with:
+                  path: out/build/${{ matrix.preset }}/vcpkg_installed
+                  key: vcpkg-installed-${{ runner.os }}-${{ matrix.preset }}-${{ hashFiles('**/vcpkg.json') }}
+                  restore-keys: |
+                      vcpkg-installed-${{ runner.os }}-${{ matrix.preset }}-
+
+            - name: Setup MSVC (Windows)
+              if: runner.os == 'Windows'
+              uses: ilammy/msvc-dev-cmd@v1
+              with:
+                  arch: x64
+
+            - name: Install dependencies (Linux)
+              if: runner.os == 'Linux'
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y g++-14 gcc-14 ninja-build
+                  sudo apt-get install -y \
+                    build-essential git \
+                    libxi-dev libxtst-dev libx11-dev libxext-dev \
+                    libxrandr-dev libxinerama-dev libxcursor-dev \
+                    libglu1-mesa-dev freeglut3-dev mesa-common-dev \
+                    autoconf automake autoconf-archive wget \
+                    lsb-release gnupg libltdl-dev libtool libtool-bin \
+                    m4 pkg-config ninja-build gettext
+
+                  sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100
+                  sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 100
+
+            - name: Install dependencies (macOS)
+              if: runner.os == 'macOS'
+              run: brew install autoconf automake autoconf-archive
+
+            - name: Setup vcpkg
+              uses: lukka/run-vcpkg@v11
+              with:
+                  doNotCache: true
+                  vcpkgDirectory: ${{ github.workspace }}/vcpkg
+                  vcpkgGitCommitId: "3bbc2809d3625cb83a0d7cbd413bd6ad769d46d4"
+              env:
+                  VCPKG_FEATURE_FLAGS: "binarycaching"
+                  VCPKG_BINARY_SOURCES: "clear;files,${{ github.workspace }}/.vcpkg-bincache,readwrite"
+
+            - name: Configure, build, and test
+              uses: lukka/run-cmake@v10
+              with:
+                  configurePreset: ${{ matrix.preset }}
+                  buildPreset: ${{ matrix.preset }}
+                  testPreset: ${{ matrix.preset }}
+              env:
+                  VCPKG_FEATURE_FLAGS: "binarycaching"
+                  VCPKG_BINARY_SOURCES: "clear;files,${{ github.workspace }}/.vcpkg-bincache,readwrite"

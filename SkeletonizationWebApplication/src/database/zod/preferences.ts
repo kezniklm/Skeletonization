@@ -3,7 +3,7 @@ import { type z } from "zod";
 
 import { userPreferences } from "../schema/preferences";
 
-export const userPreferencesSchema = createInsertSchema(userPreferences).omit({ userId: true });
+export const userPreferencesSchema = createInsertSchema(userPreferences).omit({ userId: true }).required();
 
 export type UserPreferences = z.infer<typeof userPreferencesSchema>;
 

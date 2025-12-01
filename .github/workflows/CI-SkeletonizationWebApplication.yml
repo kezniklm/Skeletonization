@@ -1,0 +1,33 @@
+name: CI - SkeletonizationWebApplication
+
+on:
+    push:
+        branches: [master]
+    pull_request:
+        branches: [master]
+jobs:
+    build-frontend:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20.x"
+                  cache: "npm"
+                  cache-dependency-path: "SkeletonizationWebApplication/package-lock.json"
+
+            - name: Install dependencies
+              working-directory: SkeletonizationWebApplication
+              run: npm ci
+
+            - name: Run Prettier and ESLint
+              working-directory: SkeletonizationWebApplication
+              run: |
+                  npm run prettier
+                  npm run lint
+
+            - name: Build React (Vite)
+              working-directory: SkeletonizationWebApplication
+              run: npm run build
