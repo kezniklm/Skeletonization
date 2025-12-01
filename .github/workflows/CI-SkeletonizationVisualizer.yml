@@ -3,8 +3,14 @@ name: CI - SkeletonizationVisualizer
 on:
     push:
         branches: [master]
+        paths:
+            - "SkeletonizationVisualizer/**"
+            - '.github/workflows/CI-SkeletonizationVisualizer.yml'
     pull_request:
         branches: [master]
+        paths:
+            - "SkeletonizationVisualizer/**"
+            - '.github/workflows/CI-SkeletonizationVisualizer.yml'
 
 jobs:
     build-frontend:

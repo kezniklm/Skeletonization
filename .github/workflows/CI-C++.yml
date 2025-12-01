@@ -3,8 +3,30 @@ name: CI - C++
 on:
     push:
         branches: [master]
+        paths:
+            - "SkeletonizationCore/**"
+            - "SkeletonizationCoreCPU/**"
+            - "SkeletonizationCoreGPU/**"
+            - "SkeletonizationCoreMT/**"
+            - "SkeletonizationCLI/**"
+            - "SkeletonizationWorker/**"
+            - "SkeletonizationPython/**"
+            - "CMakeLists.txt"
+            - "CMakePresets.json"
+            - "vcpkg.json"
     pull_request:
         branches: [master]
+        paths:
+            - "SkeletonizationCore/**"
+            - "SkeletonizationCoreCPU/**"
+            - "SkeletonizationCoreGPU/**"
+            - "SkeletonizationCoreMT/**"
+            - "SkeletonizationCLI/**"
+            - "SkeletonizationWorker/**"
+            - "SkeletonizationPython/**"
+            - "CMakeLists.txt"
+            - "CMakePresets.json"
+            - "vcpkg.json"
 
 jobs:
     build:
