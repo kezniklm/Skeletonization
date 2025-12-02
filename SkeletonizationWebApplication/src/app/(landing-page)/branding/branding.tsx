@@ -16,7 +16,11 @@ export const Branding = () => (
 
     <h2 className="mb-4 text-4xl leading-tight font-bold text-gray-900 sm:text-5xl xl:text-4xl xl:leading-snug 2xl:text-5xl dark:text-white">
       Extract the{" "}
-      <span className="bg-linear-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">Structural Essence</span>{" "}
+      <span className="bg-linear-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">
+        Structural
+        <br />
+        Essence
+      </span>{" "}
       of Your Images
     </h2>
     <p className="text-lg text-gray-600 xl:text-base 2xl:text-lg dark:text-gray-300">
