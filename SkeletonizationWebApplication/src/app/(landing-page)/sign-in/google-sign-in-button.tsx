@@ -13,10 +13,14 @@ export const GoogleSignInButton = () => {
   return (
     <button
       onClick={handleGoogleSignIn}
-      className="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-xl border-2 border-gray-200 bg-white px-6 py-4 text-base font-semibold text-gray-700 shadow-lg transition-all hover:border-blue-500 hover:shadow-xl focus:ring-4 focus:ring-blue-500/50 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:border-blue-400"
+      className="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-xl border-2 border-gray-200 bg-white px-6 py-4 text-base font-semibold text-gray-700 shadow-lg transition-all hover:border-blue-500 hover:shadow-xl focus:ring-4 focus:ring-blue-500/50 focus:outline-none xl:gap-2 xl:px-5 xl:py-3 xl:text-sm xl:shadow-md 2xl:gap-3 2xl:px-6 2xl:py-4 2xl:text-base 2xl:shadow-lg dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:border-blue-400"
       aria-label="Sign in with Google"
     >
-      <svg className="h-6 w-6 transition-transform group-hover:scale-110" viewBox="0 0 24 24" aria-hidden="true">
+      <svg
+        className="h-6 w-6 transition-transform group-hover:scale-110 xl:h-5 xl:w-5 2xl:h-6 2xl:w-6"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
         <path
           fill="#4285F4"
           d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
