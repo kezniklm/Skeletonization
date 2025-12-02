@@ -30,6 +30,8 @@ body {
 }
 
 @theme inline {
+  --breakpoint-2xl: 120rem;
+
   --radius-sm: calc(var(--radius) - 4px);
 
   --radius-md: calc(var(--radius) - 2px);

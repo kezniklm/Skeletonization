@@ -53,10 +53,10 @@ export const SettingsForm = ({ userId, initialPreferences }: SettingsFormProps) 
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="space-y-6">
+        <div className="space-y-6 xl:space-y-5 2xl:space-y-6">
           <SettingsCard
             title="Appearance"
-            icon={<Palette className="h-5 w-5" />}
+            icon={<Palette className="h-5 w-5 xl:h-4 xl:w-4 2xl:h-5 2xl:w-5" />}
             description="Customize how the application looks"
             items={[
               {
@@ -83,7 +83,7 @@ export const SettingsForm = ({ userId, initialPreferences }: SettingsFormProps) 
 
           <SettingsCard
             title="Notifications"
-            icon={<Bell className="h-5 w-5" />}
+            icon={<Bell className="h-5 w-5 xl:h-4 xl:w-4 2xl:h-5 2xl:w-5" />}
             description="Manage how you receive updates"
             items={[
               {
@@ -101,7 +101,7 @@ export const SettingsForm = ({ userId, initialPreferences }: SettingsFormProps) 
 
           <SettingsCard
             title="Timezone"
-            icon={<Globe className="h-5 w-5" />}
+            icon={<Globe className="h-5 w-5 xl:h-4 xl:w-4 2xl:h-5 2xl:w-5" />}
             description="Set your preferred timezone"
             items={[
               {
@@ -124,7 +124,7 @@ export const SettingsForm = ({ userId, initialPreferences }: SettingsFormProps) 
 
           <SettingsCard
             title="Processing Preferences"
-            icon={<Eye className="h-5 w-5" />}
+            icon={<Eye className="h-5 w-5 xl:h-4 xl:w-4 2xl:h-5 2xl:w-5" />}
             description="Configure default processing settings"
             items={[
               {
@@ -151,19 +151,19 @@ export const SettingsForm = ({ userId, initialPreferences }: SettingsFormProps) 
           />
         </div>
 
-        <div className="mt-8 flex justify-end space-x-4">
+        <div className="mt-8 flex justify-end space-x-4 xl:mt-6 xl:space-x-3 2xl:mt-8 2xl:space-x-4">
           <button
             type="button"
             onClick={handleReset}
             disabled={isSubmitting}
-            className="rounded-lg border border-gray-300 bg-white px-6 py-2 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+            className="rounded-lg border border-gray-300 bg-white px-6 py-2 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 xl:px-5 xl:py-1.5 xl:text-xs 2xl:px-6 2xl:py-2 2xl:text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
           >
             Reset to Defaults
           </button>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="rounded-lg bg-linear-to-r from-cyan-500 to-blue-500 px-6 py-2 text-sm font-medium text-white transition-all hover:from-cyan-600 hover:to-blue-600 hover:shadow-md focus:ring-2 focus:ring-cyan-500/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-lg bg-linear-to-r from-cyan-500 to-blue-500 px-6 py-2 text-sm font-medium text-white transition-all hover:from-cyan-600 hover:to-blue-600 hover:shadow-md focus:ring-2 focus:ring-cyan-500/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 xl:px-5 xl:py-1.5 xl:text-xs 2xl:px-6 2xl:py-2 2xl:text-sm"
           >
             {isSubmitting ? "Saving..." : "Save Changes"}
           </button>
