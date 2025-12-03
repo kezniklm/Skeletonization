@@ -11,7 +11,7 @@ The goal is to **implement, optimize, and compare skeletonization algorithms** a
 
 -   **Single-threaded CPU implementation**
 -   **Multi-threaded CPU implementation**
--   **GPU-accelerated implementation** (CUDA / OpenCL)
+-   **GPU-accelerated implementation**
 
 ## Objectives
 
