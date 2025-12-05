@@ -127,6 +127,38 @@ export const updateImageAction = async (imageId: string, imageData: { originalFi
   return updateImage(imageId, validatedData);
 };
 
+export const archiveImageAction = async (imageId: string) => {
+  const user = await requireUser("archive images");
+
+  const image = await getImageById(imageId);
+
+  if (!image) {
+    throw new Error("Image not found");
+  }
+
+  if (image.userId !== user.id) {
+    throw new Error("You can only archive your own images");
+  }
+
+  return updateImage(imageId, { status: "archived" });
+};
+
+export const unarchiveImageAction = async (imageId: string) => {
+  const user = await requireUser("unarchive images");
+
+  const image = await getImageById(imageId);
+
+  if (!image) {
+    throw new Error("Image not found");
+  }
+
+  if (image.userId !== user.id) {
+    throw new Error("You can only unarchive your own images");
+  }
+
+  return updateImage(imageId, { status: "uploaded" });
+};
+
 export const deleteImageAction = async (imageId: string) => {
   const user = await requireUser("delete images");
 

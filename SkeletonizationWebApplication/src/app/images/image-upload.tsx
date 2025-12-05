@@ -27,152 +27,105 @@ export const ImageUpload = ({ onUploadComplete, compact = false, fullWidth = fal
       const image = await uploadImageAction(file);
       onUploadComplete(image as SelectImage);
       setUploadedFiles((prev) => prev + 1);
-      return { success: true, file };
+      return { success: true };
     } catch (error) {
-      console.error("Upload error:", error);
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      toast.error(`Failed to upload "${file.name}": ${errorMessage}`);
-      return { success: false, file, error: errorMessage };
+      const message = error instanceof Error ? error.message : "Unknown error";
+      toast.error(`Failed to upload "${file.name}": ${message}`);
+      return { success: false };
     }
   };
 
   const uploadFiles = async (files: File[]) => {
-    if (files.length === 0) return;
-
+    if (!files.length) return;
     setIsUploading(true);
-    setUploadProgress(0);
     setTotalFiles(files.length);
     setUploadedFiles(0);
 
-    const progressInterval = setInterval(() => {
-      setUploadProgress((prev) => {
-        const target = (uploadedFiles / files.length) * 90;
-        return Math.min(prev + 5, target);
-      });
-    }, 100);
-
-    const results = await Promise.allSettled(files.map((file) => uploadFile(file)));
-
-    clearInterval(progressInterval);
-    setUploadProgress(100);
-
-    const successCount = results.filter((r) => r.status === "fulfilled" && r.value.success).length;
-    const failureCount = files.length - successCount;
-
-    if (failureCount === 0) {
-      toast.success(
-        files.length === 1 ? "Image uploaded successfully!" : `All ${files.length} images uploaded successfully!`
-      );
-    } else if (successCount === 0) {
-      toast.error(files.length === 1 ? "Failed to upload image" : `Failed to upload all ${files.length} images`);
-    } else {
-      toast.warning(
-        `${successCount} of ${files.length} images uploaded successfully. ${failureCount} failed to upload.`
-      );
-    }
-
-    setTimeout(() => {
-      setIsUploading(false);
-      setUploadProgress(0);
-      setTotalFiles(0);
-      setUploadedFiles(0);
-    }, 500);
+    await Promise.all(files.map((f) => uploadFile(f)));
+    toast.success(files.length > 1 ? "Images uploaded successfully!" : "Image uploaded successfully!");
+    setIsUploading(false);
+    setUploadProgress(0);
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-
-    const files = Array.from(e.dataTransfer.files);
-    const imageFiles = files.filter((file) => file.type.startsWith("image/"));
-
-    if (imageFiles.length === 0) {
-      toast.error("Please drop image files only");
-      return;
-    }
-
-    uploadFiles(imageFiles);
+    const files = Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith("image/"));
+    if (!files.length) return toast.error("Please drop image files only");
+    uploadFiles(files);
   };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(true);
   };
-
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
   };
-
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      uploadFiles(Array.from(files));
-    }
+    const files = e.target.files ? Array.from(e.target.files) : [];
+    if (files.length) uploadFiles(files);
   };
 
   if (compact) {
+    const wrapperClass = fullWidth ? "aspect-[64/27]" : "h-full";
+
     return (
-      <CardContent className="flex h-full items-center justify-center p-0">
+      <Card
+        className={`group overflow-hidden border-2 border-dashed border-cyan-300 bg-linear-to-br from-cyan-50/50 to-blue-50/50 shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-cyan-400 hover:shadow-lg dark:border-cyan-700 dark:from-cyan-950/20 dark:to-blue-950/20 dark:hover:border-cyan-600 ${
+          fullWidth ? "sm:col-span-2" : ""
+        }`}
+      >
         <div
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
-          className={`relative flex w-full cursor-pointer flex-col items-center justify-center rounded-lg transition-all ${
-            fullWidth ? "py-16" : "aspect-video"
-          } ${isUploading ? "pointer-events-none opacity-50" : ""}`}
+          className={`relative flex w-full items-center justify-center ${wrapperClass} ${
+            isUploading ? "pointer-events-none opacity-50" : ""
+          }`}
         >
           <input
-            type="file"
             id="image-upload-compact"
+            type="file"
             accept="image/png,image/jpeg,image/jpg,image/bmp,image/tiff"
-            onChange={handleFileSelect}
-            disabled={isUploading}
             multiple
+            disabled={isUploading}
+            onChange={handleFileSelect}
             className="hidden"
           />
 
           <label
             htmlFor="image-upload-compact"
-            className={`flex h-full w-full cursor-pointer flex-col items-center justify-center text-center ${
-              fullWidth ? "px-4 py-8" : "px-3 py-4"
-            }`}
+            className="flex h-full w-full flex-col items-center justify-center gap-2 text-center"
           >
             {isUploading ? (
-              <div className={`w-full space-y-3 ${fullWidth ? "px-4" : "px-2"}`}>
-                <div className={`mx-auto rounded-full bg-cyan-100 p-3 dark:bg-cyan-900/30 ${fullWidth ? "" : "p-2"}`}>
-                  <Upload className={`text-cyan-600 dark:text-cyan-400 ${fullWidth ? "h-8 w-8" : "h-6 w-6"}`} />
+              <div className="w-full max-w-xs space-y-3">
+                <div className="mx-auto rounded-full bg-cyan-100 p-3 dark:bg-cyan-900/30">
+                  <Upload className="h-6 w-6 text-cyan-600 dark:text-cyan-400" />
                 </div>
-                <p className={`font-medium text-gray-900 dark:text-white ${fullWidth ? "text-sm" : "text-xs"}`}>
-                  Uploading...
+                <p className="text-xs font-medium text-gray-900 dark:text-white">
+                  {totalFiles > 1 ? `Uploading ${totalFiles} files...` : "Uploading..."}
                 </p>
-                <div className="mx-auto h-2 w-full max-w-xs overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+                <div className="mx-auto h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
                   <div
                     className="h-full bg-linear-to-r from-cyan-500 to-blue-500 transition-all duration-300"
                     style={{ width: `${uploadProgress}%` }}
                   />
                 </div>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
-                  {totalFiles > 1 ? `${uploadedFiles} of ${totalFiles} files` : `${uploadProgress}%`}
+                <p className="text-[11px] text-gray-600 dark:text-gray-400">
+                  {uploadedFiles}/{totalFiles} done
                 </p>
               </div>
             ) : (
               <>
-                <div
-                  className={`rounded-full bg-linear-to-r from-cyan-500 to-blue-500 ${
-                    fullWidth ? "mb-3 p-4" : "mb-2 p-3"
-                  }`}
-                >
-                  <Upload className={`text-white ${fullWidth ? "h-8 w-8" : "h-5 w-5"}`} />
+                <div className="mb-1.5 rounded-full bg-linear-to-r from-cyan-500 to-blue-500 p-3">
+                  <Upload className="h-5 w-5 text-white" />
                 </div>
-                <p className={`font-semibold text-gray-900 dark:text-white ${fullWidth ? "text-sm" : "text-xs"}`}>
-                  Upload Images
-                </p>
-                <p className={`mt-1 text-gray-600 dark:text-gray-400 ${fullWidth ? "text-xs" : "text-[10px]"}`}>
-                  Click or drag & drop
-                </p>
+                <p className="text-xs font-semibold text-gray-900 dark:text-white">Upload Images</p>
+                <p className="text-[10px] text-gray-600 dark:text-gray-400">Click or drag & drop</p>
                 {fullWidth && (
-                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-500">PNG, JPEG, BMP, TIFF • Multiple files</p>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-500">PNG, JPEG, BMP, TIFF • Multiple files</p>
                 )}
               </>
             )}
@@ -186,12 +139,12 @@ export const ImageUpload = ({ onUploadComplete, compact = false, fullWidth = fal
             </div>
           )}
         </div>
-      </CardContent>
+      </Card>
     );
   }
 
   return (
-    <Card className="border-gray-200 bg-white shadow-sm backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900/95">
+    <Card className="border-gray-200 bg-white shadow-sm backdrop-blur-sm xl:rounded-lg dark:border-gray-800 dark:bg-gray-900/95">
       <CardContent className="p-6">
         <div
           onDrop={handleDrop}
@@ -204,21 +157,18 @@ export const ImageUpload = ({ onUploadComplete, compact = false, fullWidth = fal
           } ${isUploading ? "pointer-events-none opacity-50" : ""}`}
         >
           <input
-            type="file"
             id="image-upload"
+            type="file"
             accept="image/png,image/jpeg,image/jpg,image/bmp,image/tiff"
-            onChange={handleFileSelect}
-            disabled={isUploading}
             multiple
+            disabled={isUploading}
+            onChange={handleFileSelect}
             className="hidden"
           />
 
-          <label
-            htmlFor="image-upload"
-            className="flex cursor-pointer flex-col items-center justify-center px-6 py-12 text-center"
-          >
+          <label htmlFor="image-upload" className="flex flex-col items-center justify-center px-6 py-12 text-center">
             <div
-              className={`mb-4 rounded-full p-3 transition-colors ${
+              className={`mb-4 rounded-full p-3 ${
                 isDragging ? "bg-cyan-100 dark:bg-cyan-900/30" : "bg-gray-100 dark:bg-gray-800"
               }`}
             >
@@ -240,9 +190,6 @@ export const ImageUpload = ({ onUploadComplete, compact = false, fullWidth = fal
                     style={{ width: `${uploadProgress}%` }}
                   />
                 </div>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
-                  {totalFiles > 1 ? `${uploadedFiles} of ${totalFiles} completed` : `${uploadProgress}%`}
-                </p>
               </div>
             ) : (
               <>
@@ -251,19 +198,11 @@ export const ImageUpload = ({ onUploadComplete, compact = false, fullWidth = fal
                   drop
                 </p>
                 <p className="text-xs text-gray-600 dark:text-gray-400">
-                  PNG, JPEG, BMP, or TIFF • Multiple files supported (max 10MB each)
+                  PNG, JPEG, BMP, or TIFF • Multiple files supported
                 </p>
               </>
             )}
           </label>
-
-          {isDragging && (
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-lg bg-cyan-500/10">
-              <div className="rounded-full bg-linear-to-r from-cyan-500 to-blue-500 p-4 text-white shadow-lg">
-                <Upload className="h-8 w-8" />
-              </div>
-            </div>
-          )}
         </div>
 
         {isUploading && (
@@ -276,8 +215,7 @@ export const ImageUpload = ({ onUploadComplete, compact = false, fullWidth = fal
             }}
             className="mt-4 w-full gap-2"
           >
-            <X className="h-4 w-4" />
-            Cancel Upload
+            <X className="h-4 w-4" /> Cancel Upload
           </Button>
         )}
       </CardContent>

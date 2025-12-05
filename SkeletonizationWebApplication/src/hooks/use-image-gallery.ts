@@ -5,7 +5,7 @@ import { toast } from "sonner";
 
 import { type FilterType, type ImageFormat, type SizeFilter, type SortOption } from "@/app/images/types";
 import type { SelectImage } from "@/database/zod/image";
-import { deleteImageAction } from "@/server-actions/images";
+import { archiveImageAction, deleteImageAction, unarchiveImageAction } from "@/server-actions/images";
 
 export const useImageGallery = (initialImages: SelectImage[]) => {
   const [images, setImages] = useState<SelectImage[]>(initialImages);
@@ -67,7 +67,9 @@ export const useImageGallery = (initialImages: SelectImage[]) => {
   const filteredImages = (() => {
     let filtered = [...images];
 
-    if (selectedFilter !== "all") {
+    if (selectedFilter === "all") {
+      filtered = filtered.filter((img) => img.status !== "archived");
+    } else {
       filtered = filtered.filter((img) => img.status === selectedFilter);
     }
 
@@ -119,7 +121,7 @@ export const useImageGallery = (initialImages: SelectImage[]) => {
   })();
 
   const filterOptions = [
-    { value: "all" as const, label: "All Images", count: images.length },
+    { value: "all" as const, label: "All Images", count: images.filter((img) => img.status !== "archived").length },
     {
       value: "uploaded" as const,
       label: "Uploaded",
@@ -170,6 +172,28 @@ export const useImageGallery = (initialImages: SelectImage[]) => {
     }
   };
 
+  const handleArchive = async (imageId: string) => {
+    try {
+      await archiveImageAction(imageId);
+      setImages((prev) => prev.map((img) => (img.id === imageId ? { ...img, status: "archived" } : img)));
+      toast.success("Image archived");
+    } catch (error) {
+      console.error("Archive error:", error);
+      toast.error("Failed to archive image");
+    }
+  };
+
+  const handleUnarchive = async (imageId: string) => {
+    try {
+      await unarchiveImageAction(imageId);
+      setImages((prev) => prev.map((img) => (img.id === imageId ? { ...img, status: "uploaded" } : img)));
+      toast.success("Image unarchived");
+    } catch (error) {
+      console.error("Unarchive error:", error);
+      toast.error("Failed to unarchive image");
+    }
+  };
+
   return {
     // data
     images,
@@ -201,6 +225,8 @@ export const useImageGallery = (initialImages: SelectImage[]) => {
     handleUploadComplete,
     handleRename,
     openDeleteDialog,
-    handleDelete
+    handleDelete,
+    handleArchive,
+    handleUnarchive
   };
 };

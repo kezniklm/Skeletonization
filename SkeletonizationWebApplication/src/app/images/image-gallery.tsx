@@ -39,13 +39,15 @@ const ImageGallery = ({ initialImages }: { initialImages: SelectImage[] }) => {
     handleUploadComplete,
     handleRename,
     openDeleteDialog,
-    handleDelete
+    handleDelete,
+    handleArchive,
+    handleUnarchive
   } = useImageGallery(initialImages);
 
   const hasAdvancedFilters = selectedFormats.size > 0 || selectedSizes.size > 0;
 
   return (
-    <>
+    <div className="space-y-4">
       <ImageFilters
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
@@ -58,44 +60,65 @@ const ImageGallery = ({ initialImages }: { initialImages: SelectImage[] }) => {
         sortControl={<ImageSort sortBy={sortBy} onSortChange={setSortBy} />}
       />
 
-      <Tabs
-        value={selectedFilter}
-        onValueChange={(value) => {
-          setSelectedFilter(value as FilterType);
-          setPage(1);
-        }}
-      >
-        <TabsList className="grid w-full grid-cols-5">
-          {filterOptions.map((option) => (
-            <TabsTrigger key={option.value} value={option.value} className="gap-2">
-              <span className="hidden sm:inline">{option.label}</span>
-              <span className="sm:hidden">{option.label.split(" ")[0]}</span>
-              <Badge variant="outline" className="h-5 min-w-5 rounded-full px-1.5 text-xs">
-                {option.count}
-              </Badge>
-            </TabsTrigger>
-          ))}
-        </TabsList>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <Tabs
+          value={selectedFilter}
+          onValueChange={(value) => {
+            setSelectedFilter(value as FilterType);
+            setPage(1);
+          }}
+          className="flex-1"
+        >
+          <TabsList className="grid h-9 w-full grid-cols-5 xl:h-8 2xl:h-9">
+            {filterOptions.map((option) => (
+              <TabsTrigger key={option.value} value={option.value} className="gap-1.5 text-xs 2xl:text-sm">
+                <span className="hidden sm:inline">{option.label}</span>
+                <span className="sm:hidden">{option.label.split(" ")[0]}</span>
+                <Badge
+                  variant="secondary"
+                  className="h-4 min-w-4 rounded-full px-1.5 text-[10px] font-medium 2xl:h-5 2xl:px-2 2xl:text-xs"
+                >
+                  {option.count}
+                </Badge>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
 
+        {totalPages > 1 && (
+          <div className="flex justify-center sm:justify-end">
+            <ImagePagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+          </div>
+        )}
+      </div>
+
+      <Tabs value={selectedFilter}>
         {filterOptions.map((option) => (
-          <TabsContent key={option.value} value={option.value}>
+          <TabsContent key={option.value} value={option.value} className="mt-0">
             <ImageGrid
               images={images}
               filteredImages={paginatedImages}
               searchQuery={searchQuery}
               hasAdvancedFilters={hasAdvancedFilters}
+              selectedFilter={selectedFilter}
               onUploadComplete={handleUploadComplete}
               onDelete={openDeleteDialog}
               onRename={handleRename}
+              onArchive={handleArchive}
+              onUnarchive={handleUnarchive}
             />
           </TabsContent>
         ))}
       </Tabs>
 
-      {totalPages > 1 && <ImagePagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />}
+      {totalPages > 1 && (
+        <div className="flex justify-center">
+          <ImagePagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+        </div>
+      )}
 
       <ImageDeleteDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen} onConfirm={handleDelete} />
-    </>
+    </div>
   );
 };
 
