@@ -34,6 +34,6 @@ jobs:
                   npm run prettier
                   npm run lint
 
-            - name: Build React (Vite)
+            - name: Build React (Next.js)
               working-directory: SkeletonizationWebApplication
               run: npm run build
