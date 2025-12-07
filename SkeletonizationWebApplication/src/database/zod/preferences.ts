@@ -12,8 +12,7 @@ export type FileOutputFormat = z.infer<typeof userPreferencesSchema.shape.defaul
 export const defaultPreferences: UserPreferences = {
   theme: "system",
   compactMode: false,
-  emailNotifications: true,
-  pushNotifications: false,
+  pushNotifications: true,
   timezone: "UTC",
   autoSaveResults: true,
   defaultOutputFormat: "PNG"

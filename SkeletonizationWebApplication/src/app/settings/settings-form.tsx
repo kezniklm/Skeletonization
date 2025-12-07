@@ -87,11 +87,6 @@ export const SettingsForm = ({ userId, initialPreferences }: SettingsFormProps) 
             description="Manage how you receive updates"
             items={[
               {
-                label: "Email Notifications",
-                description: "Receive email updates about your processing jobs",
-                control: <FormToggle name="emailNotifications" aria-label="Enable email notifications" />
-              },
-              {
                 label: "Push Notifications",
                 description: "Get browser notifications for important events",
                 control: <FormToggle name="pushNotifications" aria-label="Enable push notifications" />

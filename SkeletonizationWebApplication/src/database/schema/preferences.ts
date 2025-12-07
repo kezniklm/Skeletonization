@@ -16,7 +16,6 @@ export const userPreferences = pgTable("user_preferences", {
   compactMode: boolean("compact_mode").default(false).notNull(),
 
   // Notifications
-  emailNotifications: boolean("email_notifications").default(true).notNull(),
   pushNotifications: boolean("push_notifications").default(false).notNull(),
 
   // Timezone
