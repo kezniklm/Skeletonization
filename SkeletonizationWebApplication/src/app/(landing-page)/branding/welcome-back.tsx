@@ -37,11 +37,11 @@ export const WelcomeBack = ({ className, userName }: WelcomeBackProps) => (
         </header>
 
         <NavigationLink
-          href="/dashboard"
+          href="/skeletonization"
           className="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-xl bg-linear-to-r from-cyan-600 to-blue-600 px-6 py-4 text-base font-semibold text-white shadow-lg transition-all hover:from-cyan-700 hover:to-blue-700 hover:shadow-xl focus:ring-4 focus:ring-blue-500/50 focus:outline-none xl:gap-2 xl:px-5 xl:py-3 xl:text-sm xl:shadow-md 2xl:gap-3 2xl:px-6 2xl:py-4 2xl:text-base 2xl:shadow-lg"
-          aria-label="Go to dashboard"
+          aria-label="Go to Skeletonization"
         >
-          <span>Go to Lab</span>
+          <span>Go to Skeletonization</span>
           <ArrowRight
             className="h-5 w-5 transition-transform group-hover:translate-x-1 xl:h-4 xl:w-4 2xl:h-5 2xl:w-5"
             aria-hidden="true"
@@ -60,7 +60,7 @@ export const WelcomeBack = ({ className, userName }: WelcomeBackProps) => (
               Upload New Image
             </NavigationLink>
             <NavigationLink
-              href="/history"
+              href="/skeletonization#history"
               className="block w-full rounded-lg border border-blue-200 bg-white/80 px-4 py-2.5 text-center text-sm font-medium text-gray-700 shadow-sm backdrop-blur-sm transition-all hover:border-blue-300 hover:bg-white hover:shadow-md xl:px-3.5 xl:py-2 xl:text-xs 2xl:px-4 2xl:py-2.5 2xl:text-sm dark:border-gray-600 dark:bg-gray-700/80 dark:text-gray-200 dark:hover:border-gray-500 dark:hover:bg-gray-700"
             >
               View Processing History
