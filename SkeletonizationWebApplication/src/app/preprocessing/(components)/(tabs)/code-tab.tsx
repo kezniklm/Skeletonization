@@ -1,0 +1,98 @@
+"use client";
+
+import { Code2 } from "lucide-react";
+
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+
+import { EXAMPLE_CODES } from "../../example-codes";
+
+type CodeTabProps = {
+  customCode: string;
+  setCustomCode: (code: string) => void;
+  codeError: string | null;
+  onExecuteCode: () => void;
+  processing: boolean;
+};
+
+export const CodeTab = ({ customCode, setCustomCode, codeError, onExecuteCode, processing }: CodeTabProps) => {
+  const handleExampleChange = (key: string) => {
+    const code = EXAMPLE_CODES[key] ?? "";
+    setCustomCode(code);
+  };
+
+  return (
+    <div className="space-y-4 pt-4">
+      <div className="space-y-2">
+        <Label
+          htmlFor="example"
+          className="bg-linear-to-r from-cyan-600 to-blue-600 bg-clip-text text-sm font-semibold text-transparent dark:from-cyan-400 dark:to-blue-400"
+        >
+          Example Templates
+        </Label>
+        <Select onValueChange={handleExampleChange}>
+          <SelectTrigger id="example">
+            <SelectValue placeholder="Choose an example..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="edge">Canny Edge Detection</SelectItem>
+            <SelectItem value="sobel">Sobel Edge Detection</SelectItem>
+            <SelectItem value="morph">Morphological Operations</SelectItem>
+            <SelectItem value="contour">Find Contours</SelectItem>
+            <SelectItem value="adaptive">Adaptive Threshold</SelectItem>
+            <SelectItem value="bilateral">Bilateral Filter</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label
+          htmlFor="custom-code"
+          className="bg-linear-to-r from-cyan-600 to-blue-600 bg-clip-text text-sm font-semibold text-transparent dark:from-cyan-400 dark:to-blue-400"
+        >
+          Custom OpenCV Code
+        </Label>
+        <Textarea
+          id="custom-code"
+          value={customCode}
+          onChange={(e) => setCustomCode(e.target.value)}
+          placeholder={
+            "// Write your OpenCV.js code here\n" +
+            "// Available variables: cv, src (input Mat), dst (output Mat)\n\n" +
+            "// Example:\ncv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY);"
+          }
+          className="font-mono text-xs"
+          rows={12}
+        />
+      </div>
+
+      {codeError && (
+        <Alert variant="destructive">
+          <AlertDescription className="text-xs">{codeError}</AlertDescription>
+        </Alert>
+      )}
+
+      <Button
+        onClick={onExecuteCode}
+        disabled={!customCode || processing}
+        className="w-full bg-linear-to-r from-cyan-500 to-blue-500 text-white hover:from-cyan-600 hover:to-blue-600"
+      >
+        <Code2 className="mr-2 size-4" />
+        Execute Code
+      </Button>
+
+      <div className="rounded-md border border-cyan-200 bg-linear-to-r from-cyan-50/50 to-blue-50/50 p-3 text-xs dark:border-cyan-800 dark:from-cyan-950/20 dark:to-blue-950/20">
+        <p className="text-gray-600 dark:text-gray-400">
+          <strong className="text-cyan-600 dark:text-cyan-400">Tip:</strong> Your code has access to the OpenCV.js
+          library via <code className="rounded bg-cyan-100 px-1 dark:bg-cyan-900">cv</code>, the source image as{" "}
+          <code className="rounded bg-cyan-100 px-1 dark:bg-cyan-900">src</code>, and output image as{" "}
+          <code className="rounded bg-cyan-100 px-1 dark:bg-cyan-900">dst</code>. Make sure to delete any temporary Mats
+          to avoid memory leaks.
+        </p>
+      </div>
+    </div>
+  );
+};

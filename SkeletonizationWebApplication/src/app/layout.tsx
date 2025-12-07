@@ -7,6 +7,7 @@ import { PrivateLayout } from "@/components/layout/private-layout";
 import { PublicLayout } from "@/components/layout/public-layout";
 import { auth } from "@/auth";
 import { getUserPreferences } from "@/repositories/preferences";
+import { OpenCvScript } from "@/scripts/opencv";
 
 export const metadata: Metadata = {
   title: "Skeletonization Web Application"
@@ -25,6 +26,9 @@ const RootLayout = async ({
 
   return (
     <html lang="en">
+      <head>
+        <OpenCvScript />
+      </head>
       <body className="flex min-h-full flex-col bg-gray-50 dark:bg-gray-950">
         <Providers
           initialTheme={userPreferences?.theme ?? "system"}

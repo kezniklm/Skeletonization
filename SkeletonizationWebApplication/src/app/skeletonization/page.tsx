@@ -16,9 +16,7 @@ const SkeletonizationPage = async () => {
         <h1 className="bg-linear-to-r from-cyan-600 to-blue-600 bg-clip-text text-4xl font-bold text-transparent xl:text-3xl 2xl:text-4xl dark:from-cyan-400 dark:to-blue-400">
           Skeletonization
         </h1>
-        <p className="mt-2 text-gray-600 xl:text-sm 2xl:text-base dark:text-gray-400">
-          xxxx
-        </p>
+        <p className="mt-2 text-gray-600 xl:text-sm 2xl:text-base dark:text-gray-400">xxxx</p>
       </div>
     </div>
   );

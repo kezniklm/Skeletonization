@@ -4,6 +4,8 @@ import { createHash } from "crypto";
 import { mkdir, unlink, writeFile } from "fs/promises";
 import { join } from "path";
 
+import { getExtension, getMimeType } from "@/app/preprocessing/utils/format-mapper";
+import { type FileOutputFormat } from "@/database/zod";
 import { updateImageSchema } from "@/database/zod/image";
 import { createImage, deleteImage, getImageByChecksum, getImageById, updateImage } from "@/repositories/image";
 
@@ -181,4 +183,67 @@ export const deleteImageAction = async (imageId: string) => {
   }
 
   await deleteImage(imageId);
+};
+
+export const savePreprocessedImageAction = async (
+  imageId: string,
+  imageDataUrl: string,
+  outputFormat: FileOutputFormat = "PNG"
+) => {
+  const user = await requireUser("save preprocessed images");
+
+  const originalImage = await getImageById(imageId);
+
+  if (!originalImage) {
+    throw new Error("Original image not found");
+  }
+
+  if (originalImage.userId !== user.id) {
+    throw new Error("You can only preprocess your own images");
+  }
+
+  const base64Data = imageDataUrl.replace(/^data:image\/\w+;base64,/, "");
+  const buffer = Buffer.from(base64Data, "base64");
+
+  const checksum = createHash("sha256").update(buffer).digest("hex");
+
+  const existingImage = await getImageByChecksum(checksum, user.id);
+
+  if (existingImage) {
+    return existingImage;
+  }
+
+  const timestamp = Date.now();
+  const sanitizedFilename = originalImage.originalFilename.replace(/\.(png|jpg|jpeg|bmp|tiff)$/i, "");
+  const fileExtension = getExtension(outputFormat);
+  const mimeType = getMimeType(outputFormat);
+  const filename = `${timestamp}_${sanitizedFilename}_preprocessed.${fileExtension}`;
+
+  const storagePath = join(PUBLIC_UPLOADS_DIR, user.id, filename);
+  const fullPath = join(process.cwd(), "public", storagePath);
+  const imageUrl = `/${storagePath.replace(/\\/g, "/")}`;
+
+  const userUploadDir = join(process.cwd(), "public", PUBLIC_UPLOADS_DIR, user.id);
+
+  await mkdir(userUploadDir, { recursive: true });
+
+  await writeFile(fullPath, buffer);
+
+  const dimensions = await getImageDimensions(buffer, mimeType);
+
+  const imageRecord = await createImage({
+    userId: user.id,
+    originalFilename: `${sanitizedFilename}_preprocessed.${fileExtension}`,
+    storagePath,
+    url: imageUrl,
+    mime: mimeType,
+    width: dimensions.width,
+    height: dimensions.height,
+    sizeBytes: buffer.length,
+    checksum,
+    status: "derived",
+    parentImageId: imageId
+  });
+
+  return imageRecord;
 };

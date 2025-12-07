@@ -10,6 +10,15 @@ export const getUserPreferences = async (userId: string) => {
   return preferences ?? null;
 };
 
+export const getUserDefaultOutputFormatPreferences = async (userId: string) => {
+  const [{ defaultOutputFormat }] = await db
+    .select({ defaultOutputFormat: userPreferences.defaultOutputFormat })
+    .from(userPreferences)
+    .where(eq(userPreferences.userId, userId));
+
+  return defaultOutputFormat;
+};
+
 export const createUserPreferences = async (userId: string) => {
   const [newPreferences] = await db.insert(userPreferences).values({ userId }).returning();
 

@@ -10,8 +10,23 @@ export const getImageById = async (imageId: string) => {
   return result ?? null;
 };
 
+export const getImageByIdAndUserId = async (imageId: string | undefined, userId: string) => {
+  if (!imageId) {
+    return null;
+  }
+
+  const [result] = await db
+    .select()
+    .from(image)
+    .where(and(eq(image.id, imageId), eq(image.userId, userId)));
+
+  return result ?? null;
+};
+
 export const getImagesByUserId = async (userId: string) =>
   db.select().from(image).where(eq(image.userId, userId)).orderBy(desc(image.createdAt));
+
+export const getImagesCountByUserId = async (userId: string) => db.$count(image, eq(image.userId, userId));
 
 export const getImagesByUserIdPaginated = async (
   userId: string,
