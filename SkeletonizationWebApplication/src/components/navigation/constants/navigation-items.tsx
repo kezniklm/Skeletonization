@@ -10,12 +10,6 @@ export type NavigationItem = {
 
 export const navigationItems: NavigationItem[] = [
   {
-    name: "Lab",
-    href: "/",
-    icon: <Network className="h-4 w-4" />,
-    description: "Processing workspace"
-  },
-  {
     name: "Images",
     href: "/images",
     icon: <ImageIcon className="h-4 w-4" />,
@@ -32,5 +26,11 @@ export const navigationItems: NavigationItem[] = [
     href: "/skeletonization",
     icon: <Binary className="h-4 w-4" />,
     description: "Thinning algorithms"
+  },
+  {
+    name: "Lab",
+    href: "/lab",
+    icon: <Network className="h-4 w-4" />,
+    description: "Processing workspace"
   }
 ];

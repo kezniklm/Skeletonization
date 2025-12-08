@@ -60,7 +60,7 @@ export const WelcomeBack = ({ className, userName }: WelcomeBackProps) => (
               Upload New Image
             </NavigationLink>
             <NavigationLink
-              href="/skeletonization#history"
+              href="/lab"
               className="block w-full rounded-lg border border-blue-200 bg-white/80 px-4 py-2.5 text-center text-sm font-medium text-gray-700 shadow-sm backdrop-blur-sm transition-all hover:border-blue-300 hover:bg-white hover:shadow-md xl:px-3.5 xl:py-2 xl:text-xs 2xl:px-4 2xl:py-2.5 2xl:text-sm dark:border-gray-600 dark:bg-gray-700/80 dark:text-gray-200 dark:hover:border-gray-500 dark:hover:bg-gray-700"
             >
               View Processing History
