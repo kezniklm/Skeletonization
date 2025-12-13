@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, lt, or } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, lt, or } from "drizzle-orm";
 
 import { db } from "@/database";
 import { image, type imageStatusEnum } from "@/database/schema/image";
@@ -25,6 +25,8 @@ export const getImageByIdAndUserId = async (imageId: string | undefined, userId:
 
 export const getImagesByUserId = async (userId: string) =>
   db.select().from(image).where(eq(image.userId, userId)).orderBy(desc(image.createdAt));
+
+export const getImagesByIds = async (ids: string[]) => db.select().from(image).where(inArray(image.id, ids));
 
 export const getImagesCountByUserId = async (userId: string) => db.$count(image, eq(image.userId, userId));
 

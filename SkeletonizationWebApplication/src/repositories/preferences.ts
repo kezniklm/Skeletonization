@@ -19,6 +19,15 @@ export const getUserDefaultOutputFormatPreferences = async (userId: string) => {
   return defaultOutputFormat;
 };
 
+export const getUserPushNotificationsPreferences = async (userId: string) => {
+  const [{ pushNotifications }] = await db
+    .select({ pushNotifications: userPreferences.pushNotifications })
+    .from(userPreferences)
+    .where(eq(userPreferences.userId, userId));
+
+  return pushNotifications;
+};
+
 export const createUserPreferences = async (userId: string) => {
   const [newPreferences] = await db.insert(userPreferences).values({ userId }).returning();
 

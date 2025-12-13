@@ -61,18 +61,10 @@ entity image {
   created_at: timestamp
 }
 
-entity algorithm {
-  id: uuid <<PK>>
-  name: text
-  description: text
-  created_at: timestamp
-}
-
 entity run {
   id: uuid <<PK>>
   user_id: uuid <<FK to user.id>>
   name: text
-  algorithm_id: uuid <<FK to algorithm.id>>
   params: jsonb
   status: text        -- pending/running/failed/completed/cancelled
   created_at: timestamp
@@ -84,9 +76,10 @@ entity run_image {
   id: uuid <<PK>>
   run_id: uuid <<FK to run.id>>
   image_id: uuid <<FK to image.id>>
+  algorithm: text     -- Zhang-Suen/Guo-Hall/K3M/KMM/Choi-Lam-Siu/Han-La-Rhee/Kwon-Kang/Petrosino-Salvi/Tarabek
   ordinal: integer
   params: jsonb
-  status: text
+  status: text        -- pending/processing/completed/failed
   attempt: integer
   created_at: timestamp
   processed_at: timestamp
@@ -122,7 +115,6 @@ user ||-down--o{ account : has
 user ||--down--o{ user_preferences : has preferences
 user ||--down--o{ image : owns
 user ||--down--o{ run : created
-algorithm ||--o{ run : used_by
 run ||--o{ run_image : contains
 image ||--o{ run_image : used_in
 run_image ||--o{ output : generates

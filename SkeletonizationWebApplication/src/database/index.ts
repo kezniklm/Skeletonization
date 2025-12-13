@@ -3,7 +3,6 @@ import "dotenv/config";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
-import { algorithm } from "./schema/algorithm";
 import { account, session, user, verification } from "./schema/auth";
 import { image } from "./schema/image";
 import { job } from "./schema/job";
@@ -22,7 +21,6 @@ export const db = drizzle(client, {
     verification,
     userPreferences,
     image,
-    algorithm,
     run,
     runImage,
     output,

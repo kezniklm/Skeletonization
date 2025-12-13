@@ -34,6 +34,12 @@ export const createRunImage = async (runImageData: InsertRunImage) => {
   return newRunImage;
 };
 
+export const createRunImagesBulk = async (runImagesData: InsertRunImage[]) => {
+  if (runImagesData.length === 0) return [];
+  const newRunImages = await db.insert(runImage).values(runImagesData).returning();
+  return newRunImages;
+};
+
 export const updateRunImage = async (runImageId: string, runImageData: Partial<UpdateRunImage>) => {
   const [updated] = await db.update(runImage).set(runImageData).where(eq(runImage.id, runImageId)).returning();
 

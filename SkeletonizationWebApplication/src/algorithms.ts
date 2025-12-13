@@ -8,4 +8,6 @@ export const algorithms = [
   "Kwon-Kang",
   "Petrosino-Salvi",
   "Tarabek"
-];
+] as const;
+
+export type Algorithm = (typeof algorithms)[number];

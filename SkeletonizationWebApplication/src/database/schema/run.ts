@@ -1,6 +1,5 @@
 import { jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
-import { algorithm } from "./algorithm";
 import { user } from "./auth";
 
 export const runStatusEnum = ["pending", "running", "failed", "completed", "cancelled"] as const;
@@ -11,9 +10,6 @@ export const run = pgTable("run", {
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
-  algorithmId: uuid("algorithm_id")
-    .notNull()
-    .references(() => algorithm.id, { onDelete: "restrict" }),
   params: jsonb("params"),
   status: text("status", { enum: runStatusEnum }).default("pending").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),

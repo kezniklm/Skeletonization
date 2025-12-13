@@ -31,6 +31,12 @@ export const createJob = async (jobData: InsertJob) => {
   return newJob;
 };
 
+export const createJobsBulk = async (jobsData: InsertJob[]) => {
+  if (jobsData.length === 0) return [];
+  const newJobs = await db.insert(job).values(jobsData).returning();
+  return newJobs;
+};
+
 export const updateJob = async (jobId: string, jobData: Partial<UpdateJob>) => {
   const [updated] = await db.update(job).set(jobData).where(eq(job.id, jobId)).returning();
 
