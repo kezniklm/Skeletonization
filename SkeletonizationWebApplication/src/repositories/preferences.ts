@@ -4,10 +4,10 @@ import { db } from "@/database";
 import { userPreferences } from "@/database/schema/preferences";
 import { type UserPreferences } from "@/database/zod/preferences";
 
-export const getUserPreferences = async (userId: string) => {
+export const getOrCreateUserPreferences = async (userId: string) => {
   const [preferences] = await db.select().from(userPreferences).where(eq(userPreferences.userId, userId));
 
-  return preferences ?? null;
+  return preferences ?? (await createUserPreferences(userId));
 };
 
 export const getUserDefaultOutputFormatPreferences = async (userId: string) => {
@@ -34,13 +34,7 @@ export const createUserPreferences = async (userId: string) => {
   return newPreferences;
 };
 
-export const upsertUserPreferences = async (preferencesData: Partial<UserPreferences>, userId: string) => {
-  const existing = await getUserPreferences(userId);
-
-  if (!existing) {
-    return createUserPreferences(userId);
-  }
-
+export const updatePreferences = async (preferencesData: UserPreferences, userId: string) => {
   const [updated] = await db
     .update(userPreferences)
     .set(preferencesData)
@@ -49,6 +43,3 @@ export const upsertUserPreferences = async (preferencesData: Partial<UserPrefere
 
   return updated;
 };
-
-export const updatePreferences = async (preferencesData: UserPreferences, userId: string) =>
-  upsertUserPreferences(preferencesData, userId);

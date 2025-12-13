@@ -2,7 +2,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { auth } from "@/auth";
-import { getUserPreferences } from "@/repositories/preferences";
+import { getOrCreateUserPreferences } from "@/repositories/preferences";
 
 import { SettingsForm } from "./settings-form";
 
@@ -13,7 +13,7 @@ const SettingsPage = async () => {
     redirect("/");
   }
 
-  const userPreferences = (await getUserPreferences(session.user.id)) ?? null;
+  const userPreferences = await getOrCreateUserPreferences(session.user.id);
 
   return (
     <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-0 2xl:max-w-5xl">

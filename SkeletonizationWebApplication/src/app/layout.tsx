@@ -6,8 +6,9 @@ import { Providers } from "@/components/layout/providers";
 import { PrivateLayout } from "@/components/layout/private-layout";
 import { PublicLayout } from "@/components/layout/public-layout";
 import { auth } from "@/auth";
-import { getUserPreferences } from "@/repositories/preferences";
+import { getOrCreateUserPreferences } from "@/repositories/preferences";
 import { OpenCvScript } from "@/scripts/opencv";
+import { defaultPreferences } from "@/database/schema/preferences";
 
 export const metadata: Metadata = {
   title: "Skeletonization Web Application"
@@ -22,7 +23,7 @@ const RootLayout = async ({
 
   const isLoggedIn = session?.user ? true : false;
 
-  const userPreferences = session?.user ? await getUserPreferences(session.user.id) : null;
+  const userPreferences = session?.user ? await getOrCreateUserPreferences(session.user.id) : null;
 
   return (
     <html lang="en">
@@ -31,8 +32,8 @@ const RootLayout = async ({
       </head>
       <body className="flex min-h-full flex-col bg-gray-50 dark:bg-gray-950">
         <Providers
-          initialTheme={userPreferences?.theme ?? "system"}
-          compactMode={userPreferences?.compactMode ?? false}
+          initialTheme={userPreferences?.theme ?? defaultPreferences.theme}
+          compactMode={userPreferences?.compactMode ?? defaultPreferences.compactMode}
         >
           {isLoggedIn ? <PrivateLayout>{children}</PrivateLayout> : <PublicLayout>{children}</PublicLayout>}
         </Providers>

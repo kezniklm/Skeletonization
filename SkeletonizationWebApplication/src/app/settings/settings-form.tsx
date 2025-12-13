@@ -6,16 +6,17 @@ import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { FormSelect, FormToggle } from "@/components/form";
-import { type UserPreferences, userPreferencesSchema, defaultPreferences } from "@/database/zod/preferences";
+import { type UserPreferences, userPreferencesSchema } from "@/database/zod/preferences";
 import { updatePreferencesAction } from "@/server-actions/preferences";
 import { useTheme } from "@/contexts/theme-context";
 import { useCompactMode } from "@/contexts/compact-mode-context";
+import { defaultPreferences } from "@/database/schema/preferences";
 
 import { SettingsCard } from "./settings-card";
 
 type SettingsFormProps = {
   userId: string;
-  initialPreferences: UserPreferences | null;
+  initialPreferences: UserPreferences;
 };
 
 export const SettingsForm = ({ userId, initialPreferences }: SettingsFormProps) => {
@@ -24,7 +25,7 @@ export const SettingsForm = ({ userId, initialPreferences }: SettingsFormProps) 
 
   const methods = useForm<UserPreferences>({
     resolver: zodResolver(userPreferencesSchema),
-    defaultValues: initialPreferences ?? defaultPreferences
+    defaultValues: initialPreferences
   });
 
   const {

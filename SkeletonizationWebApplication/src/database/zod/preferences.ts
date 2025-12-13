@@ -8,12 +8,3 @@ export const userPreferencesSchema = createInsertSchema(userPreferences).omit({ 
 export type UserPreferences = z.infer<typeof userPreferencesSchema>;
 
 export type FileOutputFormat = z.infer<typeof userPreferencesSchema.shape.defaultOutputFormat>;
-
-export const defaultPreferences: UserPreferences = {
-  theme: "system",
-  compactMode: false,
-  pushNotifications: true,
-  timezone: "UTC",
-  autoSaveResults: true,
-  defaultOutputFormat: "PNG"
-};
