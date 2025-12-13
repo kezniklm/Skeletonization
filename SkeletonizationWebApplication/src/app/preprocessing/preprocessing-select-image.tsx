@@ -4,8 +4,9 @@ import { useRef, useState, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import { FolderOpen, Image as ImageIcon, Loader2, Upload } from "lucide-react";
 
+import { EmptyState } from "@/components/empty-state";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -200,35 +201,15 @@ export const PreprocessingSelectImage = ({ availableImagesCount }: Preprocessing
       />
 
       {availableImagesCount === 0 ? (
-        <Card className="border-2 border-dashed border-cyan-300 bg-linear-to-br from-cyan-50/50 to-blue-50/50 shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-cyan-400 hover:shadow-xl dark:border-cyan-700 dark:from-cyan-950/20 dark:to-blue-950/20 dark:hover:border-cyan-600">
-          <CardContent className="flex min-h-[300px] flex-col items-center justify-center space-y-4 py-12">
-            <div className="rounded-full bg-linear-to-r from-cyan-500 to-blue-500 p-4">
-              <ImageIcon className="size-10 text-white" />
-            </div>
-            <div className="space-y-2 text-center">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white">No Images Yet</h3>
-              <p className="max-w-md text-sm text-gray-600 dark:text-gray-400">
-                Upload your first image to start preprocessing with advanced filters and transformations
-              </p>
-            </div>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Button onClick={handlePickFile} disabled={uploading}>
-                {uploading ? (
-                  <>
-                    <Loader2 className="mr-2 size-4 animate-spin" />
-                    Uploading...
-                  </>
-                ) : (
-                  <>
-                    <Upload className="mr-2 size-5" />
-                    Upload Image
-                  </>
-                )}
-              </Button>
-            </div>
-            <p className="text-xs text-gray-500 dark:text-gray-500">PNG, JPEG, BMP, TIFF • Max 10MB</p>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={ImageIcon}
+          title="No Images Yet"
+          description="Upload your first image to start preprocessing with advanced filters and transformations"
+          actionLabel={uploading ? "Uploading..." : "Upload Image"}
+          actionIcon={uploading ? Loader2 : Upload}
+          onAction={handlePickFile}
+          helpText="PNG, JPEG, BMP, TIFF • Max 10MB"
+        />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 xl:gap-6">
           <Card className="group overflow-hidden border-2 border-dashed border-cyan-300 bg-linear-to-br from-cyan-50/50 to-blue-50/50 shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-cyan-400 hover:shadow-xl dark:border-cyan-700 dark:from-cyan-950/20 dark:to-blue-950/20 dark:hover:border-cyan-600">
