@@ -13,9 +13,6 @@ export const getRunById = async (runId: string) => {
 export const getRunsByUserId = async (userId: string) =>
   db.select().from(run).where(eq(run.userId, userId)).orderBy(desc(run.createdAt));
 
-export const getRunsByAlgorithmId = async (algorithmId: string) =>
-  db.select().from(run).where(eq(run.algorithmId, algorithmId)).orderBy(desc(run.createdAt));
-
 export const getRunsByStatus = async (status: (typeof runStatusEnum)[number]) =>
   db.select().from(run).where(eq(run.status, status)).orderBy(desc(run.createdAt));
 
