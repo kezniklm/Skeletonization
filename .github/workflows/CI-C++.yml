@@ -37,11 +37,11 @@ jobs:
             matrix:
                 include:
                     # Linux
-                    # - os: ubuntu
-                    #   arch: x64
-                    #   runs-on: ubuntu-latest
-                    #   preset: x64-release-linux
-                    #   cpp: 23
+                    - os: ubuntu
+                      arch: x64
+                      runs-on: ubuntu-latest
+                      preset: x64-release-linux
+                      cpp: 23
                     # - os: ubuntu-22.04 -> Not available, it is only in preview and not available in the Github repository
                     #   arch: arm64
                     #   runs-on: ubuntu-22.04
@@ -61,22 +61,17 @@ jobs:
                     #   cpp: 23
 
                     # macOS
-                    # - os: macos
-                    #   arch: x64
-                    #   runs-on: macos-latest-large
-                    #   preset: x64-release-linux
-                    #   cpp: 23
-                    # - os: macos
-                    #   arch: arm64
-                    #   runs-on: macos-latest
-                    #   preset: x64-release-linux
-                    #   cpp: 23
+                    - os: macos
+                      arch: arm64
+                      runs-on: macos-latest
+                      preset: x64-release-linux
+                      cpp: 23
 
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
 
-            - name: Cleanup runner (Linux)
+            - name: Cleanup runner (Linux) - otherwise build fails due to lack of disk space
               if: runner.os == 'Linux'
               run: |
                   # Remove Java (JDKs)
@@ -145,7 +140,6 @@ jobs:
               if: runner.os == 'Linux'
               run: |
                   sudo apt-get update
-                  sudo apt-get install -y g++-14 gcc-14 ninja-build
                   sudo apt-get install -y \
                     build-essential git \
                     libxi-dev libxtst-dev libx11-dev libxext-dev \
@@ -154,9 +148,6 @@ jobs:
                     autoconf automake autoconf-archive wget \
                     lsb-release gnupg libltdl-dev libtool libtool-bin \
                     m4 pkg-config ninja-build gettext
-
-                  sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100
-                  sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 100
 
             - name: Install dependencies (macOS)
               if: runner.os == 'macOS'
