@@ -103,6 +103,8 @@ else()
     add_compile_definitions(SKELETONIZATION_WITH_GPU=0)
 endif()
 
+enable_testing()
+
 add_subdirectory(SkeletonizationPython)
 add_subdirectory(SkeletonizationVisualizer)
 add_subdirectory(SkeletonizationTests)
