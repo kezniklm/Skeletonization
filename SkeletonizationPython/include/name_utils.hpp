@@ -5,7 +5,6 @@
 
 enum class name_policy { underscore_namespaces, unqualified };
 
-
 inline void erase_all(std::string& s, const std::string_view needle)
 {
 	for (std::size_t pos = 0; (pos = s.find(needle, pos)) != std::string::npos;)

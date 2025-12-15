@@ -4,27 +4,60 @@ if(NOT SKELETONIZATION_ENABLE_GPU)
     return()
 endif()
 
-cmake_minimum_required(VERSION 3.30)
-project(SkeletonizationCoreGPU)
-
 include(${CMAKE_CURRENT_SOURCE_DIR}/vcpkg-deps.cmake)
 
-file(GLOB_RECURSE GPU_MODULES CONFIGURE_DEPENDS source/*.ixx)
+file(GLOB_RECURSE GPU_CPP_FILES
+    CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+)
 
-file(GLOB_RECURSE GPU_CUDA_FILES CONFIGURE_DEPENDS source/*.cu)
+file(GLOB_RECURSE GPU_CUDA_FILES
+    CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cu"
+)
 
-set(CMAKE_CUDA_STANDARD 17)
-set(CMAKE_CUDA_STANDARD_REQUIRED ON)
-set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Wno-deprecated-gpu-targets")
+file(GLOB_RECURSE GPU_HEADER_FILES
+    CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/*.cuh"
+)
 
 add_library(SkeletonizationCoreGPU)
 
+add_library(Skeletonization::CoreGPU ALIAS SkeletonizationCoreGPU)
+
 target_sources(SkeletonizationCoreGPU
-    PUBLIC
-    FILE_SET modules TYPE CXX_MODULES FILES
-    ${GPU_MODULES}
     PRIVATE
+    ${GPU_CPP_FILES}
     ${GPU_CUDA_FILES}
+    PUBLIC
+    FILE_SET HEADERS
+    BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    FILES ${GPU_HEADER_FILES}
 )
 
-target_link_libraries(SkeletonizationCoreGPU PUBLIC SkeletonizationCore)
+target_include_directories(SkeletonizationCoreGPU
+    PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+
+set_target_properties(SkeletonizationCoreGPU PROPERTIES
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED YES
+    CXX_EXTENSIONS OFF
+
+    CUDA_STANDARD 20
+    CUDA_STANDARD_REQUIRED YES
+    CUDA_EXTENSIONS OFF
+)
+
+target_compile_options(SkeletonizationCoreGPU
+    PRIVATE
+    $<$<COMPILE_LANGUAGE:CUDA>:-Wno-deprecated-gpu-targets>
+)
+
+target_link_libraries(SkeletonizationCoreGPU
+    PUBLIC
+    Skeletonization::Core
+)

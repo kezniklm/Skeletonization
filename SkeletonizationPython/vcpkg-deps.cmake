@@ -1,7 +1,3 @@
 set(PYBIND11_FINDPYTHON ON)
 
 find_package(pybind11 REQUIRED CONFIG)
-
-file(GLOB_RECURSE PYTHON_WRAPPER_SOURCES CONFIGURE_DEPENDS source/*.ixx)
-
-pybind11_add_module(SkeletonizationPython ${PYTHON_WRAPPER_SOURCES})

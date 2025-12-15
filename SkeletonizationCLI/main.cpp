@@ -1,8 +1,8 @@
 #include <string>
 
-import commandline;
-import benchmark;
-import logger;
+#include "SkeletonizationCLI/logger/logger.hpp"
+#include "SkeletonizationCLI/commandline/parser.hpp"
+#include "SkeletonizationCLI/benchmark/manager.hpp"
 
 int main(const int argc, const char* const * argv)
 {

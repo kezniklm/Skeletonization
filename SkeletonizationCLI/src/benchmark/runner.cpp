@@ -1,0 +1,105 @@
+#include "SkeletonizationCLI/benchmark/runner.hpp"
+
+#include <functional>
+#include <map>
+#include <string>
+#include <utility>
+
+#include <benchmark/benchmark.h>
+#include <opencv2/opencv.hpp>
+
+#include "glog/logging.h"
+#include "SkeletonizationCLI/commandline/arguments.hpp"
+#include "SkeletonizationCLI/visual_inspector/image_container.hpp"
+#include "SkeletonizationCore/configuration/types.hpp"
+#include "SkeletonizationCore/extensions/image_processing.hpp"
+#include "SkeletonizationCore/skeletonizer/skeletonizer.hpp"
+
+
+namespace skeletonization_benchmark
+{
+	runner::runner(const configuration::image_benchmark_metadata& image_metadata)
+		: image_metadata_(image_metadata)
+		  , input_image_(read_image(image_metadata.path))
+		  , binary_image_(global_arguments().run_image_preprocessing
+			                  ? preprocess_image(input_image_)
+			                  : input_image_)
+	{
+	}
+
+	void runner::register_all_benchmarks()
+	{
+		for (const auto& [type, creators] : image_metadata_.skeletonizers)
+		{
+			for (const auto& creator : creators)
+			{
+				auto skeletonizer_instance = creator();
+
+				const auto name =
+					create_benchmark_name(skeletonizer_instance->name(), type);
+
+				register_benchmark(name, std::move(skeletonizer_instance));
+			}
+		}
+	}
+
+	visual_inspector::image_container runner::process_benchmark_results() const
+	{
+		visual_inspector::image_container image_container(image_metadata_.name);
+
+		constexpr auto default_input_image_name = "Original Image";
+
+		image_container.add_image(input_image_, default_input_image_name);
+
+		for (const auto& [name, image] : results_)
+		{
+			if (name.empty())
+			{
+				image_container.add_image(image);
+			}
+			else
+			{
+				image_container.add_image(image, name);
+			}
+		}
+
+		return image_container;
+	}
+
+	void runner::register_benchmark(const std::string& name,
+	                                std::unique_ptr<skeletonizer::skeletonizer<>> skeletonizer_instance)
+	{
+		const auto& arguments = global_arguments();
+
+		if (name.size() > max_total_algorithm_name_length)
+		{
+			LOG(WARNING) << "Skipping benchmark for \"" << name
+				<< "\" (name too long, limit is "
+				<< user_algorithm_name_length << " characters)"
+				<< std::endl << std::endl;
+			return;
+		}
+
+		benchmark::RegisterBenchmark(
+			name,
+			[this,
+				name,
+				skeletonizer = std::move(skeletonizer_instance)](benchmark::State& state) mutable
+			{
+				for (auto _ : state)
+				{
+					auto image = binary_image_.clone();
+
+					skeletonizer->apply(image);
+
+					results_[name] = scale(image);
+				}
+			})->Iterations(arguments.number_of_benchmark_iterations);
+	}
+
+	std::string runner::create_benchmark_name(const std::string& skeletonizer_name,
+	                                          const skeletonizer::skeletonizer_type type) const
+	{
+		return image_metadata_.name + "/" + skeletonizer_name + "/" + to_string(type);
+	}
+}

@@ -1,17 +1,28 @@
 ﻿# CMakeList.txt : SkeletonizationCoreCPU
 
-cmake_minimum_required(VERSION 3.30)
-project(SkeletonizationCoreCPU)
-
 include(${CMAKE_CURRENT_SOURCE_DIR}/vcpkg-deps.cmake)
 
-file(GLOB_RECURSE CORE_SOURCES CONFIGURE_DEPENDS source/*.ixx)
+file(GLOB_RECURSE CORE_CPU_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+
+file(GLOB_RECURSE CORE_CPU_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp")
 
 add_library(SkeletonizationCoreCPU)
 
-target_sources(SkeletonizationCoreCPU
-    PUBLIC
-    FILE_SET modules TYPE CXX_MODULES FILES
-    ${CORE_SOURCES})
+add_library(Skeletonization::CoreCPU ALIAS SkeletonizationCoreCPU)
 
-target_link_libraries(SkeletonizationCoreCPU PUBLIC SkeletonizationCore)
+target_sources(SkeletonizationCoreCPU
+    PRIVATE
+    ${CORE_CPU_SOURCES}
+    PUBLIC
+    FILE_SET HEADERS
+    BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    FILES ${CORE_CPU_HEADERS}
+)
+
+target_include_directories(SkeletonizationCoreCPU
+    PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+
+target_link_libraries(SkeletonizationCoreCPU PUBLIC Skeletonization::Core)

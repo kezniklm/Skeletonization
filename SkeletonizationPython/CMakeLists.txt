@@ -1,20 +1,39 @@
 ﻿# CMakeList.txt : SkeletonizationPython
 
-cmake_minimum_required(VERSION 3.30)
-project(SkeletonizationPython)
+include("${CMAKE_CURRENT_SOURCE_DIR}/vcpkg-deps.cmake")
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/vcpkg-deps.cmake)
+file(GLOB_RECURSE PYTHON_WRAPPER_SOURCES
+    CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+)
 
-file(GLOB_RECURSE PYTHON_WRAPPER_SOURCES CONFIGURE_DEPENDS source/*.cpp)
+file(GLOB_RECURSE PYTHON_WRAPPER_HEADERS
+    CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp"
+)
 
-target_sources(SkeletonizationPython PRIVATE ${PYTHON_WRAPPER_SOURCES})
+pybind11_add_module(SkeletonizationPython
+    ${PYTHON_WRAPPER_SOURCES}
+    ${PYTHON_WRAPPER_HEADERS}
+)
 
-target_include_directories(SkeletonizationPython PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set_target_properties(SkeletonizationPython PROPERTIES OUTPUT_NAME "skeletonization")
 
-target_link_libraries(SkeletonizationPython PRIVATE SkeletonizationCore SkeletonizationCoreCPU SkeletonizationCoreMT)
+target_include_directories(SkeletonizationPython
+    PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/include"
+)
+
+target_link_libraries(SkeletonizationPython
+    PRIVATE
+    Skeletonization::Core
+    Skeletonization::CoreCPU
+    Skeletonization::CoreMT
+)
 
 if(SKELETONIZATION_ENABLE_GPU)
-    target_link_libraries(SkeletonizationPython PRIVATE SkeletonizationCoreGPU)
+    target_link_libraries(SkeletonizationPython
+        PRIVATE
+        Skeletonization::CoreGPU
+    )
 endif()
-
-set_target_properties(SkeletonizationPython PROPERTIES OUTPUT_NAME skeletonization)

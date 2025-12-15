@@ -9,10 +9,10 @@ namespace skelpy
 {
 	struct algorithm_info
 	{
-		std::string id; // C++ class name (or whatever you choose)
-		std::string py; // Python callable name
-		std::string display; // Human label
-		std::string description; // Optional
+		std::string id;
+		std::string py;
+		std::string display;
+		std::string description;
 		int fg{1}, sk{1}, bg{0};
 		std::vector<std::string> tags;
 

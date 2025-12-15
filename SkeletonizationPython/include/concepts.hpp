@@ -1,6 +1,6 @@
 #pragma once
 
-import skeletonizer;
+#include "SkeletonizationCore/skeletonizer/skeletonizer.hpp"
 
 template <class T, template<int, int, int> class Template>
 struct is_derived_from_template
