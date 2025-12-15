@@ -6,7 +6,7 @@ file(GLOB_RECURSE CORE_CPU_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR
 
 file(GLOB_RECURSE CORE_CPU_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp")
 
-add_library(SkeletonizationCoreCPU)
+add_library(SkeletonizationCoreCPU SHARED)
 
 add_library(Skeletonization::CoreCPU ALIAS SkeletonizationCoreCPU)
 

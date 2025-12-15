@@ -6,7 +6,7 @@ file(GLOB_RECURSE CORE_THREAD_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_
 
 file(GLOB_RECURSE CORE_THREAD_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp")
 
-add_library(SkeletonizationCoreMT)
+add_library(SkeletonizationCoreMT SHARED)
 
 add_library(Skeletonization::CoreMT ALIAS SkeletonizationCoreMT)
 
