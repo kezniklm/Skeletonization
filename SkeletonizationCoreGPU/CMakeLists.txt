@@ -22,7 +22,7 @@ file(GLOB_RECURSE GPU_HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/include/*.cuh"
 )
 
-add_library(SkeletonizationCoreGPU SHARED)
+add_library(SkeletonizationCoreGPU)
 
 add_library(Skeletonization::CoreGPU ALIAS SkeletonizationCoreGPU)
 
