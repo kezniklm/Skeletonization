@@ -26,7 +26,12 @@ namespace visual_inspector
 #else
 		const std::string cmd = "xdg-open " + url;
 #endif
-		std::system(cmd.c_str());
+		const auto return_code = std::system(cmd.c_str());
+
+		if (return_code != 0)
+		{
+			LOG(ERROR) << "Failed to open browser with URL: " << url << ". Return code: " << return_code;
+		}
 	}
 
 	class visualizer_server final : public std::enable_shared_from_this<visualizer_server>
@@ -56,10 +61,7 @@ namespace visual_inspector
 					const auto ends_with = [](const std::string_view s,
 					                          const std::string_view suffix)
 					{
-						return s.size() >= suffix.size()
-							&& 0 == s.compare(s.size() - suffix.size(),
-							                  suffix.size(),
-							                  suffix);
+						return s.size() >= suffix.size() && s.ends_with(suffix);
 					};
 
 					if (request->getMethod() != drogon::Get)
@@ -93,12 +95,25 @@ namespace visual_inspector
 		{
 			const auto url = "http://127.0.0.1:" + std::to_string(port_) + "/";
 
-#if defined(_WIN32)
-			ShellExecuteA(nullptr, "open", url.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
-#elif defined(__APPLE__)
-			std::system(std::string("open \"" + url + "\"").c_str());
+#ifdef _WIN32
+			if (ShellExecuteA(nullptr, "open", url.c_str(), nullptr, nullptr, SW_SHOWNORMAL) <= reinterpret_cast<HINSTANCE>(32))
+			{
+				LOG(ERROR) << "Failed to open browser with URL: " << url;
+			}
+#elifdef __APPLE__
+			const auto return_code = std::system(std::string("open \"" + url + "\"").c_str());
+
+			if (return_code != 0)
+			{
+				LOG(ERROR) << "Failed to open browser with URL: " << url << ". Return code: " << return_code;
+			}
 #else
-			std::system(std::string("xdg-open \"" + url + "\"").c_str());
+			const auto return_code = std::system(std::string("xdg-open \"" + url + "\"").c_str());
+
+			if (return_code != 0)
+			{
+				LOG(ERROR) << "Failed to open browser with URL: " << url << ". Return code: " << return_code;
+			}
 #endif
 
 			drogon::app().run();
