@@ -20,7 +20,7 @@ namespace skeletonizer
 		static constexpr int background = BackgroundValue;
 		static constexpr int skeleton = SkeletonValue;
 
-		virtual bool has_changed(const cv::InputArray& difference) const
+		virtual bool has_changed(cv::InputArray& difference) const
 		{
 			return cv::countNonZero(difference) > 0;
 		}
