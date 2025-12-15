@@ -10,12 +10,7 @@
     "gtest",
     "drogon",
     "hiredis",
-    {
-      "name": "opencv4",
-      "features": [
-        "contrib"
-      ]
-    }
+    "opencv4"
   ],
   "features": {
     "cuda": {
@@ -25,8 +20,7 @@
         {
           "name": "opencv4",
           "features": [
-            "cuda",
-            "contrib"
+            "cuda"
           ]
         }
       ]
