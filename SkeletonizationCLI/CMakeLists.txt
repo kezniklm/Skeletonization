@@ -42,7 +42,6 @@ target_link_libraries(SkeletonizationCLI
     RapidJSON
     rapidjson
     Drogon::Drogon
-    glog::glog
 )
 
 if(SKELETONIZATION_ENABLE_GPU)

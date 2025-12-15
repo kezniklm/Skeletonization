@@ -1,6 +1,7 @@
 #include <string>
 
-#include "SkeletonizationCLI/logger/logger.hpp"
+#include "SkeletonizationCore/logger/logger.hpp"
+
 #include "SkeletonizationCLI/commandline/parser.hpp"
 #include "SkeletonizationCLI/benchmark/manager.hpp"
 

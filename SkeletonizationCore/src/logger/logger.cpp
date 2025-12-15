@@ -4,7 +4,7 @@
 #include <iomanip>
 #include <sstream>
 
-#include "SkeletonizationCLI/logger/logger.hpp"
+#include "SkeletonizationCore/logger/logger.hpp"
 
 logger::logger(const std::string_view program_name)
 	: program_name_(program_name)
