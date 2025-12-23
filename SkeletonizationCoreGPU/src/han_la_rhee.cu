@@ -9,7 +9,7 @@ namespace skeletonizer::gpu::algorithms
 		                        gpu_binary_image.type(),
 		                        cv::Scalar(0));
 
-		constexpr dim3 block(block_dimension_x, block_dimension_y);
+		const dim3 block(block_dimension_x, block_dimension_y);
 		const dim3 grid(
 			(gpu_binary_image.cols + block.x - 1) / block.x,
 			(gpu_binary_image.rows + block.y - 1) / block.y);
