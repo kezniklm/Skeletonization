@@ -96,7 +96,8 @@ namespace visual_inspector
 			const auto url = "http://127.0.0.1:" + std::to_string(port_) + "/";
 
 #ifdef _WIN32
-			if (ShellExecuteA(nullptr, "open", url.c_str(), nullptr, nullptr, SW_SHOWNORMAL) <= reinterpret_cast<HINSTANCE>(32))
+			if (ShellExecuteA(nullptr, "open", url.c_str(), nullptr, nullptr, SW_SHOWNORMAL) <= reinterpret_cast<
+				HINSTANCE>(32))
 			{
 				LOG(ERROR) << "Failed to open browser with URL: " << url;
 			}

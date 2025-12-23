@@ -87,4 +87,4 @@ namespace skeletonizer::mt::algorithms
 
 		static inline void postprocessing(cv::Mat& binary_image);
 	};
-} 
+}
