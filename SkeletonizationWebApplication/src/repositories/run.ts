@@ -47,6 +47,8 @@ export const getRunById = async (runId: string) => {
 export const getRunsByUserId = async (userId: string) =>
   db.select().from(run).where(eq(run.userId, userId)).orderBy(desc(run.createdAt));
 
+export const getRunCountByUserId = async (userId: string) => db.$count(run, eq(run.userId, userId));
+
 export const getRunsWithDetailsByUserId = async (userId: string): Promise<LabRun[]> => {
   const inputImage = alias(image, "input_image");
   const producedImage = alias(image, "produced_image");

@@ -31,6 +31,9 @@ export const getImagesByIds = async (ids: string[]) => db.select().from(image).w
 
 export const getImagesCountByUserId = async (userId: string) => db.$count(image, eq(image.userId, userId));
 
+export const getImagesCountByUserIdAndStatus = async (userId: string, status: ImageStatus) =>
+  db.$count(image, and(eq(image.userId, userId), eq(image.status, status)));
+
 export const getImagesByUserIdPaginated = async (
   userId: string,
   options: {

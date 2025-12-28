@@ -1,12 +1,13 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { Calendar } from "lucide-react";
 
 import { auth } from "@/auth";
+import { getImagesCountByUserId, getImagesCountByUserIdAndStatus, getRunCountByUserId } from "@/repositories";
 
 import { ProfileHeader } from "./profile-header";
 import { ProfileSection } from "./profile-section";
 import { ProfileStatistics } from "./profile-statistics";
+import { getProfileSections } from "./sections";
 
 const ProfilePage = async () => {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -15,38 +16,14 @@ const ProfilePage = async () => {
     redirect("/");
   }
 
-  const { user } = session;
+  const user = session.user;
 
-  const accountSection = {
-    title: "Account Information",
-    icon: <Calendar className="h-5 w-5" />,
-    fields: [
-      {
-        label: "Member Since",
-        value: user.createdAt
-          ? new Date(user.createdAt).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric"
-            })
-          : "N/A",
-        icon: <Calendar className="h-4 w-4 text-gray-400" />
-      },
-      {
-        label: "Last Updated",
-        value: user.updatedAt
-          ? new Date(user.updatedAt).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric"
-            })
-          : "N/A",
-        icon: <Calendar className="h-4 w-4 text-gray-400" />
-      }
-    ]
-  };
+  const [userImagesCount, userRunsCount, userSkeletonizedImagesCount] = await Promise.all([
+    getImagesCountByUserId(user.id),
+    getRunCountByUserId(user.id),
+    getImagesCountByUserIdAndStatus(user.id, "skeletonized")
+  ]);
 
-  //TODO Statistics
   return (
     <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-0 2xl:max-w-5xl">
       <div className="mb-8">
@@ -66,10 +43,16 @@ const ProfilePage = async () => {
       />
 
       <div className="space-y-6 xl:space-y-5 2xl:space-y-6">
-        <ProfileSection title={accountSection.title} icon={accountSection.icon} fields={accountSection.fields} />
+        {getProfileSections(user).map((section) => (
+          <ProfileSection key={section.title} title={section.title} icon={section.icon} fields={section.fields} />
+        ))}
       </div>
 
-      <ProfileStatistics />
+      <ProfileStatistics
+        imagesCount={userImagesCount}
+        runsCount={userRunsCount}
+        skeletonizedImagesCount={userSkeletonizedImagesCount}
+      />
     </div>
   );
 };
