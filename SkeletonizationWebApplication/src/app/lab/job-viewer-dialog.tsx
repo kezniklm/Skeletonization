@@ -52,6 +52,8 @@ export const JobViewerDialog = ({
   const [reveal, setReveal] = useState(50);
   const [overlayOpacity, setOverlayOpacity] = useState(55);
 
+  const isPanZoomEnabled = mode === "single";
+
   const singleSrc = selection === "original" ? originalSrc : selectedSrc;
 
   return (
@@ -64,21 +66,27 @@ export const JobViewerDialog = ({
 
         <div className="flex flex-col gap-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <Button type="button" variant="outline" size="sm" onClick={zoomOut}>
-                <Minus />
-                Zoom out
-              </Button>
-              <Button type="button" variant="outline" size="sm" onClick={zoomIn}>
-                <Plus />
-                Zoom in
-              </Button>
-              <Button type="button" variant="outline" size="sm" onClick={resetView}>
-                <RotateCcw />
-                Reset
-              </Button>
-              <span className="text-xs text-gray-600 dark:text-gray-400">{Math.round(zoom * 100)}%</span>
-            </div>
+            {isPanZoomEnabled && (
+              <div className="flex flex-wrap items-center gap-2">
+                <Button type="button" variant="outline" size="sm" onClick={zoomOut}>
+                  <Minus />
+                  Zoom out
+                </Button>
+                <Button type="button" variant="outline" size="sm" onClick={zoomIn}>
+                  <Plus />
+                  Zoom in
+                </Button>
+                <Button type="button" variant="outline" size="sm" onClick={resetView}>
+                  <RotateCcw />
+                  Reset
+                </Button>
+                <span className="text-xs text-gray-600 dark:text-gray-400">{Math.round(zoom * 100)}%</span>
+              </div>
+            )}
+
+            {!isPanZoomEnabled && (
+              <div className="text-xs text-gray-500 dark:text-gray-400">Use Single mode for pan &amp; zoom</div>
+            )}
 
             {hasOutput && (
               <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
@@ -99,21 +107,21 @@ export const JobViewerDialog = ({
             <div
               className={cn(
                 "relative h-[65vh] w-full touch-none overflow-hidden rounded-xl border border-gray-200 bg-gray-50 select-none dark:border-gray-800 dark:bg-gray-900",
-                isDragging ? "cursor-grabbing" : "cursor-grab"
+                isPanZoomEnabled && (isDragging ? "cursor-grabbing" : "cursor-grab")
               )}
-              onPointerDown={onPointerDown}
-              onPointerMove={onPointerMove}
-              onPointerUp={stopDragging}
-              onPointerCancel={stopDragging}
-              onPointerLeave={stopDragging}
-              onWheel={onWheel}
+              onPointerDown={isPanZoomEnabled ? onPointerDown : undefined}
+              onPointerMove={isPanZoomEnabled ? onPointerMove : undefined}
+              onPointerUp={isPanZoomEnabled ? stopDragging : undefined}
+              onPointerCancel={isPanZoomEnabled ? stopDragging : undefined}
+              onPointerLeave={isPanZoomEnabled ? stopDragging : undefined}
+              onWheel={isPanZoomEnabled ? onWheel : undefined}
             >
               <div
                 className="absolute inset-0"
                 style={{
-                  transform: stageTransform,
+                  transform: isPanZoomEnabled ? stageTransform : undefined,
                   transformOrigin: "center",
-                  willChange: "transform"
+                  willChange: isPanZoomEnabled ? "transform" : undefined
                 }}
               >
                 <TabsContent value="single" className="h-full">
@@ -157,34 +165,62 @@ export const JobViewerDialog = ({
                     </TabsContent>
 
                     <TabsContent value="slider" className="h-full">
-                      <div className="relative h-full w-full">
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <Image
-                            src={originalSrc}
-                            alt={`${title} original`}
-                            width={1600}
-                            height={1200}
-                            draggable={false}
-                            className="max-h-full max-w-full object-contain"
-                          />
-                        </div>
-
+                      <div className="relative flex h-full w-full flex-col">
                         <div
-                          className="absolute inset-0 flex items-center justify-center overflow-hidden"
-                          style={{ clipPath: `inset(0 ${100 - reveal}% 0 0)` }}
+                          className="relative flex-1 cursor-ew-resize"
+                          onPointerDown={(e) => {
+                            e.currentTarget.setPointerCapture(e.pointerId);
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            setReveal(((e.clientX - rect.left) / rect.width) * 100);
+                          }}
+                          onPointerMove={(e) => {
+                            if (e.buttons !== 1) return;
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            const newReveal = ((e.clientX - rect.left) / rect.width) * 100;
+                            setReveal(Math.max(0, Math.min(100, newReveal)));
+                          }}
                         >
-                          <Image
-                            src={selectedSrc}
-                            alt={`${title} output`}
-                            width={1600}
-                            height={1200}
-                            draggable={false}
-                            className="max-h-full max-w-full object-contain"
-                          />
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <Image
+                              src={originalSrc}
+                              alt={`${title} original`}
+                              width={1600}
+                              height={1200}
+                              draggable={false}
+                              className="max-h-full max-w-full object-contain"
+                            />
+                          </div>
+
+                          <div
+                            className="absolute inset-0 flex items-center justify-center overflow-hidden"
+                            style={{ clipPath: `inset(0 ${100 - reveal}% 0 0)` }}
+                          >
+                            <Image
+                              src={selectedSrc}
+                              alt={`${title} output`}
+                              width={1600}
+                              height={1200}
+                              draggable={false}
+                              className="max-h-full max-w-full object-contain"
+                            />
+                          </div>
+
+                          <div
+                            className="pointer-events-none absolute top-0 bottom-0 w-1 -translate-x-1/2 bg-white shadow-[0_0_8px_rgba(0,0,0,0.5)]"
+                            style={{ left: `${reveal}%` }}
+                          >
+                            <div className="absolute top-1/2 left-1/2 h-12 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-gray-800/80 shadow-lg" />
+                          </div>
+
+                          <div className="pointer-events-none absolute top-3 left-3 rounded bg-black/60 px-2 py-1 text-xs font-medium text-white">
+                            Original
+                          </div>
+                          <div className="pointer-events-none absolute top-3 right-3 rounded bg-black/60 px-2 py-1 text-xs font-medium text-white">
+                            Output
+                          </div>
                         </div>
 
-                        <div className="absolute inset-x-0 bottom-4 mx-auto w-[min(28rem,90%)] rounded-lg border border-gray-200 bg-white/90 p-3 backdrop-blur dark:border-gray-800 dark:bg-gray-950/90">
-                          <p className="mb-2 text-xs font-medium text-gray-700 dark:text-gray-300">Reveal</p>
+                        <div className="border-t border-gray-200 bg-white/90 py-3 backdrop-blur dark:border-gray-800 dark:bg-gray-950/90">
                           <Slider
                             value={[reveal]}
                             onValueChange={(v) => setReveal(v[0] ?? 50)}
@@ -223,15 +259,21 @@ export const JobViewerDialog = ({
                           />
                         </div>
 
-                        <div className="absolute inset-x-0 bottom-4 mx-auto w-[min(28rem,90%)] rounded-lg border border-gray-200 bg-white/90 p-3 backdrop-blur dark:border-gray-800 dark:bg-gray-950/90">
-                          <p className="mb-2 text-xs font-medium text-gray-700 dark:text-gray-300">Overlay opacity</p>
-                          <Slider
-                            value={[overlayOpacity]}
-                            onValueChange={(v) => setOverlayOpacity(v[0] ?? 55)}
-                            min={0}
-                            max={100}
-                            step={1}
-                          />
+                        <div className="absolute inset-x-0 bottom-0 border-t border-gray-200 bg-white/90 px-4 py-3 backdrop-blur dark:border-gray-800 dark:bg-gray-950/90">
+                          <div className="flex items-center gap-4">
+                            <span className="text-xs font-medium whitespace-nowrap text-gray-700 dark:text-gray-300">
+                              Overlay opacity
+                            </span>
+                            <Slider
+                              className="flex-1"
+                              value={[overlayOpacity]}
+                              onValueChange={(v) => setOverlayOpacity(v[0] ?? 55)}
+                              min={0}
+                              max={100}
+                              step={1}
+                            />
+                            <span className="w-8 text-right text-xs text-gray-500">{overlayOpacity}%</span>
+                          </div>
                         </div>
                       </div>
                     </TabsContent>
