@@ -1,13 +1,36 @@
 import { and, asc, desc, eq } from "drizzle-orm";
 
 import { db } from "@/database";
+import { image } from "@/database/schema/image";
 import { job, type JobStatus } from "@/database/schema/job";
 import { type InsertJob, type UpdateJob } from "@/database/zod/job";
+
+export type JobWithOwner = {
+  jobId: string;
+  runId: string;
+  inputImageId: string | null;
+  userId: string | null;
+};
 
 export const getJobById = async (jobId: string) => {
   const [result] = await db.select().from(job).where(eq(job.id, jobId));
 
   return result ?? null;
+};
+
+export const getJobWithOwner = async (jobId: string): Promise<JobWithOwner | null> => {
+  const [jobData] = await db
+    .select({
+      jobId: job.id,
+      runId: job.runId,
+      inputImageId: job.imageId,
+      userId: image.userId
+    })
+    .from(job)
+    .leftJoin(image, eq(job.imageId, image.id))
+    .where(eq(job.id, jobId));
+
+  return jobData ?? null;
 };
 
 export const getJobsByRunId = async (runId: string) =>

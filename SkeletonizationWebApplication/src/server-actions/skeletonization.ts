@@ -5,12 +5,10 @@ import { join } from "path";
 import type { SelectImage } from "@/database/zod/image";
 import type { InsertJob } from "@/database/zod/job";
 import { type CreateSkeletonizationRun, createSkeletonizationRunSchema } from "@/database/zod/run";
-import type { InsertRunImage } from "@/database/zod/run-image";
-import { publishJob, type SkeletonizationJob } from "@/lib/redis";
+import { publishJobs, type SkeletonizationJob } from "@/lib/job-publisher";
 import { getImagesByIds } from "@/repositories/image";
 import { createJobsBulk } from "@/repositories/job";
-import { createRun, getRunById, updateRunStatus } from "@/repositories/run";
-import { createRunImagesBulk } from "@/repositories/run-image";
+import { createRun, updateRunStatus } from "@/repositories/run";
 
 import { requireUser } from "./common";
 
@@ -41,75 +39,48 @@ export const createSkeletonizationRunsAction = async (input: CreateSkeletonizati
     status: "pending"
   });
 
-  const runImagesData: InsertRunImage[] = [];
+  const jobsData: InsertJob[] = [];
 
   let ordinal = 0;
   for (const imageId of imageIds) {
     for (const algorithm of algorithms) {
-      runImagesData.push({
+      jobsData.push({
         runId: run.id,
         imageId,
         algorithm,
         ordinal: ordinal++,
         params,
-        status: "pending",
-        attempt: 0
+        status: "queued"
       });
     }
   }
 
-  const createdRunImages = await createRunImagesBulk(runImagesData);
-
-  const jobsData: InsertJob[] = createdRunImages.map((runImage) => ({
-    runImageId: runImage.id,
-    status: "queued",
-    attempts: 0
-  }));
-
-  await createJobsBulk(jobsData);
-
-  const tasks = createdRunImages.map((runImage) => {
-    const img = imagesMap.get(runImage.imageId)!;
-    const imagePath = join(process.cwd(), "public", img.storagePath);
-    return {
-      image_path: imagePath,
-      algorithm: runImage.algorithm,
-      should_run_preprocessing: true
-    };
-  });
-
-  const redisJob: SkeletonizationJob = { id: run.id, tasks };
+  const createdJobs = await createJobsBulk(jobsData);
 
   try {
-    await publishJob(redisJob);
+    const redisJobs: SkeletonizationJob[] = createdJobs.map((job) => {
+      const img = imagesMap.get(job.imageId)!;
+      const imagePath = join(process.cwd(), "public", img.storagePath);
+
+      return {
+        id: job.id,
+        tasks: [
+          {
+            image_path: imagePath,
+            algorithm: job.algorithm,
+            should_run_preprocessing: true
+          }
+        ]
+      };
+    });
+
+    await publishJobs(redisJobs);
     await updateRunStatus(run.id, "running", new Date());
   } catch (error) {
-    console.error("Failed to publish job to Redis:", error);
+    console.error("Failed to publish jobs to Redis:", error);
     await updateRunStatus(run.id, "failed", new Date());
     throw error;
   }
-
-  return run;
-};
-
-export const cancelRunAction = async (runId: string) => {
-  const user = await requireUser("cancel runs");
-
-  const run = await getRunById(runId);
-
-  if (!run) {
-    throw new Error("Run not found");
-  }
-
-  if (run.userId !== user.id) {
-    throw new Error("You can only cancel your own runs");
-  }
-
-  if (run.status !== "pending") {
-    throw new Error("Only pending runs can be cancelled");
-  }
-
-  await updateRunStatus(runId, "cancelled", new Date());
 
   return run;
 };

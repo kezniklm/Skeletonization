@@ -182,3 +182,13 @@ export const updateRunStatus = async (runId: string, status: RunStatus, timestam
 
   return updateRun(runId, updates);
 };
+
+export const getRunStatus = async (runId: string): Promise<RunStatus | null> => {
+  const [runData] = await db.select({ status: run.status }).from(run).where(eq(run.id, runId));
+  return runData?.status ?? null;
+};
+
+export const getRunOwnerAndName = async (runId: string): Promise<{ userId: string; name: string | null } | null> => {
+  const [runData] = await db.select({ userId: run.userId, name: run.name }).from(run).where(eq(run.id, runId));
+  return runData ?? null;
+};

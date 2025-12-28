@@ -1,0 +1,48 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: skeletonization-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - skeletonization
+
+
+  worker:
+    build:
+      context: ../SkeletonizationWorker
+      dockerfile: Dockerfile
+    container_name: skeletonization-worker
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - OUTPUT_DIRECTORY=/app/output
+      - PROCESSOR_TYPE=cpu
+    volumes:
+      - worker-output:/app/output
+      - ./public/uploads:/app/input:ro
+    restart: unless-stopped
+    networks:
+      - skeletonization
+
+networks:
+  skeletonization:
+    driver: bridge
+
+volumes:
+  redis-data:
+    driver: local
+  worker-output:
+    driver: local
