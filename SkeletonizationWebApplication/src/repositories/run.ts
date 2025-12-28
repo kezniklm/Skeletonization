@@ -5,6 +5,7 @@ import { type Algorithm } from "@/algorithms";
 import { db } from "@/database";
 import { image } from "@/database/schema/image";
 import { job } from "@/database/schema/job";
+import { jobStats } from "@/database/schema/job-stats";
 import { run, type RunStatus } from "@/database/schema/run";
 import { type InsertRun, type UpdateRun } from "@/database/zod/run";
 
@@ -13,6 +14,7 @@ export type LabJob = {
   ordinal: number;
   status: string;
   algorithm: Algorithm;
+  processingTimeMs: number;
   image: {
     id: string;
     name: string;
@@ -69,6 +71,9 @@ export const getRunsWithDetailsByUserId = async (userId: string): Promise<LabRun
         status: job.status,
         algorithm: job.algorithm
       },
+      jobStats: {
+        processingTimeMs: jobStats.processingTimeMs
+      },
       inputImage: {
         id: inputImage.id,
         name: inputImage.originalFilename,
@@ -84,6 +89,7 @@ export const getRunsWithDetailsByUserId = async (userId: string): Promise<LabRun
     .from(run)
     .where(eq(run.userId, userId))
     .leftJoin(job, eq(job.runId, run.id))
+    .leftJoin(jobStats, eq(jobStats.jobId, job.id))
     .leftJoin(inputImage, eq(job.imageId, inputImage.id))
     .leftJoin(producedImage, eq(producedImage.generatedByJobId, job.id))
     .orderBy(desc(run.createdAt), asc(job.ordinal));
@@ -115,6 +121,7 @@ export const getRunsWithDetailsByUserId = async (userId: string): Promise<LabRun
         ordinal: row.job.ordinal ?? 0,
         status: row.job.status ?? "pending",
         algorithm: row.job.algorithm as Algorithm,
+        processingTimeMs: row.jobStats?.processingTimeMs ?? 0,
         image: {
           id: row.inputImage.id,
           name: row.inputImage.name ?? "",

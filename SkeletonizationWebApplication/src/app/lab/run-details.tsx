@@ -63,6 +63,13 @@ const formatDuration = (startIso: string | null, endIso: string | null) => {
   return `${minutes}m ${seconds}s`;
 };
 
+const formatProcessingTime = (ms: number | null) => {
+  if (ms === null) return null;
+  if (ms < 1000) return `${ms}ms`;
+  const seconds = (ms / 1000).toFixed(2);
+  return `${seconds}s`;
+};
+
 const getUniqueAlgorithms = (jobs: readonly Pick<LabJob, "algorithm">[]) => {
   const seen = new Set<Algorithm>();
   for (const j of jobs) {
@@ -272,9 +279,16 @@ export const RunDetails = ({ run, className }: { run: LabRun; className?: string
                                 {formatStatus(ri.status)}
                               </span>
                             </div>
-                            <p className="truncate text-[11px] text-gray-600 dark:text-gray-400">
-                              {ri.producedImage ? "Skeleton" : "No output"}
-                            </p>
+                            <div className="flex items-center justify-between gap-2">
+                              <p className="truncate text-[11px] text-gray-600 dark:text-gray-400">
+                                {ri.producedImage ? "Skeleton" : "No output"}
+                              </p>
+                              {ri.processingTimeMs !== null && (
+                                <span className="text-[11px] text-gray-500 dark:text-gray-500">
+                                  {formatProcessingTime(ri.processingTimeMs)}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </button>
                       );
