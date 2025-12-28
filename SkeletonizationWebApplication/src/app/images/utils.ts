@@ -37,7 +37,7 @@ export const getStatusLabel = (status: SelectImage["status"]): string =>
 
 export const getStatusBadgeClass = (status: SelectImage["status"]): string => {
   switch (status) {
-    case "validated":
+    case "skeletonized":
       return "border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-400";
     case "archived":
       return "border-gray-200 bg-gray-50 text-gray-700 dark:border-gray-800 dark:bg-gray-950 dark:text-gray-400";

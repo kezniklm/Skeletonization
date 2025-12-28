@@ -2,7 +2,9 @@ import { type AnyPgColumn, bigint, integer, pgTable, text, timestamp, uuid } fro
 
 import { user } from "./auth";
 
-export const imageStatusEnum = ["uploaded", "validated", "archived", "derived"] as const;
+const imageStatusEnum = ["uploaded", "skeletonized", "archived", "derived"] as const;
+
+export type ImageStatus = (typeof imageStatusEnum)[number];
 
 export const image = pgTable("image", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -19,6 +21,6 @@ export const image = pgTable("image", {
   checksum: text("checksum").notNull(),
   status: text("status", { enum: imageStatusEnum }).default("uploaded").notNull(),
   parentImageId: uuid("parent_image_id").references((): AnyPgColumn => image.id, { onDelete: "set null" }),
-  processingRunId: uuid("processing_run_id"),
+  generatedByJobId: uuid("generated_by_job_id"),
   createdAt: timestamp("created_at").defaultNow().notNull()
 });

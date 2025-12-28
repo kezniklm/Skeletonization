@@ -1,7 +1,7 @@
-import { desc, eq } from "drizzle-orm";
+import { and, asc, desc, eq } from "drizzle-orm";
 
 import { db } from "@/database";
-import { job, type jobStatusEnum } from "@/database/schema/job";
+import { job, type JobStatus } from "@/database/schema/job";
 import { type InsertJob, type UpdateJob } from "@/database/zod/job";
 
 export const getJobById = async (jobId: string) => {
@@ -10,17 +10,20 @@ export const getJobById = async (jobId: string) => {
   return result ?? null;
 };
 
-export const getJobsByRunImageId = async (runImageId: string) =>
-  db.select().from(job).where(eq(job.runImageId, runImageId)).orderBy(desc(job.createdAt));
+export const getJobsByRunId = async (runId: string) =>
+  db.select().from(job).where(eq(job.runId, runId)).orderBy(asc(job.ordinal));
 
-export const getJobsByStatus = async (status: (typeof jobStatusEnum)[number]) =>
+export const getJobsByImageId = async (imageId: string) =>
+  db.select().from(job).where(eq(job.imageId, imageId)).orderBy(desc(job.createdAt));
+
+export const getJobsByStatus = async (status: JobStatus) =>
   db.select().from(job).where(eq(job.status, status)).orderBy(desc(job.createdAt));
 
-export const getJobsByWorkerId = async (workerId: string) =>
-  db.select().from(job).where(eq(job.workerId, workerId)).orderBy(desc(job.createdAt));
-
-export const getLatestJobForRunImage = async (runImageId: string) => {
-  const [result] = await db.select().from(job).where(eq(job.runImageId, runImageId)).orderBy(desc(job.createdAt));
+export const getJobByRunAndImage = async (runId: string, imageId: string) => {
+  const [result] = await db
+    .select()
+    .from(job)
+    .where(and(eq(job.runId, runId), eq(job.imageId, imageId)));
 
   return result ?? null;
 };
@@ -47,31 +50,4 @@ export const deleteJob = async (jobId: string) => {
   await db.delete(job).where(eq(job.id, jobId));
 };
 
-export const updateJobStatus = async (jobId: string, status: (typeof jobStatusEnum)[number], timestamp?: Date) => {
-  const updates: Partial<UpdateJob> = { status };
-
-  if (status === "processing" && timestamp) {
-    updates.startedAt = timestamp;
-  } else if ((status === "completed" || status === "failed" || status === "cancelled") && timestamp) {
-    updates.finishedAt = timestamp;
-  }
-
-  return updateJob(jobId, updates);
-};
-
-export const incrementJobAttempt = async (jobId: string) => {
-  const current = await getJobById(jobId);
-  if (!current) return null;
-
-  return updateJob(jobId, { attempts: (current.attempts ?? 0) + 1 });
-};
-
-export const appendJobLogs = async (jobId: string, newLogs: string) => {
-  const current = await getJobById(jobId);
-  if (!current) return null;
-
-  const currentLogs = current.logs ?? "";
-  const updatedLogs = currentLogs ? `${currentLogs}\n${newLogs}` : newLogs;
-
-  return updateJob(jobId, { logs: updatedLogs });
-};
+export const updateJobStatus = async (jobId: string, status: JobStatus) => updateJob(jobId, { status });

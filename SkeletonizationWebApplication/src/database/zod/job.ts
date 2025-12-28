@@ -1,10 +1,10 @@
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import { type z } from "zod";
+import { z } from "zod";
 
 import { job } from "../schema";
 
 export const insertJobSchema = createInsertSchema(job, {
-  attempts: (schema) => schema.nonnegative("Attempts must be non-negative")
+  params: z.any().optional()
 });
 
 export const selectJobSchema = createSelectSchema(job);

@@ -2,7 +2,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { auth } from "@/auth";
-import { getUserImagesByStatus } from "@/repositories/image";
+import { getUserImagesByStatuses } from "@/repositories/image";
 import { getUserPushNotificationsPreferences } from "@/repositories/preferences";
 import { NotificationPermissionDialog } from "@/components/notification-permission-dialog";
 
@@ -16,13 +16,10 @@ const SkeletonizationPage = async () => {
     redirect("/");
   }
 
-  const [uploadedImages, validatedImages, pushNotificationsEnabled] = await Promise.all([
-    getUserImagesByStatus(session.user.id, "uploaded"),
-    getUserImagesByStatus(session.user.id, "validated"),
+  const [availableImages, pushNotificationsEnabled] = await Promise.all([
+    getUserImagesByStatuses(session.user.id, ["uploaded", "derived"]),
     getUserPushNotificationsPreferences(session.user.id)
   ]);
-
-  const availableImages = [...uploadedImages, ...validatedImages];
 
   return (
     <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6 lg:px-0 2xl:max-w-5xl">

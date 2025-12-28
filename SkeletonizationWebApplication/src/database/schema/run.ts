@@ -2,7 +2,9 @@ import { jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 import { user } from "./auth";
 
-export const runStatusEnum = ["pending", "running", "failed", "completed", "cancelled"] as const;
+const runStatusEnum = ["pending", "running", "failed", "completed", "cancelled"] as const;
+
+export type RunStatus = (typeof runStatusEnum)[number];
 
 export const run = pgTable("run", {
   id: uuid("id").primaryKey().defaultRandom(),

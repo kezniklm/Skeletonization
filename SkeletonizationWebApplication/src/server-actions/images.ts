@@ -124,9 +124,9 @@ export const uploadImageAction = async (file: File) => {
 export const updateImageAction = async (imageId: string, imageData: { originalFilename?: string; status?: string }) => {
   await requireUser("update images");
 
-  const validatedData = updateImageSchema.partial().parse({ ...imageData, id: imageId });
+  const parsedData = updateImageSchema.partial().parse({ ...imageData, id: imageId });
 
-  return updateImage(imageId, validatedData);
+  return updateImage(imageId, parsedData);
 };
 
 export const archiveImageAction = async (imageId: string) => {

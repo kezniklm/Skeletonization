@@ -1,7 +1,8 @@
 import { and, asc, desc, eq, inArray, lt, or } from "drizzle-orm";
 
 import { db } from "@/database";
-import { image, type imageStatusEnum } from "@/database/schema/image";
+import { image, type ImageStatus } from "@/database/schema/image";
+import { job } from "@/database/schema/job";
 import { type InsertImage, type UpdateImage } from "@/database/zod/image";
 
 export const getImageById = async (imageId: string) => {
@@ -33,13 +34,13 @@ export const getImagesCountByUserId = async (userId: string) => db.$count(image,
 export const getImagesByUserIdPaginated = async (
   userId: string,
   options: {
-    limit?: number;
+    limit: number;
     cursor?: { createdAt: Date; id: string };
     sortBy?: "createdAt" | "originalFilename";
     sortOrder?: "asc" | "desc";
-  } = {}
+  } = { limit: 20, cursor: undefined, sortBy: "createdAt", sortOrder: "desc" }
 ) => {
-  const { limit = 20, cursor, sortBy = "createdAt", sortOrder = "desc" } = options;
+  const { limit, cursor, sortBy, sortOrder } = options;
 
   const conditions = [eq(image.userId, userId)];
 
@@ -83,16 +84,43 @@ export const getImagesByUserIdPaginated = async (
 };
 
 export const getImagesByRunId = async (runId: string) =>
-  db.select().from(image).where(eq(image.processingRunId, runId)).orderBy(desc(image.createdAt));
+  db
+    .select({
+      id: image.id,
+      userId: image.userId,
+      originalFilename: image.originalFilename,
+      storagePath: image.storagePath,
+      url: image.url,
+      mime: image.mime,
+      width: image.width,
+      height: image.height,
+      sizeBytes: image.sizeBytes,
+      checksum: image.checksum,
+      status: image.status,
+      parentImageId: image.parentImageId,
+      generatedByJobId: image.generatedByJobId,
+      createdAt: image.createdAt
+    })
+    .from(image)
+    .leftJoin(job, eq(image.generatedByJobId, job.id))
+    .where(eq(job.runId, runId))
+    .orderBy(desc(image.createdAt));
 
 export const getImagesByParentId = async (parentImageId: string) =>
   db.select().from(image).where(eq(image.parentImageId, parentImageId)).orderBy(desc(image.createdAt));
 
-export const getUserImagesByStatus = async (userId: string, status: (typeof imageStatusEnum)[number]) =>
+export const getUserImagesByStatus = async (userId: string, status: ImageStatus) =>
   db
     .select()
     .from(image)
     .where(and(eq(image.userId, userId), eq(image.status, status)))
+    .orderBy(desc(image.createdAt));
+
+export const getUserImagesByStatuses = async (userId: string, statuses: ImageStatus[]) =>
+  db
+    .select()
+    .from(image)
+    .where(and(eq(image.userId, userId), inArray(image.status, statuses)))
     .orderBy(desc(image.createdAt));
 
 export const createImage = async (imageData: InsertImage) => {

@@ -2,12 +2,12 @@ import { boolean, pgTable, text } from "drizzle-orm/pg-core";
 
 import { user } from "./auth";
 
-export const themeEnum = ["system", "light", "dark"] as const;
-export const defaultOutputFormatEnum = ["PNG", "JPEG", "TIFF", "BMP"] as const;
+const themeEnum = ["system", "light", "dark"] as const;
+const defaultOutputFormatEnum = ["PNG", "JPEG", "TIFF", "BMP"] as const;
 
-type Theme = (typeof themeEnum)[number];
+export type Theme = (typeof themeEnum)[number];
 
-type DefaultOutputFormat = (typeof defaultOutputFormatEnum)[number];
+export type DefaultOutputFormat = (typeof defaultOutputFormatEnum)[number];
 
 export const defaultPreferences = {
   theme: "system" as Theme,

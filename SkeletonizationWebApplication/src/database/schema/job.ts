@@ -1,20 +1,25 @@
-import { integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { integer, jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
-import { runImage } from "./run-image";
+import { algorithms } from "@/algorithms";
 
-export const jobStatusEnum = ["queued", "processing", "completed", "failed", "cancelled"] as const;
+import { image } from "./image";
+import { run } from "./run";
+
+const jobStatusEnum = ["queued", "processing", "completed", "failed"] as const;
+
+export type JobStatus = (typeof jobStatusEnum)[number];
 
 export const job = pgTable("job", {
   id: uuid("id").primaryKey().defaultRandom(),
-  runImageId: uuid("run_image_id")
+  runId: uuid("run_id")
     .notNull()
-    .references(() => runImage.id, { onDelete: "cascade" }),
-  workerId: text("worker_id"),
+    .references(() => run.id, { onDelete: "cascade" }),
+  imageId: uuid("image_id")
+    .notNull()
+    .references(() => image.id, { onDelete: "cascade" }),
+  algorithm: text("algorithm", { enum: algorithms }).notNull(),
+  ordinal: integer("ordinal").notNull(),
+  params: jsonb("params"),
   status: text("status", { enum: jobStatusEnum }).default("queued").notNull(),
-  attempts: integer("attempts").default(0).notNull(),
-  lastError: text("last_error"),
-  logs: text("logs"),
-  startedAt: timestamp("started_at"),
-  finishedAt: timestamp("finished_at"),
   createdAt: timestamp("created_at").defaultNow().notNull()
 });

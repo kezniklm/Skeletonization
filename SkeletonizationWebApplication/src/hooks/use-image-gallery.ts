@@ -7,6 +7,12 @@ import { type FilterType, type ImageFormat, type SizeFilter, type SortOption } f
 import type { SelectImage } from "@/database/zod/image";
 import { archiveImageAction, deleteImageAction, unarchiveImageAction } from "@/server-actions/images";
 
+type FilterOption = Readonly<{
+  value: FilterType;
+  label: string;
+  count: number;
+}>;
+
 export const useImageGallery = (initialImages: SelectImage[]) => {
   const [images, setImages] = useState<SelectImage[]>(initialImages);
   const [selectedFilter, setSelectedFilter] = useState<FilterType>("all");
@@ -120,29 +126,53 @@ export const useImageGallery = (initialImages: SelectImage[]) => {
     return filteredImages.slice(startIndex, endIndex);
   })();
 
-  const filterOptions = [
-    { value: "all" as const, label: "All Images", count: images.filter((img) => img.status !== "archived").length },
-    {
-      value: "uploaded" as const,
-      label: "Uploaded",
-      count: images.filter((img) => img.status === "uploaded").length
-    },
-    {
-      value: "validated" as const,
-      label: "Validated",
-      count: images.filter((img) => img.status === "validated").length
-    },
-    {
-      value: "archived" as const,
-      label: "Archived",
-      count: images.filter((img) => img.status === "archived").length
-    },
-    {
-      value: "derived" as const,
-      label: "Derived",
-      count: images.filter((img) => img.status === "derived").length
+  const statusCounts = (() => {
+    const counts: Record<Exclude<FilterType, "all">, number> = {
+      uploaded: 0,
+      skeletonized: 0,
+      archived: 0,
+      derived: 0
+    };
+
+    for (const img of images) {
+      switch (img.status) {
+        case "uploaded":
+        case "skeletonized":
+        case "archived":
+        case "derived":
+          counts[img.status] += 1;
+          break;
+        default:
+          break;
+      }
     }
-  ];
+
+    return counts;
+  })();
+
+  const filterOptions = [
+    { value: "all", label: "All Images", count: images.length - statusCounts.archived },
+    {
+      value: "uploaded",
+      label: "Uploaded",
+      count: statusCounts.uploaded
+    },
+    {
+      value: "skeletonized",
+      label: "Skeletonized",
+      count: statusCounts.skeletonized
+    },
+    {
+      value: "archived",
+      label: "Archived",
+      count: statusCounts.archived
+    },
+    {
+      value: "derived",
+      label: "Derived",
+      count: statusCounts.derived
+    }
+  ] satisfies readonly FilterOption[];
 
   const handleUploadComplete = (newImage: SelectImage) => {
     setImages((prev) => [newImage, ...prev]);

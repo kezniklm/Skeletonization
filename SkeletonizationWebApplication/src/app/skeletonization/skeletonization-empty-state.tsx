@@ -20,7 +20,7 @@ export const SkeletonizationEmptyState = () => {
       actionLabel="Go to Image Gallery"
       actionIcon={Upload}
       onAction={onBrowseGallery}
-      helpText="Only uploaded and validated images can be processed"
+      helpText="Only uploaded and derived images can be processed"
     />
   );
 };

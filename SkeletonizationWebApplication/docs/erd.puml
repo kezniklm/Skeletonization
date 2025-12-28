@@ -1,5 +1,9 @@
 @startuml
+left to right direction
 skinparam linetype ortho
+
+skinparam nodesep 40
+skinparam ranksep 50
 
 entity user {
   id: uuid <<PK>>
@@ -37,7 +41,6 @@ entity user_preferences {
   user_id: uuid <<FK to user.id>> <<UNIQUE>>
   theme: text("system"|"light"|"dark") <<DEFAULT=system>>
   compact_mode: boolean <<DEFAULT=false>>
-  email_notifications: boolean <<DEFAULT=true>>
   push_notifications: boolean <<DEFAULT=false>>
   timezone: text <<DEFAULT=UTC>>
   auto_save_results: boolean <<DEFAULT=true>>
@@ -55,9 +58,9 @@ entity image {
   height: integer
   size_bytes: bigint
   checksum: text
-  status: text           -- uploaded/validated/archived/derived
+  status: text           -- uploaded/skeletonized/archived/derived
   parent_image_id: uuid  -- nullable, points to original image if derived
-  processing_run_id: uuid -- nullable, run that produced this derived image
+  generated_by_job_id: uuid -- nullable, points to job that produced this image
   created_at: timestamp
 }
 
@@ -72,41 +75,26 @@ entity run {
   completed_at: timestamp
 }
 
-entity run_image {
+entity job {
   id: uuid <<PK>>
   run_id: uuid <<FK to run.id>>
   image_id: uuid <<FK to image.id>>
   algorithm: text     -- Zhang-Suen/Guo-Hall/K3M/KMM/Choi-Lam-Siu/Han-La-Rhee/Kwon-Kang/Petrosino-Salvi/Tarabek
   ordinal: integer
   params: jsonb
-  status: text        -- pending/processing/completed/failed
-  attempt: integer
+  status: text        -- queued/processing/completed/failed
   created_at: timestamp
-  processed_at: timestamp
 }
 
-entity output {
-  id: uuid <<PK>>
-  run_image_id: uuid <<FK to run_image.id>>
-  type: text          -- original, thumbnail, preprocessed, skeleton, skeleton_overlay, binary_mask, vector, metrics_json, etc.
-  storage_path: text
-  url: text
-  mime: text
-  metrics: jsonb
-  created_at: timestamp
-  size_bytes: bigint
-}
-
-entity job {
-  id: uuid <<PK>>
-  run_image_id: uuid <<FK to run_image.id>>
+entity job_stats {
+  job_id: uuid <<PK>> <<FK to job.id>>
   worker_id: text
-  status: text
-  attempts: integer
   last_error: text
   logs: text
+  processing_time_ms: integer
   started_at: timestamp
   finished_at: timestamp
+  created_at: timestamp
 }
 
 ' Relationships
@@ -115,13 +103,11 @@ user ||-down--o{ account : has
 user ||--down--o{ user_preferences : has preferences
 user ||--down--o{ image : owns
 user ||--down--o{ run : created
-run ||--o{ run_image : contains
-image ||--o{ run_image : used_in
-run_image ||--o{ output : generates
-run_image ||--o{ job : processed_by
+run ||--right--o{ job : contains
+image ||--down--o{ job : used_in (input)
+job ||--right--o{ image : produces
+job ||--|| job_stats : has
+image }o-left-|| image : parent_of
 
-' New relationships for provenance
-image }o--|| image : parent_of
-run ||--o{ image : creates
 
 @enduml

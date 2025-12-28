@@ -310,7 +310,7 @@ export const SkeletonizationWorkspace = ({ images }: SkeletonizationWorkspacePro
                 >
                   <TabsList className="grid h-9 w-full grid-cols-3 xl:h-8 2xl:h-9">
                     {filterOptions
-                      .filter((opt) => opt.value === "all" || opt.value === "uploaded" || opt.value === "validated")
+                      .filter((opt) => opt.value === "all" || opt.value === "uploaded" || opt.value === "derived")
                       .map((option) => (
                         <TabsTrigger key={option.value} value={option.value} className="gap-1.5 text-xs 2xl:text-sm">
                           <span className="hidden sm:inline">{option.label}</span>
