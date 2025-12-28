@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <optional>
+
 #include "opencv2/core.hpp"
 
 namespace skeletonizer
@@ -41,18 +43,49 @@ namespace skeletonizer
 		gpu
 	};
 
-	inline std::string to_string(const skeletonizer_type skeletonizer_type)
+	inline std::string to_string(const skeletonizer_type skeletonizer_type, const bool to_upper = true)
 	{
+		std::string result;
+
 		switch (skeletonizer_type)
 		{
 		case skeletonizer_type::cpu:
-			return "CPU";
+			result = "CPU";
 		case skeletonizer_type::thread:
-			return "THREAD";
+			result = "THREAD";
 		case skeletonizer_type::gpu:
-			return "GPU";
+			result = "GPU";
 		default:
-			return "Unknown";
+			result = "Unknown";
 		}
+
+		if (to_upper)
+		{
+			std::ranges::transform(result, result.begin(),
+			                       [](const unsigned char c)
+			                       {
+				                       return static_cast<char>(std::toupper(c));
+			                       });
+		}
+
+		return result;
+	}
+
+	inline std::optional<skeletonizer_type> from_string(const std::string_view value)
+	{
+		if (value == "gpu")
+		{
+			return skeletonizer_type::gpu;
+		}
+		if (value == "thread")
+		{
+			return skeletonizer_type::thread;
+		}
+		if (value == "cpu")
+		{
+			return skeletonizer_type::cpu;
+		}
+
+		return std::nullopt;
 	}
 }
