@@ -174,6 +174,8 @@ export const useImageGallery = (initialImages: SelectImage[]) => {
     }
   ] satisfies readonly FilterOption[];
 
+  const getImageLabel = (imageId: string) => images.find((img) => img.id === imageId)?.originalFilename ?? "image";
+
   const handleUploadComplete = (newImage: SelectImage) => {
     setImages((prev) => [newImage, ...prev]);
   };
@@ -190,37 +192,41 @@ export const useImageGallery = (initialImages: SelectImage[]) => {
   const handleDelete = async () => {
     if (!imageToDelete) return;
 
+    const imageLabel = getImageLabel(imageToDelete);
+
     try {
       await deleteImageAction(imageToDelete);
       setImages((prev) => prev.filter((img) => img.id !== imageToDelete));
-      toast.success("Image deleted");
+      toast.success(`Image ${imageLabel} has been deleted successfully!`);
       setDeleteDialogOpen(false);
       setImageToDelete(null);
     } catch (error) {
       console.error("Delete error:", error);
-      toast.error("Failed to delete image");
+      toast.error(`Failed to delete ${imageLabel}`);
     }
   };
 
   const handleArchive = async (imageId: string) => {
+    const imageLabel = getImageLabel(imageId);
     try {
       await archiveImageAction(imageId);
       setImages((prev) => prev.map((img) => (img.id === imageId ? { ...img, status: "archived" } : img)));
-      toast.success("Image archived");
+      toast.success(`Image ${imageLabel} has been archived successfully!`);
     } catch (error) {
       console.error("Archive error:", error);
-      toast.error("Failed to archive image");
+      toast.error(`Failed to archive ${imageLabel}`);
     }
   };
 
   const handleUnarchive = async (imageId: string) => {
+    const imageLabel = getImageLabel(imageId);
     try {
       await unarchiveImageAction(imageId);
       setImages((prev) => prev.map((img) => (img.id === imageId ? { ...img, status: "uploaded" } : img)));
-      toast.success("Image unarchived");
+      toast.success(`Image ${imageLabel} has been unarchived successfully!`);
     } catch (error) {
       console.error("Unarchive error:", error);
-      toast.error("Failed to unarchive image");
+      toast.error(`Failed to unarchive ${imageLabel}`);
     }
   };
 

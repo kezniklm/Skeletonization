@@ -22,16 +22,43 @@ export const ImageUpload = ({ onUploadComplete, compact = false, fullWidth = fal
   const [totalFiles, setTotalFiles] = useState(0);
   const [uploadedFiles, setUploadedFiles] = useState(0);
 
-  const uploadFile = async (file: File) => {
+  const notifyUploadSummary = (files: File[], successCount: number, failureCount: number) => {
+    if (files.length === 1) {
+      if (successCount === 1) {
+        toast.success(`Image ${files[0]?.name ?? ""} uploaded successfully!`);
+      }
+      return;
+    }
+
+    if (failureCount === 0) {
+      toast.success("Images uploaded successfully!");
+      return;
+    }
+
+    if (successCount === 0) {
+      toast.error(`All ${files.length} uploads failed`);
+      return;
+    }
+
+    toast.info(`${successCount} uploaded, ${failureCount} failed`);
+  };
+
+  const uploadFile = async (file: File, totalCount: number) => {
     try {
       const image = await uploadImageAction(file);
-      onUploadComplete(image as SelectImage);
-      setUploadedFiles((prev) => prev + 1);
+      onUploadComplete(image);
       return { success: true };
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
-      toast.error(`Failed to upload "${file.name}": ${message}`);
+      toast.error(`Failed to upload ${file.name}: ${message}`);
       return { success: false };
+    } finally {
+      setUploadedFiles((prev) => {
+        const next = prev + 1;
+        const progress = totalCount > 0 ? Math.round((next / totalCount) * 100) : 0;
+        setUploadProgress(progress);
+        return next;
+      });
     }
   };
 
@@ -41,8 +68,12 @@ export const ImageUpload = ({ onUploadComplete, compact = false, fullWidth = fal
     setTotalFiles(files.length);
     setUploadedFiles(0);
 
-    await Promise.all(files.map((f) => uploadFile(f)));
-    toast.success(files.length > 1 ? "Images uploaded successfully!" : "Image uploaded successfully!");
+    const results = await Promise.all(files.map((f) => uploadFile(f, files.length)));
+    const successCount = results.filter((r) => r.success).length;
+    const failureCount = results.length - successCount;
+
+    notifyUploadSummary(files, successCount, failureCount);
+
     setIsUploading(false);
     setUploadProgress(0);
   };

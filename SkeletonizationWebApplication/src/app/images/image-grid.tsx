@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import type { SelectImage } from "@/database/zod/image";
 import { EmptyState } from "@/components/empty-state";
+import { capitalizeFirst } from "@/lib/format";
 
 import { ImageUpload } from "./image-upload";
 import { ImageCard } from "./image-card";
@@ -74,15 +75,24 @@ export const ImageGrid = ({
         {showEmptyState && (
           <EmptyState
             icon={ImageIcon}
-            title={searchQuery || hasAdvancedFilters ? "No images found" : "No images in this category"}
+            title={
+              searchQuery || hasAdvancedFilters
+                ? "No images found"
+                : selectedFilter === "all"
+                  ? "No Images to Display"
+                  : `No ${capitalizeFirst(selectedFilter)} Images`
+            }
             description={
               searchQuery || hasAdvancedFilters
                 ? "Try adjusting your filters or search query"
-                : "No images with this status yet"
+                : selectedFilter === "all"
+                  ? "All your images are currently archived.\n Check the Archived tab to view them."
+                  : `You don't have any images marked as ${selectedFilter} yet`
             }
             actionLabel="Upload Image"
             actionIcon={Upload}
             onAction={() => router.push("/preprocessing")}
+            helpText={selectedFilter === "all" ? "Or upload a new image to get started" : undefined}
             className="aspect-64/27 sm:col-span-2"
           />
         )}
