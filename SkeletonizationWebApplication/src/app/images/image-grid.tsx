@@ -83,6 +83,7 @@ export const ImageGrid = ({
             actionLabel="Upload Image"
             actionIcon={Upload}
             onAction={() => router.push("/preprocessing")}
+            className="aspect-64/27 sm:col-span-2"
           />
         )}
       </div>

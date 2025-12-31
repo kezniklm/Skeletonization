@@ -13,6 +13,7 @@ type EmptyStateProps = {
   actionIcon: LucideIcon;
   onAction: () => void;
   helpText?: string;
+  className?: string;
 };
 
 export const EmptyState = ({
@@ -22,10 +23,13 @@ export const EmptyState = ({
   actionLabel,
   actionIcon: ActionIcon,
   onAction,
-  helpText
+  helpText,
+  className
 }: EmptyStateProps) => (
-  <Card className="border-2 border-dashed border-cyan-300 bg-linear-to-br from-cyan-50/50 to-blue-50/50 shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-cyan-400 hover:shadow-xl dark:border-cyan-700 dark:from-cyan-950/20 dark:to-blue-950/20 dark:hover:border-cyan-600">
-    <CardContent className="flex min-h-75 flex-col items-center justify-center space-y-4 py-12">
+  <Card
+    className={`border-2 border-dashed border-cyan-300 bg-linear-to-br from-cyan-50/50 to-blue-50/50 shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-cyan-400 hover:shadow-xl dark:border-cyan-700 dark:from-cyan-950/20 dark:to-blue-950/20 dark:hover:border-cyan-600 ${className ?? ""}`}
+  >
+    <CardContent className="flex h-full min-h-75 flex-col items-center justify-center space-y-4 py-12">
       <div className="rounded-full bg-linear-to-r from-cyan-500 to-blue-500 p-4">
         <Icon className="size-10 text-white" />
       </div>
