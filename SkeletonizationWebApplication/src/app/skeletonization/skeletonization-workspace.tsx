@@ -13,10 +13,10 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { type SelectImage } from "@/database/zod/image";
 import { createSkeletonizationRunsAction } from "@/server-actions/skeletonization";
 import { useImageGallery } from "@/hooks/use-image-gallery";
-import type { FilterType } from "@/app/images/types";
 import type { Algorithm } from "@/algorithms";
 import { StepIndicator } from "@/components/ui/step-indicator";
 import { runConfigurationSchema, type RunConfiguration } from "@/database/zod/run";
+import { type FilterType } from "@/components/filters";
 
 import { ImageFilters } from "../images/image-filters";
 import { ImageSort } from "../images/image-sort";

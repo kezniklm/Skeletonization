@@ -4,11 +4,11 @@ import type { SelectImage } from "@/database/zod/image";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useImageGallery } from "@/hooks/use-image-gallery";
+import { type FilterType } from "@/components/filters";
 
 import { ImageFilters } from "./image-filters";
 import { ImageGrid } from "./image-grid";
 import { ImageDeleteDialog } from "./image-delete-dialog";
-import { type FilterType } from "./types";
 import { ImageSort } from "./image-sort";
 import { ImagePagination } from "./image-pagination";
 

@@ -1,6 +1,5 @@
+import { type SizeFilter } from "@/components/filters";
 import type { SelectImage } from "@/database/zod/image";
-
-import { type SizeFilter } from "./types";
 
 export const getSizeLabel = (size: SizeFilter): string => {
   switch (size) {

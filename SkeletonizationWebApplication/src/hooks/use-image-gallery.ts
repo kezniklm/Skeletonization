@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { type FilterType, type ImageFormat, type SizeFilter, type SortOption } from "@/app/images/types";
+import { type FilterType, type ImageFormat, type SizeFilter, type SortOption } from "@/components/filters";
 import type { SelectImage } from "@/database/zod/image";
 import { archiveImageAction, deleteImageAction, unarchiveImageAction } from "@/server-actions/images";
 

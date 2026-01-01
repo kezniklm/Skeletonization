@@ -1,9 +1,9 @@
 import { and, asc, desc, eq, inArray, lt, or } from "drizzle-orm";
 
 import { db } from "@/database";
-import { image, type ImageStatus } from "@/database/schema/image";
+import { image } from "@/database/schema/image";
 import { job } from "@/database/schema/job";
-import { type InsertImage, type UpdateImage } from "@/database/zod/image";
+import { type ImageStatus, type InsertImage, type UpdateImage } from "@/database/zod/image";
 
 export const getImageById = async (imageId: string) => {
   const [result] = await db.select().from(image).where(eq(image.id, imageId));

@@ -10,7 +10,7 @@ import { type UserPreferences, userPreferencesSchema } from "@/database/zod/pref
 import { updatePreferencesAction } from "@/server-actions/preferences";
 import { useTheme } from "@/contexts/theme-context";
 import { useCompactMode } from "@/contexts/compact-mode-context";
-import { defaultPreferences } from "@/database/schema/preferences";
+import { defaultPreferences } from "@/database/schema";
 
 import { SettingsCard } from "./settings-card";
 

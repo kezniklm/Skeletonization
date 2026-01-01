@@ -6,8 +6,8 @@ import { db } from "@/database";
 import { image } from "@/database/schema/image";
 import { job } from "@/database/schema/job";
 import { jobStats } from "@/database/schema/job-stats";
-import { run, type RunStatus } from "@/database/schema/run";
-import { type InsertRun, type UpdateRun } from "@/database/zod/run";
+import { run } from "@/database/schema/run";
+import { type InsertRun, type RunStatus, type UpdateRun } from "@/database/zod/run";
 
 export type LabJob = {
   id: string;

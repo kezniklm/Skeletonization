@@ -2,8 +2,8 @@ import { and, asc, desc, eq } from "drizzle-orm";
 
 import { db } from "@/database";
 import { image } from "@/database/schema/image";
-import { job, type JobStatus } from "@/database/schema/job";
-import { type InsertJob, type UpdateJob } from "@/database/zod/job";
+import { job } from "@/database/schema/job";
+import { type InsertJob, type JobStatus, type UpdateJob } from "@/database/zod/job";
 
 export type JobWithOwner = {
   jobId: string;

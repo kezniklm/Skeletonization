@@ -3,9 +3,8 @@
 import { useState } from "react";
 
 import { type Algorithm } from "@/algorithms";
+import { type SortOption } from "@/components/filters";
 import { type LabRun } from "@/repositories/run";
-
-import { type LabSortOption } from "../app/lab/lab-sort";
 
 const getRunDisplayName = (run: LabRun) => run.name?.trim() ?? `Run ${run.id.slice(0, 8)}`;
 
@@ -23,7 +22,7 @@ const getCreatedAtMs = (run: LabRun) => {
   return Number.isFinite(ms) ? ms : 0;
 };
 
-const compareBySort = (a: LabRun, b: LabRun, sortBy: LabSortOption) => {
+const compareBySort = (a: LabRun, b: LabRun, sortBy: SortOption) => {
   switch (sortBy) {
     case "date-asc":
       return getCreatedAtMs(a) - getCreatedAtMs(b) || a.id.localeCompare(b.id);
@@ -44,7 +43,7 @@ const compareBySort = (a: LabRun, b: LabRun, sortBy: LabSortOption) => {
 
 export const useFilteredRuns = (runs: LabRun[]) => {
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [sortBy, setSortBy] = useState<LabSortOption>("date-desc");
+  const [sortBy, setSortBy] = useState<SortOption>("date-desc");
   const [selectedAlgorithms, setSelectedAlgorithms] = useState<Set<Algorithm>>(() => new Set());
 
   const normalizedQuery = searchQuery.trim().toLowerCase();
