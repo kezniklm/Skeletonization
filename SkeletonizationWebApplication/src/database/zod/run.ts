@@ -24,10 +24,15 @@ export const runConfigurationSchema = insertRunSchema.pick({ name: true }).exten
 
 export type RunConfiguration = z.infer<typeof runConfigurationSchema>;
 
+export const skeletonizationParamsSchema = z.object({
+  preprocessAllImages: z.boolean().default(true),
+  preprocessByImageId: z.record(z.string().uuid(), z.boolean()).default({})
+});
+
 export const createSkeletonizationRunSchema = runConfigurationSchema
   .extend({
     imageIds: z.array(z.uuid()).min(1, "At least one image must be selected"),
-    params: z.record(z.string(), z.unknown()).optional()
+    params: skeletonizationParamsSchema.default({ preprocessAllImages: true, preprocessByImageId: {} })
   })
   .refine((data) => data.algorithms.length > 0, {
     message: "At least one algorithm must be selected",

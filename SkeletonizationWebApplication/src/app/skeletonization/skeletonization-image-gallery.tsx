@@ -5,6 +5,9 @@ import { Check } from "lucide-react";
 
 import type { SelectImage } from "@/database/zod/image";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 type SkeletonizationImageGalleryProps = {
@@ -12,12 +15,17 @@ type SkeletonizationImageGalleryProps = {
   allFilteredImages: SelectImage[];
   selectedImageIds: string[];
   onSelectionChange: (imageIds: string[]) => void;
+  getShouldPreprocessImage: (imageId: string) => boolean;
+  onTogglePreprocessImage: (imageId: string) => void;
 };
 
 export const SkeletonizationImageGallery = ({
   images,
   allFilteredImages,
   selectedImageIds,
+  onSelectionChange,
+  getShouldPreprocessImage,
+  onTogglePreprocessImage,
   onSelectionChange
 }: SkeletonizationImageGalleryProps) => {
   const toggleImage = (imageId: string) => {
@@ -83,13 +91,22 @@ export const SkeletonizationImageGallery = ({
       <div className="flex gap-3 overflow-x-auto pb-2">
         {images.map((image) => {
           const isSelected = selectedImageIds.includes(image.id);
+          const shouldPreprocess = getShouldPreprocessImage(image.id);
           return (
-            <button
+            <div
               key={image.id}
-              type="button"
+              role="button"
+              tabIndex={0}
+              aria-pressed={isSelected}
               onClick={() => toggleImage(image.id)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  toggleImage(image.id);
+                }
+              }}
               className={cn(
-                "group relative aspect-square h-48 w-48 shrink-0 overflow-hidden rounded-lg border-2 transition-all lg:h-12 lg:w-12 xl:h-40 xl:w-40 2xl:h-48 2xl:w-48",
+                "group relative aspect-square h-48 w-48 shrink-0 cursor-pointer overflow-hidden rounded-lg border-2 transition-all focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:outline-none lg:h-12 lg:w-12 xl:h-40 xl:w-40 2xl:h-48 2xl:w-48 dark:focus-visible:ring-cyan-400 dark:focus-visible:ring-offset-gray-950",
                 isSelected
                   ? "border-cyan-500 dark:border-cyan-400"
                   : "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
@@ -118,8 +135,39 @@ export const SkeletonizationImageGallery = ({
                 <p className="text-[10px] text-gray-300">
                   {image.width} × {image.height}
                 </p>
+
+                {isSelected && (
+                  <div className="mt-1 flex items-center gap-2">
+                    <Checkbox
+                      checked={shouldPreprocess}
+                      onClick={(e) => e.stopPropagation()}
+                      onKeyDown={(e) => e.stopPropagation()}
+                      onPointerDown={(e) => e.stopPropagation()}
+                      onCheckedChange={() => onTogglePreprocessImage(image.id)}
+                    />
+
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          className="text-[10px] text-gray-200"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onTogglePreprocessImage(image.id);
+                          }}
+                          onPointerDown={(e) => e.stopPropagation()}
+                        >
+                          Preprocess
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent sideOffset={6}>
+                        Skeletonization algorithms expect binary images containing 0 and 1.
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                )}
               </div>
-            </button>
+            </div>
           );
         })}
       </div>

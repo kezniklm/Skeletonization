@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, ArrowRight, ArrowLeft, Check } from "lucide-react";
+import { Loader2, ArrowRight, ArrowLeft, Check, Info } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { type SelectImage } from "@/database/zod/image";
 import { createSkeletonizationRunsAction } from "@/server-actions/skeletonization";
 import { useImageGallery } from "@/hooks/use-image-gallery";
@@ -64,6 +66,31 @@ export const SkeletonizationWorkspace = ({ images }: SkeletonizationWorkspacePro
   const [runName, setRunName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<RunFormErrors>({});
+  const [preprocessAllImages, setPreprocessAllImages] = useState(true);
+  const [preprocessByImageId, setPreprocessByImageId] = useState<Record<string, boolean>>({});
+
+  const setPreprocessAll = (nextValue: boolean) => {
+    setPreprocessAllImages(nextValue);
+    setPreprocessByImageId({});
+  };
+
+  const getShouldPreprocessImage = (imageId: string) => preprocessByImageId[imageId] ?? preprocessAllImages;
+
+  const togglePreprocessForImage = (imageId: string) => {
+    setPreprocessByImageId((prev) => {
+      const next = { ...prev };
+      const current = prev[imageId] ?? preprocessAllImages;
+      const toggled = !current;
+
+      if (toggled === preprocessAllImages) {
+        delete next[imageId];
+      } else {
+        next[imageId] = toggled;
+      }
+
+      return next;
+    });
+  };
 
   const {
     filteredImages,
@@ -154,6 +181,12 @@ export const SkeletonizationWorkspace = ({ images }: SkeletonizationWorkspacePro
   };
 
   const handleSubmit = async () => {
+    const selectedOverrides = selectedImageIds.reduce<Record<string, boolean>>((acc, imageId) => {
+      const override = preprocessByImageId[imageId];
+      if (typeof override === "boolean") acc[imageId] = override;
+      return acc;
+    }, {});
+
     const runConfig: RunConfiguration = {
       name: runName.trim(),
       algorithms: selectedAlgorithms,
@@ -185,7 +218,10 @@ export const SkeletonizationWorkspace = ({ images }: SkeletonizationWorkspacePro
     try {
       await createSkeletonizationRunsAction({
         ...runConfig,
-        params: {}
+        params: {
+          preprocessAllImages,
+          preprocessByImageId: selectedOverrides
+        }
       });
 
       const algorithmCount = selectedAlgorithms.length;
@@ -287,6 +323,31 @@ export const SkeletonizationWorkspace = ({ images }: SkeletonizationWorkspacePro
               </p>
             </div>
             <div className="space-y-4 px-6 py-6 lg:space-y-0.5 lg:px-2 lg:py-1 xl:space-y-4 xl:px-5 xl:py-5 2xl:space-y-4 2xl:px-6 2xl:py-6">
+              <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 dark:border-gray-700 dark:bg-gray-800/50">
+                <div className="flex items-center gap-2">
+                  <Label className="text-sm font-medium">Preprocess images</Label>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+                        aria-label="About binary images"
+                      >
+                        <Info className="h-4 w-4" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent sideOffset={6}>
+                      Skeletonization algorithms expect binary images containing 0 and 1.
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Checkbox checked={preprocessAllImages} onCheckedChange={(v) => setPreprocessAll(v === true)} />
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Apply to all</span>
+                </div>
+              </div>
+
               <ImageFilters
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}
@@ -343,6 +404,9 @@ export const SkeletonizationWorkspace = ({ images }: SkeletonizationWorkspacePro
                     setErrors((prev) => ({ ...prev, imageIds: undefined }));
                   }
                 }}
+                getShouldPreprocessImage={getShouldPreprocessImage}
+                onTogglePreprocessImage={togglePreprocessForImage}
+                selectedFilter={selectedFilter}
               />
 
               {errors.imageIds && <p className="mt-1 text-xs text-red-500 dark:text-red-400">{errors.imageIds}</p>}

@@ -17,6 +17,9 @@ export const createSkeletonizationRunsAction = async (input: CreateSkeletonizati
 
   const { name, algorithms, imageIds, params } = createSkeletonizationRunSchema.parse(input);
 
+  const getShouldRunPreprocessing = (imageId: string) =>
+    params.preprocessByImageId[imageId] ?? params.preprocessAllImages;
+
   const images = await getImagesByIds(imageIds);
 
   const imagesMap = new Map<string, SelectImage>(images.map((img) => [img.id, img]));
@@ -68,7 +71,7 @@ export const createSkeletonizationRunsAction = async (input: CreateSkeletonizati
           {
             image_path: imagePath,
             algorithm: job.algorithm,
-            should_run_preprocessing: true
+            should_run_preprocessing: getShouldRunPreprocessing(job.imageId)
           }
         ]
       };
