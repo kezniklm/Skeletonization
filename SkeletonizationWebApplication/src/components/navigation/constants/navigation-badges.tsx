@@ -1,7 +1,7 @@
 import { Cpu, Cloud, Layers, Binary } from "lucide-react";
 import { type ReactElement } from "react";
 
-import { algorithms } from "@/algorithms";
+import { ALGORITHMS } from "@/algorithms";
 
 export type NavigationBadge = {
   icon: ReactElement;
@@ -27,7 +27,7 @@ export const navigationBadges: NavigationBadge[] = [
   },
   {
     icon: <Layers className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" />,
-    label: `${algorithms.length} Algorithms`,
+    label: `${ALGORITHMS.length} Algorithms`,
     visibility: "always"
   }
 ];

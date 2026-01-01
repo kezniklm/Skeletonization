@@ -1,7 +1,7 @@
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
-import { algorithms } from "@/algorithms";
+import { ALGORITHMS } from "@/algorithms";
 
 import { run } from "../schema";
 
@@ -18,7 +18,7 @@ export type SelectRun = z.infer<typeof selectRunSchema>;
 export type UpdateRun = z.infer<typeof updateRunSchema>;
 
 export const runConfigurationSchema = insertRunSchema.pick({ name: true }).extend({
-  algorithms: z.array(z.enum(algorithms)).min(1, "Please select at least one algorithm"),
+  algorithms: z.array(z.enum(ALGORITHMS)).min(1, "Please select at least one algorithm"),
   imageIds: z.array(z.string()).min(1, "Please select at least one image")
 });
 

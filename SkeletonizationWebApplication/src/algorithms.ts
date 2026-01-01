@@ -1,4 +1,4 @@
-export const algorithms = [
+export const ALGORITHMS = [
   "Choi-Lam-Siu",
   "Guo-Hall",
   "Han-La-Rhee",
@@ -10,4 +10,4 @@ export const algorithms = [
   "Zhang-Suen"
 ] as const;
 
-export type Algorithm = (typeof algorithms)[number];
+export type Algorithm = (typeof ALGORITHMS)[number];

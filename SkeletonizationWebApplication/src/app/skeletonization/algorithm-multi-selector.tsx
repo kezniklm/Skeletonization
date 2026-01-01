@@ -1,6 +1,6 @@
 "use client";
 
-import { algorithms, type Algorithm } from "@/algorithms";
+import { ALGORITHMS, type Algorithm } from "@/algorithms";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -21,7 +21,7 @@ export const AlgorithmMultiSelector = ({ selectedAlgorithms, onSelectionChange }
   };
 
   const selectAll = () => {
-    onSelectionChange([...algorithms]);
+    onSelectionChange([...ALGORITHMS]);
   };
 
   const deselectAll = () => {
@@ -59,7 +59,7 @@ export const AlgorithmMultiSelector = ({ selectedAlgorithms, onSelectionChange }
       </div>
 
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-        {algorithms.map((algorithm) => {
+        {ALGORITHMS.map((algorithm) => {
           const isSelected = selectedAlgorithms.includes(algorithm);
           return (
             <label

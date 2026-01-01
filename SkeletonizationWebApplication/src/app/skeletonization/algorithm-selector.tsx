@@ -2,7 +2,7 @@
 
 import { Check, ChevronDown } from "lucide-react";
 
-import { algorithms } from "@/algorithms";
+import { ALGORITHMS } from "@/algorithms";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   DropdownMenu,
@@ -31,7 +31,7 @@ export const AlgorithmSelector = ({ selectedAlgorithm, onAlgorithmChange }: Algo
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-(--radix-dropdown-menu-trigger-width)">
-          {algorithms.map((algo) => (
+          {ALGORITHMS.map((algo) => (
             <DropdownMenuItem key={algo} onSelect={() => onAlgorithmChange(algo)}>
               <div className="flex w-full items-center justify-between">
                 <span>{algo}</span>

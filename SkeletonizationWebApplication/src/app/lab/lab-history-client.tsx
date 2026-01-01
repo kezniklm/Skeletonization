@@ -1,7 +1,7 @@
 "use client";
 
 import { type LabRun } from "@/repositories/run";
-import { algorithms } from "@/algorithms";
+import { ALGORITHMS } from "@/algorithms";
 
 import { useFilteredRuns } from "../../hooks/use-filtered-runs";
 
@@ -45,7 +45,7 @@ export const LabHistoryClient = ({ runs, totalRuns }: { runs: LabRun[]; totalRun
               <>
                 <LabSort sortBy={sortBy} onSortChange={setSortBy} />
                 <LabAlgorithmFilter
-                  algorithms={algorithms}
+                  algorithms={ALGORITHMS}
                   selectedAlgorithms={selectedAlgorithms}
                   toggleAlgorithm={toggleAlgorithm}
                 />

@@ -1,6 +1,6 @@
 import { Workflow } from "lucide-react";
 
-import { algorithms } from "@/algorithms";
+import { ALGORITHMS } from "@/algorithms";
 
 export const AlgorithmShowcase = () => (
   <section
@@ -18,7 +18,7 @@ export const AlgorithmShowcase = () => (
       role="list"
       aria-label="List of supported skeletonization algorithms"
     >
-      {algorithms.map((algo) => (
+      {ALGORITHMS.map((algo) => (
         <span
           key={algo}
           role="listitem"

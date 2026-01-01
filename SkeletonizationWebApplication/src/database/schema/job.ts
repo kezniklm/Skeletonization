@@ -1,6 +1,6 @@
 import { integer, jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
-import { algorithms } from "@/algorithms";
+import { ALGORITHMS } from "@/algorithms";
 
 import { image } from "./image";
 import { run } from "./run";
@@ -17,7 +17,7 @@ export const job = pgTable("job", {
   imageId: uuid("image_id")
     .notNull()
     .references(() => image.id, { onDelete: "cascade" }),
-  algorithm: text("algorithm", { enum: algorithms }).notNull(),
+  algorithm: text("algorithm", { enum: ALGORITHMS }).notNull(),
   ordinal: integer("ordinal").notNull(),
   params: jsonb("params"),
   status: text("status", { enum: jobStatusEnum }).default("queued").notNull(),
