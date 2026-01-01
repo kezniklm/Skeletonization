@@ -5,9 +5,7 @@ import { ALGORITHMS } from "@/algorithms";
 import { image } from "./image";
 import { run } from "./run";
 
-const jobStatusEnum = ["queued", "processing", "completed", "failed"] as const;
-
-export type JobStatus = (typeof jobStatusEnum)[number];
+const JOB_STATUS_ENUM = ["queued", "processing", "completed", "failed"] as const;
 
 export const job = pgTable("job", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -20,6 +18,6 @@ export const job = pgTable("job", {
   algorithm: text("algorithm", { enum: ALGORITHMS }).notNull(),
   ordinal: integer("ordinal").notNull(),
   params: jsonb("params"),
-  status: text("status", { enum: jobStatusEnum }).default("queued").notNull(),
+  status: text("status", { enum: JOB_STATUS_ENUM }).default("queued").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull()
 });

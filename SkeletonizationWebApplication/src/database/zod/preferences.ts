@@ -8,3 +8,7 @@ export const userPreferencesSchema = createInsertSchema(userPreferences).omit({ 
 export type UserPreferences = z.infer<typeof userPreferencesSchema>;
 
 export type FileOutputFormat = z.infer<typeof userPreferencesSchema.shape.defaultOutputFormat>;
+
+export type ImageFormat = Lowercase<FileOutputFormat>;
+
+export type Theme = z.infer<typeof userPreferencesSchema.shape.theme>;

@@ -21,3 +21,5 @@ export const updateImageSchema = insertImageSchema.partial().required({ id: true
 export type InsertImage = z.infer<typeof insertImageSchema>;
 export type SelectImage = z.infer<typeof selectImageSchema>;
 export type UpdateImage = z.infer<typeof updateImageSchema>;
+
+export type ImageStatus = z.infer<typeof selectImageSchema.shape.status>;

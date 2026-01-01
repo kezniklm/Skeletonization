@@ -35,3 +35,5 @@ export const createSkeletonizationRunSchema = runConfigurationSchema
   });
 
 export type CreateSkeletonizationRun = z.infer<typeof createSkeletonizationRunSchema>;
+
+export type RunStatus = z.infer<typeof selectRunSchema.shape.status>;
