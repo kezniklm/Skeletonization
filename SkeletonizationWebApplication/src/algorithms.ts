@@ -5,6 +5,7 @@ export const ALGORITHMS = [
   "K3M",
   "KMM",
   "Kwon-Kang",
+  "Liu-Zhang",
   "Petrosino-Salvi",
   "Tarabek",
   "Zhang-Suen"
