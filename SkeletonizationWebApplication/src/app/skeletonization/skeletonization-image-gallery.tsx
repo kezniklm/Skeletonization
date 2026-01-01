@@ -7,8 +7,9 @@ import type { SelectImage } from "@/database/zod/image";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { type FilterType } from "@/components/filters";
+import { SkeletonizationImageGalleryEmptyState } from "@/app/skeletonization/skeletonization-image-gallery-empty-state";
 
 type SkeletonizationImageGalleryProps = {
   images: SelectImage[];
@@ -17,6 +18,7 @@ type SkeletonizationImageGalleryProps = {
   onSelectionChange: (imageIds: string[]) => void;
   getShouldPreprocessImage: (imageId: string) => boolean;
   onTogglePreprocessImage: (imageId: string) => void;
+  selectedFilter: FilterType;
 };
 
 export const SkeletonizationImageGallery = ({
@@ -26,7 +28,7 @@ export const SkeletonizationImageGallery = ({
   onSelectionChange,
   getShouldPreprocessImage,
   onTogglePreprocessImage,
-  onSelectionChange
+  selectedFilter
 }: SkeletonizationImageGalleryProps) => {
   const toggleImage = (imageId: string) => {
     if (selectedImageIds.includes(imageId)) {
@@ -46,14 +48,7 @@ export const SkeletonizationImageGallery = ({
   };
 
   if (images.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 py-12 text-center dark:border-gray-700">
-        <p className="text-gray-600 dark:text-gray-400">No images available</p>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-500">
-          Upload and validate images to start skeletonization
-        </p>
-      </div>
-    );
+    return <SkeletonizationImageGalleryEmptyState selectedFilter={selectedFilter} />;
   }
 
   return (
