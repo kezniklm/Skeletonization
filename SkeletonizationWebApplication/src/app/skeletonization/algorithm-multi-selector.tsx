@@ -57,32 +57,33 @@ export const AlgorithmMultiSelector = ({ selectedAlgorithms, onSelectionChange }
           </button>
         </div>
       </div>
-
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-        {ALGORITHMS.map((algorithm) => {
-          const isSelected = selectedAlgorithms.includes(algorithm);
-          return (
-            <label
-              key={algorithm}
-              className={cn(
-                "flex cursor-pointer items-center gap-3 rounded-lg border-2 p-3 text-left transition-all",
-                isSelected
-                  ? "border-cyan-500 bg-cyan-50 dark:border-cyan-400 dark:bg-cyan-950/30"
-                  : "border-gray-200 hover:border-gray-300 hover:bg-gray-50 dark:border-gray-700 dark:hover:border-gray-600 dark:hover:bg-gray-800/50"
-              )}
-            >
-              <Checkbox checked={isSelected} onCheckedChange={() => toggleAlgorithm(algorithm)} />
-              <span
+      <div className="max-h-40 overflow-auto pb-2">
+        <div className="grid grid-cols-3 gap-2">
+          {ALGORITHMS.map((algorithm) => {
+            const isSelected = selectedAlgorithms.includes(algorithm);
+            return (
+              <label
+                key={algorithm}
                 className={cn(
-                  "text-sm font-medium",
-                  isSelected ? "text-cyan-900 dark:text-cyan-100" : "text-gray-700 dark:text-gray-300"
+                  "flex cursor-pointer items-center gap-3 rounded-lg border-2 p-3 text-left transition-all",
+                  isSelected
+                    ? "border-cyan-500 bg-cyan-50 dark:border-cyan-400 dark:bg-cyan-950/30"
+                    : "border-gray-200 hover:border-gray-300 hover:bg-gray-50 dark:border-gray-700 dark:hover:border-gray-600 dark:hover:bg-gray-800/50"
                 )}
               >
-                {algorithm}
-              </span>
-            </label>
-          );
-        })}
+                <Checkbox checked={isSelected} onCheckedChange={() => toggleAlgorithm(algorithm)} />
+                <span
+                  className={cn(
+                    "text-sm font-medium whitespace-nowrap",
+                    isSelected ? "text-cyan-900 dark:text-cyan-100" : "text-gray-700 dark:text-gray-300"
+                  )}
+                >
+                  {algorithm}
+                </span>
+              </label>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
