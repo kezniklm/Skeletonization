@@ -43,35 +43,35 @@ namespace skeletonizer
 		gpu
 	};
 
-	inline std::string to_string(const skeletonizer_type skeletonizer_type, const bool to_upper = true)
+	[[nodiscard]] constexpr std::string_view to_string_view(const skeletonizer_type type) noexcept
 	{
-		std::string result;
+		using enum skeletonizer_type;
 
-		switch (skeletonizer_type)
+		switch (type)
 		{
-		case skeletonizer_type::cpu:
-			result = "CPU";
-		case skeletonizer_type::thread:
-			result = "THREAD";
-		case skeletonizer_type::gpu:
-			result = "GPU";
-		default:
-			result = "Unknown";
+		case cpu: return "cpu";
+		case thread: return "thread";
+		case gpu: return "gpu";
+		default: return "unknown";
 		}
+	}
+
+	[[nodiscard]] inline std::string to_string(const skeletonizer_type type, const bool to_upper = true)
+	{
+		std::string s{to_string_view(type)};
 
 		if (to_upper)
 		{
-			std::ranges::transform(result, result.begin(),
-			                       [](const unsigned char c)
-			                       {
-				                       return static_cast<char>(std::toupper(c));
-			                       });
+			std::ranges::transform(s, s.begin(), [](const unsigned char c)
+			{
+				return static_cast<char>(std::toupper(c));
+			});
 		}
 
-		return result;
+		return s;
 	}
 
-	inline std::optional<skeletonizer_type> from_string(const std::string_view value)
+	inline [[nodiscard]] std::optional<skeletonizer_type> from_string(const std::string_view value)
 	{
 		if (value == "gpu")
 		{
