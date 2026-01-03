@@ -3,6 +3,8 @@ import { access, copyFile, mkdir, readFile, stat } from "fs/promises";
 import { join } from "path";
 
 import { basename, getImageDimensions, getMimeTypeFromFilename } from "./image-utils";
+import { getStorage } from "./storage";
+import { getStorageConfig } from "./storage/config";
 
 export type OutputFileInfo = {
   storagePath: string;
@@ -41,7 +43,7 @@ const findWorkerOutputFile = async (outputPath: string): Promise<string | null> 
   return null;
 };
 
-export const copyOutputFile = async (workerOutputPath: string): Promise<OutputFileInfo> => {
+const copyOutputFileLocal = async (workerOutputPath: string): Promise<OutputFileInfo> => {
   const outputFileName = basename(workerOutputPath);
 
   if (!outputFileName) {
@@ -79,4 +81,44 @@ export const copyOutputFile = async (workerOutputPath: string): Promise<OutputFi
     checksum,
     originalFilename: outputFileName
   };
+};
+
+const copyOutputFileS3 = async (outputKey: string): Promise<OutputFileInfo> => {
+  const outputFileName = basename(outputKey);
+
+  if (!outputFileName) {
+    throw new Error(`Invalid output key: ${outputKey}`);
+  }
+
+  const storage = getStorage();
+
+  const { body, contentType } = await storage.getObject(outputKey);
+
+  const mime = contentType ?? getMimeTypeFromFilename(outputFileName);
+  const checksum = createHash("sha256").update(body).digest("hex");
+  const dimensions = getImageDimensions(body, mime);
+  const url = storage.getPublicUrl(outputKey);
+
+  console.log(`Retrieved output file from S3: ${outputKey}`);
+
+  return {
+    storagePath: outputKey,
+    url,
+    mime,
+    width: dimensions.width,
+    height: dimensions.height,
+    sizeBytes: body.length,
+    checksum,
+    originalFilename: outputFileName
+  };
+};
+
+export const copyOutputFile = async (workerOutputPath: string): Promise<OutputFileInfo> => {
+  const config = getStorageConfig();
+
+  if (config.backend === "s3") {
+    return copyOutputFileS3(workerOutputPath);
+  }
+
+  return copyOutputFileLocal(workerOutputPath);
 };

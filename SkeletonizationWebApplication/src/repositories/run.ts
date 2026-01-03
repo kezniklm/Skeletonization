@@ -18,11 +18,11 @@ export type LabJob = {
   image: {
     id: string;
     name: string;
-    storagePath: string;
+    url: string;
   };
   producedImage: null | {
     id: string;
-    storagePath: string;
+    url: string;
     name: string;
     status: string;
   };
@@ -77,12 +77,12 @@ export const getRunsWithDetailsByUserId = async (userId: string): Promise<LabRun
       inputImage: {
         id: inputImage.id,
         name: inputImage.originalFilename,
-        storagePath: inputImage.storagePath
+        url: inputImage.url
       },
       producedImage: {
         id: producedImage.id,
         name: producedImage.originalFilename,
-        storagePath: producedImage.storagePath,
+        url: producedImage.url,
         status: producedImage.status
       }
     })
@@ -125,7 +125,7 @@ export const getRunsWithDetailsByUserId = async (userId: string): Promise<LabRun
         image: {
           id: row.inputImage.id,
           name: row.inputImage.name ?? "",
-          storagePath: row.inputImage.storagePath ?? ""
+          url: row.inputImage.url ?? ""
         },
         producedImage: null
       };
@@ -136,7 +136,7 @@ export const getRunsWithDetailsByUserId = async (userId: string): Promise<LabRun
     if (row.producedImage?.id && !jobEntry.producedImage) {
       jobEntry.producedImage = {
         id: row.producedImage.id,
-        storagePath: row.producedImage.storagePath ?? "",
+        url: row.producedImage.url ?? "",
         name: row.producedImage.name ?? "",
         status: row.producedImage.status ?? ""
       };

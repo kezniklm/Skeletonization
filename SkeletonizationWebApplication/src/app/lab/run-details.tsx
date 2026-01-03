@@ -12,8 +12,11 @@ import { cn } from "@/lib/utils";
 import { JobViewerDialog } from "./job-viewer-dialog";
 import { useJobViewer } from "./use-job-viewer";
 
-const getImageSrc = (storagePath: string) => {
-  const normalized = storagePath.replace(/\\/g, "/");
+const getImageSrc = (url: string) => {
+  if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/api/")) {
+    return url;
+  }
+  const normalized = url.replace(/\\/g, "/");
   return normalized.startsWith("/") ? normalized : `/${normalized}`;
 };
 
@@ -94,7 +97,7 @@ const groupJobsByImage = (jobs: readonly LabJob[]): GroupedImageJobs[] => {
     if (!existing) {
       imageGroups.set(j.image.id, {
         image: j.image,
-        originalSrc: getImageSrc(j.image.storagePath),
+        originalSrc: getImageSrc(j.image.url),
         minOrdinal: j.ordinal,
         items: [j]
       });
@@ -219,7 +222,7 @@ export const RunDetails = ({ run, className }: { run: LabRun; className?: string
                     .slice()
                     .sort((a, b) => a.algorithm.localeCompare(b.algorithm))
                     .map((ri) => {
-                      const outputSrc = ri.producedImage ? getImageSrc(ri.producedImage.storagePath) : "";
+                      const outputSrc = ri.producedImage ? getImageSrc(ri.producedImage.url) : "";
                       const isClickable = Boolean(outputSrc);
 
                       return (

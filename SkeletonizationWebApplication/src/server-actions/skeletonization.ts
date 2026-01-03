@@ -1,7 +1,5 @@
 "use server";
 
-import { join } from "path";
-
 import type { SelectImage } from "@/database/zod/image";
 import type { InsertJob } from "@/database/zod/job";
 import { type CreateSkeletonizationRun, createSkeletonizationRunSchema } from "@/database/zod/run";
@@ -63,13 +61,12 @@ export const createSkeletonizationRunsAction = async (input: CreateSkeletonizati
   try {
     const redisJobs: SkeletonizationJob[] = createdJobs.map((job) => {
       const img = imagesMap.get(job.imageId)!;
-      const imagePath = join(process.cwd(), "public", img.storagePath);
 
       return {
         id: job.id,
         tasks: [
           {
-            image_path: imagePath,
+            image_key: img.storagePath,
             algorithm: job.algorithm,
             should_run_preprocessing: getShouldRunPreprocessing(job.imageId)
           }

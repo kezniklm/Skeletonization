@@ -8,7 +8,7 @@ export const QUEUE_NAMES = {
 export type SkeletonizationJob = {
   id: string;
   tasks: Array<{
-    image_path: string;
+    image_key: string;
     algorithm: Algorithm;
     should_run_preprocessing: boolean;
   }>;

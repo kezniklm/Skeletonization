@@ -24,6 +24,15 @@ export const getImageByIdAndUserId = async (imageId: string | undefined, userId:
   return result ?? null;
 };
 
+export const getImageByStoragePathAndUserId = async (storagePath: string, userId: string) => {
+  const [result] = await db
+    .select()
+    .from(image)
+    .where(and(eq(image.storagePath, storagePath), eq(image.userId, userId)));
+
+  return result ?? null;
+};
+
 export const getImagesByUserId = async (userId: string) =>
   db.select().from(image).where(eq(image.userId, userId)).orderBy(desc(image.createdAt));
 

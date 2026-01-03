@@ -1,12 +1,11 @@
 "use server";
 
 import { createHash } from "crypto";
-import { mkdir, unlink, writeFile } from "fs/promises";
-import { join } from "path";
 
 import { getExtension, getMimeType } from "@/app/preprocessing/utils/format-mapper";
 import { type FileOutputFormat } from "@/database/zod";
 import { updateImageSchema } from "@/database/zod/image";
+import { getStorage } from "@/lib/storage";
 import { createImage, deleteImage, getImageByChecksum, getImageById, updateImage } from "@/repositories/image";
 
 import { requireUser } from "./common";
@@ -14,7 +13,6 @@ import { requireUser } from "./common";
 const ALLOWED_IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/jpg", "image/bmp", "image/tiff"]);
 
 const MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
-const PUBLIC_UPLOADS_DIR = "uploads";
 
 const validateImageFile = (file: File) => {
   if (!file) {
@@ -67,16 +65,11 @@ const getImageDimensions = async (buffer: Buffer, mimeType: string): Promise<{ w
   return { width: 0, height: 0 };
 };
 
-const buildStoragePaths = (userId: string, originalName: string) => {
+const buildStorageKey = (userId: string, originalName: string) => {
   const timestamp = Date.now();
   const sanitizedFilename = originalName.replace(/[^a-zA-Z0-9.-]/g, "_");
   const filename = `${timestamp}_${sanitizedFilename}`;
-
-  const storagePath = join(PUBLIC_UPLOADS_DIR, userId, filename);
-  const fullPath = join(process.cwd(), "public", storagePath);
-  const imageUrl = `/${storagePath.replace(/\\/g, "/")}`;
-
-  return { filename, storagePath, fullPath, imageUrl };
+  return `uploads/${userId}/${filename}`;
 };
 
 export const uploadImageAction = async (file: File) => {
@@ -97,19 +90,15 @@ export const uploadImageAction = async (file: File) => {
 
   const dimensions = await getImageDimensions(buffer, file.type);
 
-  const { storagePath, fullPath, imageUrl } = buildStoragePaths(user.id, file.name);
-
-  const userUploadDir = join(process.cwd(), "public", PUBLIC_UPLOADS_DIR, user.id);
-
-  await mkdir(userUploadDir, { recursive: true });
-
-  await writeFile(fullPath, buffer);
+  const storage = getStorage();
+  const storageKey = buildStorageKey(user.id, file.name);
+  const { url } = await storage.putObject(storageKey, buffer, { contentType: file.type });
 
   const imageRecord = await createImage({
     userId: user.id,
     originalFilename: file.name,
-    storagePath,
-    url: imageUrl,
+    storagePath: storageKey,
+    url,
     mime: file.type,
     width: dimensions.width,
     height: dimensions.height,
@@ -174,10 +163,9 @@ export const deleteImageAction = async (imageId: string) => {
     throw new Error("You can only delete your own images");
   }
 
-  const fullPath = join(process.cwd(), "public", image.storagePath);
-
   try {
-    await unlink(fullPath);
+    const storage = getStorage();
+    await storage.deleteObject(image.storagePath);
   } catch (error) {
     console.error("Error deleting file:", error);
   }
@@ -219,23 +207,17 @@ export const savePreprocessedImageAction = async (
   const mimeType = getMimeType(outputFormat);
   const filename = `${timestamp}_${sanitizedFilename}_preprocessed.${fileExtension}`;
 
-  const storagePath = join(PUBLIC_UPLOADS_DIR, user.id, filename);
-  const fullPath = join(process.cwd(), "public", storagePath);
-  const imageUrl = `/${storagePath.replace(/\\/g, "/")}`;
-
-  const userUploadDir = join(process.cwd(), "public", PUBLIC_UPLOADS_DIR, user.id);
-
-  await mkdir(userUploadDir, { recursive: true });
-
-  await writeFile(fullPath, buffer);
+  const storage = getStorage();
+  const storageKey = `uploads/${user.id}/${filename}`;
+  const { url } = await storage.putObject(storageKey, buffer, { contentType: mimeType });
 
   const dimensions = await getImageDimensions(buffer, mimeType);
 
   const imageRecord = await createImage({
     userId: user.id,
     originalFilename: `${sanitizedFilename}_preprocessed.${fileExtension}`,
-    storagePath,
-    url: imageUrl,
+    storagePath: storageKey,
+    url,
     mime: mimeType,
     width: dimensions.width,
     height: dimensions.height,
