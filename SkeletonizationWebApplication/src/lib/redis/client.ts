@@ -94,7 +94,7 @@ class RedisClientManager {
 
   async createSubscriberClient(): Promise<RedisClient> {
     const client = createRedisClient();
-    const heartbeat: ReturnType<typeof setInterval> | null = null;
+    let heartbeat: ReturnType<typeof setInterval> | null = null;
 
     client.on("error", (err) => console.error("Redis Subscriber Error:", err.message));
     client.on("reconnecting", () => console.log("Redis Subscriber: Reconnecting..."));
@@ -105,6 +105,7 @@ class RedisClientManager {
     });
 
     await client.connect();
+    heartbeat = startHeartbeat(client, "Redis Subscriber");
     console.log("Redis Subscriber: Connected");
     return client;
   }

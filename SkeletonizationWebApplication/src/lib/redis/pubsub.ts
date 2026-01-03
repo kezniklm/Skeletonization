@@ -38,9 +38,16 @@ export const createPubSubChannel = <T>(channelName: string): PubSubChannel<T> =>
 
   const unsubscribeIfEmpty = async () => {
     if (callbacks.size === 0 && isSubscribed && subscriberClient) {
-      await subscriberClient.unsubscribe(channelName).catch(console.error);
-      isSubscribed = false;
-      console.log(`Redis PubSub: Unsubscribed from ${channelName}`);
+      try {
+        await subscriberClient.unsubscribe(channelName);
+        console.log(`Redis PubSub: Unsubscribed from ${channelName}`);
+        await subscriberClient.quit();
+      } catch (err) {
+        console.error(`Error cleaning up subscriber for ${channelName}:`, err);
+      } finally {
+        subscriberClient = null;
+        isSubscribed = false;
+      }
     }
   };
 
