@@ -1,26 +1,40 @@
 ﻿# CMakeList.txt : SkeletonizationWorker
 
-cmake_minimum_required(VERSION 3.30)
-project(SkeletonizationWorker)
+include("${CMAKE_CURRENT_SOURCE_DIR}/vcpkg-deps.cmake")
 
-file(GLOB_RECURSE WORKER_SOURCE CONFIGURE_DEPENDS source/*.ixx)
-file(GLOB_RECURSE WORKER_MAIN CONFIGURE_DEPENDS main.cpp)
+file(GLOB_RECURSE WORKER_SOURCES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp"
+)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/vcpkg-deps.cmake)
+file(GLOB_RECURSE WORKER_HEADERS
+    CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp"
+)
 
-file(COPY "${CMAKE_SOURCE_DIR}/skeletonizer_config.json" DESTINATION "${CMAKE_BINARY_DIR}")
+find_path(BEXT_DI_INCLUDE_DIRS "boost/di.hpp")
 
-add_executable(SkeletonizationWorker ${WORKER_MAIN} ${WORKER_SOURCE})
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/.env" DESTINATION "${CMAKE_BINARY_DIR}/SkeletonizationWorker")
+
+add_executable(SkeletonizationWorker)
 
 target_sources(SkeletonizationWorker
-    PUBLIC
-    FILE_SET modules TYPE CXX_MODULES FILES
-    ${WORKER_SOURCE})
+    PRIVATE
+    ${WORKER_SOURCES}
+    PRIVATE
+    FILE_SET HEADERS
+    BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    FILES ${WORKER_HEADERS}
+)
 
-target_include_directories(SkeletonizationWorker PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(SkeletonizationWorker PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include ${BEXT_DI_INCLUDE_DIRS} ${AWSSDK_INCLUDE_DIRS})
 
-target_link_libraries(SkeletonizationWorker PRIVATE SkeletonizationCore RapidJSON rapidjson glog::glog hiredis::hiredis)
+target_link_libraries(SkeletonizationWorker PRIVATE Skeletonization::Core Skeletonization::CoreCPU RapidJSON rapidjson hiredis::hiredis hiredis::hiredis_ssl libenvpp::libenvpp ${AWSSDK_LIBRARIES})
 
 if(SKELETONIZATION_ENABLE_GPU)
-    target_link_libraries(SkeletonizationWorker PRIVATE SkeletonizationCoreGPU)
+    target_link_libraries(SkeletonizationWorker PRIVATE Skeletonization::CoreGPU)
+endif()
+
+if(SKELETONIZATION_ENABLE_MT)
+    target_link_libraries(SkeletonizationWorker PRIVATE Skeletonization::CoreMT)
 endif()

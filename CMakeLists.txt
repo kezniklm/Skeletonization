@@ -27,7 +27,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     endif()
 endif()
 
-# Enable performance optimizations
+# Enable performance optimizations and compiler flags
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     message(STATUS "Enabling Release optimizations for performance")
 
@@ -109,5 +109,5 @@ enable_testing()
 add_subdirectory(SkeletonizationPython)
 add_subdirectory(SkeletonizationVisualizer)
 add_subdirectory(SkeletonizationTests)
-#add_subdirectory(SkeletonizationWorker)
+add_subdirectory(SkeletonizationWorker)
 add_subdirectory(SkeletonizationCLI)

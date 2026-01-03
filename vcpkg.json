@@ -9,8 +9,21 @@
     "glog",
     "gtest",
     "drogon",
-    "hiredis",
-    "opencv4"
+    {
+      "name": "hiredis",
+      "features": [
+        "ssl"
+      ]
+    },
+    "bext-di",
+    "libenvpp",
+    "opencv4",
+    {
+      "name": "aws-sdk-cpp",
+      "features": [
+        "s3"
+      ]
+    }
   ],
   "features": {
     "cuda": {
