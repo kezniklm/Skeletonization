@@ -14,7 +14,19 @@ file(GLOB_RECURSE WORKER_HEADERS
 
 find_path(BEXT_DI_INCLUDE_DIRS "boost/di.hpp")
 
-file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/.env" DESTINATION "${CMAKE_BINARY_DIR}/SkeletonizationWorker")
+set(DOTENV_SRC  "${CMAKE_CURRENT_SOURCE_DIR}/.env")
+set(DOTENV_DEST "${CMAKE_CURRENT_BINARY_DIR}/.env")
+
+option(ENABLE_DOTENV_COPY "Copy .env into the build dir (dev/deploy only)" OFF)
+
+if(ENABLE_DOTENV_COPY)
+  if(EXISTS "${DOTENV_SRC}")
+    configure_file("${DOTENV_SRC}" "${DOTENV_DEST}" COPYONLY)
+    message(STATUS "Copied .env -> ${DOTENV_DEST}")
+  else()
+    message(STATUS "Skipping .env copy (not found at ${DOTENV_SRC})")
+  endif()
+endif()
 
 add_executable(SkeletonizationWorker)
 
