@@ -363,3 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 /vc140.idb
 *.tsbuildinfo
+
+.env
