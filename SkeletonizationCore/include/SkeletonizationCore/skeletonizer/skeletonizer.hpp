@@ -4,6 +4,7 @@
 #include <optional>
 
 #include "opencv2/core.hpp"
+#include "SkeletonizationCore/extensions/string.hpp"
 
 namespace skeletonizer
 {
@@ -71,17 +72,19 @@ namespace skeletonizer
 		return s;
 	}
 
-	inline [[nodiscard]] std::optional<skeletonizer_type> from_string(const std::string_view value)
+	[[nodiscard]] inline std::optional<skeletonizer_type> from_string(const std::string_view value)
 	{
-		if (value == "gpu")
+		if (equals_ascii(value, "gpu"))
 		{
 			return skeletonizer_type::gpu;
 		}
-		if (value == "thread")
+
+		if (equals_ascii(value, "thread"))
 		{
 			return skeletonizer_type::thread;
 		}
-		if (value == "cpu")
+
+		if (equals_ascii(value, "cpu"))
 		{
 			return skeletonizer_type::cpu;
 		}
