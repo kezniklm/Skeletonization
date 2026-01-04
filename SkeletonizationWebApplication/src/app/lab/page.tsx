@@ -28,7 +28,7 @@ const LabPage = async () => {
       <NotificationPermissionDialog notificationsEnabled={pushNotificationsEnabled} />
 
       <div className="mb-8">
-        <h1 className="bg-linear-to-r from-cyan-600 to-blue-600 bg-clip-text text-4xl font-bold text-transparent xl:text-3xl 2xl:text-4xl dark:from-cyan-400 dark:to-blue-400">
+        <h1 className="bg-linear-to-r from-cyan-600 to-blue-600 bg-clip-text pb-0.5 text-4xl font-bold text-transparent xl:text-3xl 2xl:text-4xl dark:from-cyan-400 dark:to-blue-400">
           Processing Lab
         </h1>
         <p className="mt-2 text-gray-600 xl:text-sm 2xl:text-base dark:text-gray-400">

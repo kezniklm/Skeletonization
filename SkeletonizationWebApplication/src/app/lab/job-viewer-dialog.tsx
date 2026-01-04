@@ -60,7 +60,7 @@ export const JobViewerDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-5xl">
         <DialogHeader>
-          <DialogTitle className="truncate">{title || "Image"}</DialogTitle>
+          <DialogTitle className="truncate pb-0.5">{title || "Image"}</DialogTitle>
           <DialogDescription>Drag to pan • Use controls to zoom</DialogDescription>
         </DialogHeader>
 
