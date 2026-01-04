@@ -14,7 +14,6 @@ export const defaultPreferences = {
   compactMode: false,
   pushNotifications: true,
   timezone: "UTC",
-  autoSaveResults: true,
   defaultOutputFormat: "PNG" satisfies DefaultOutputFormat
 } as const;
 
@@ -30,11 +29,11 @@ export const userPreferences = pgTable("user_preferences", {
 
   // Notifications
   pushNotifications: boolean("push_notifications").default(defaultPreferences.pushNotifications).notNull(),
+
   // Timezone
   timezone: text("timezone").default(defaultPreferences.timezone).notNull(),
 
   // Processing Preferences
-  autoSaveResults: boolean("auto_save_results").default(defaultPreferences.autoSaveResults).notNull(),
   defaultOutputFormat: text("default_output_format", { enum: DEFAULT_OUTPUT_FORMAT_ENUM })
     .default(defaultPreferences.defaultOutputFormat)
     .notNull()

@@ -124,11 +124,6 @@ export const SettingsForm = ({ userId, initialPreferences }: SettingsFormProps) 
             description="Configure default processing settings"
             items={[
               {
-                label: "Auto-save Results",
-                description: "Automatically save processing results to your library",
-                control: <FormToggle name="autoSaveResults" aria-label="Enable auto-save results" />
-              },
-              {
                 label: "Default Output Format",
                 description: "Choose the default format for processed images",
                 control: (
