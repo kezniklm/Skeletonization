@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, ArrowRight, ArrowLeft, Check, Info } from "lucide-react";
+import { Loader2, ArrowRight, ArrowLeft, Check } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -326,31 +326,6 @@ export const SkeletonizationWorkspace = ({ images, defaultOutputFormat }: Skelet
               </p>
             </div>
             <div className="space-y-4 px-6 py-6 lg:space-y-0.5 lg:px-2 lg:py-1 xl:space-y-4 xl:px-5 xl:py-5 2xl:space-y-4 2xl:px-6 2xl:py-6">
-              <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 dark:border-gray-700 dark:bg-gray-800/50">
-                <div className="flex items-center gap-2">
-                  <Label className="text-sm font-medium">Preprocess images</Label>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        type="button"
-                        className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
-                        aria-label="About binary images"
-                      >
-                        <Info className="h-4 w-4" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent sideOffset={6}>
-                      Skeletonization algorithms expect binary images containing 0 and 1.
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <Checkbox checked={preprocessAllImages} onCheckedChange={(v) => setPreprocessAll(v === true)} />
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Apply to all</span>
-                </div>
-              </div>
-
               <ImageFilters
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}
@@ -390,11 +365,25 @@ export const SkeletonizationWorkspace = ({ images, defaultOutputFormat }: Skelet
                   </TabsList>
                 </Tabs>
 
-                {totalPages > 1 && (
-                  <div className="flex justify-center sm:justify-end">
-                    <ImagePagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 rounded-md border border-gray-200 bg-gray-50 px-3 py-1.5 dark:border-gray-700 dark:bg-gray-800/50">
+                    <Checkbox checked={preprocessAllImages} onCheckedChange={(v) => setPreprocessAll(v === true)} />
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="cursor-help text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Preprocess All
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent sideOffset={6}>
+                        Skeletonization algorithms expect binary images containing 0 and 1.
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
-                )}
+
+                  {totalPages > 1 && (
+                    <ImagePagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+                  )}
+                </div>
               </div>
 
               <SkeletonizationImageGallery
