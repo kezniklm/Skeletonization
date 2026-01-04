@@ -12,7 +12,7 @@ export type SkeletonizationJob = {
     image_key: string;
     algorithm: Algorithm;
     should_run_preprocessing: boolean;
-    outputFormat: FileOutputFormat;
+    output_format: FileOutputFormat;
   }>;
 };
 

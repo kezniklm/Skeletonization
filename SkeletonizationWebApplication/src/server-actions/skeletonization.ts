@@ -69,7 +69,7 @@ export const createSkeletonizationRunsAction = async (input: CreateSkeletonizati
             image_key: img.storagePath,
             algorithm: job.algorithm,
             should_run_preprocessing: getShouldRunPreprocessing(job.imageId),
-            outputFormat: params.outputFormat
+            output_format: params.outputFormat
           }
         ]
       };
