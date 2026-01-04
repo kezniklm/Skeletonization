@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <ranges>
 #include <sstream>
 #include <thread>
@@ -230,7 +231,7 @@ namespace worker::infrastructure::redis
 
 		if (redis_context_->err)
 		{
-			const std::string error = redis_context_->errstr ? redis_context_->errstr : "unknown";
+			const std::string error = redis_context_->errstr[0] != '\0' ? redis_context_->errstr : "unknown";
 
 			redisFree(redis_context_);
 
@@ -284,7 +285,7 @@ namespace worker::infrastructure::redis
 
 		if (redis_context_->err)
 		{
-			const std::string error = redis_context_->errstr ? redis_context_->errstr : "unknown";
+			const std::string error = redis_context_->errstr[0] != '\0' ? redis_context_->errstr : "unknown";
 
 			redisFree(redis_context_);
 
@@ -323,8 +324,13 @@ namespace worker::infrastructure::redis
 		}
 
 		const std::vector<std::string_view> auth_args = configuration_.uri.username.empty()
-			? std::vector<std::string_view>{"AUTH", configuration_.uri.password}
-			: std::vector<std::string_view>{"AUTH", configuration_.uri.username, configuration_.uri.password};
+			                                                ? std::vector<std::string_view>{
+				                                                "AUTH", configuration_.uri.password
+			                                                }
+			                                                : std::vector<std::string_view>{
+				                                                "AUTH", configuration_.uri.username,
+				                                                configuration_.uri.password
+			                                                };
 
 		const auto command_result = execute_command(auth_args);
 
@@ -425,7 +431,7 @@ namespace worker::infrastructure::redis
 				std::ostringstream oss;
 
 				oss << "redisCommandArgv null reply; ctx->err=" << redis_context_->err
-					<< " (" << (redis_context_->errstr ? redis_context_->errstr : "") << ")";
+					<< " (" << (redis_context_->errstr[0] != '\0' ? redis_context_->errstr : "") << ")";
 
 				return std::unexpected(oss.str());
 			}

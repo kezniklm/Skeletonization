@@ -93,12 +93,12 @@ namespace worker::configuration
 
 		if (backend != backend::storage_backend::s3)
 		{
-			config.storage_backend = storage_backend::local;
+			config.backend = storage_backend::local;
 
 			return;
 		}
 
-		config.storage_backend = storage_backend::s3;
+		config.backend = storage_backend::s3;
 		config.s3.endpoint = get_env<std::string>("S3_ENDPOINT");
 		config.s3.region = get_env_or<std::string>("S3_REGION", "auto");
 		config.s3.bucket = get_env<std::string>("S3_BUCKET");

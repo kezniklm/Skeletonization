@@ -39,7 +39,11 @@ namespace worker::infrastructure::dependency_injection
 			di::bind<results_queue_t>.to(results_queue_t{configuration.results_queue}),
 			di::bind<output_directory_t>.to(output_directory_t{configuration.output_directory}),
 			di::bind<poll_timeout_t>.to(poll_timeout_t{std::chrono::seconds{configuration.poll_timeout_seconds}}),
-			di::bind<cancellation_token_t>.in(di::singleton),
+			di::bind<cancellation_token_t>.to([]() -> cancellation_token_t&
+			{
+				static cancellation_token_t token{};
+				return token;
+			}),
 			di::bind<skeletonizer::skeletonizer_type>.to(configuration.processor_type),
 			di::bind<configuration::s3_configuration>.to(configuration.s3)
 		);
@@ -63,7 +67,7 @@ namespace worker::infrastructure::dependency_injection
 	inline std::shared_ptr<application::interfaces::i_object_storage> make_object_storage(
 		const configuration::configuration& configuration)
 	{
-		if (configuration.storage_backend == configuration::storage_backend::local)
+		if (configuration.backend == configuration::storage_backend::local)
 		{
 			return std::make_shared<local_object_storage>();
 		}

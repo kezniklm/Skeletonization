@@ -127,7 +127,7 @@ namespace worker::infrastructure::redis
 			if (ctx->err)
 			{
 				error += ": ";
-				error += ctx->errstr ? ctx->errstr : "unknown error";
+				error += ctx->errstr[0] != '\0' ? ctx->errstr : "unknown error";
 			}
 			return std::unexpected(error);
 		}

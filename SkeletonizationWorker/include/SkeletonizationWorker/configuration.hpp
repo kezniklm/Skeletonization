@@ -45,7 +45,7 @@ struct env::default_parser<skeletonizer::skeletonizer_type>
 
 		if (!skeletonizer_type)
 		{
-			throw parser_error{ "Invalid MODE value: " + std::string{value} };
+			throw parser_error{"Invalid MODE value: " + std::string{value}};
 		}
 
 		return skeletonizer_type.value();
@@ -61,7 +61,7 @@ struct env::default_parser<worker::configuration::backend::storage_backend>
 
 		if (!storage_backend)
 		{
-			throw parser_error{ "Invalid storage backend value: " + std::string{value} };
+			throw parser_error{"Invalid storage backend value: " + std::string{value}};
 		}
 
 		return storage_backend.value();
@@ -138,7 +138,7 @@ namespace worker::configuration
 
 		std::string output_directory = "output";
 
-		storage_backend storage_backend = storage_backend::local;
+		storage_backend backend = storage_backend::local;
 		s3_configuration s3{};
 
 		skeletonizer::skeletonizer_type processor_type;
