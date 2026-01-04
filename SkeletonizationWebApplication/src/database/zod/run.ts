@@ -4,6 +4,7 @@ import { z } from "zod";
 import { ALGORITHMS } from "@/algorithms";
 
 import { run } from "../schema";
+import { DEFAULT_OUTPUT_FORMAT_ENUM } from "../schema/preferences";
 
 export const insertRunSchema = createInsertSchema(run, {
   name: (schema) => schema.trim().min(1, "Run name is required").max(50, "Run name is too long")
@@ -26,13 +27,18 @@ export type RunConfiguration = z.infer<typeof runConfigurationSchema>;
 
 export const skeletonizationParamsSchema = z.object({
   preprocessAllImages: z.boolean().default(true),
-  preprocessByImageId: z.record(z.string().uuid(), z.boolean()).default({})
+  preprocessByImageId: z.record(z.uuid(), z.boolean()).default({}),
+  outputFormat: z.enum(DEFAULT_OUTPUT_FORMAT_ENUM).default("PNG")
 });
 
 export const createSkeletonizationRunSchema = runConfigurationSchema
   .extend({
     imageIds: z.array(z.uuid()).min(1, "At least one image must be selected"),
-    params: skeletonizationParamsSchema.default({ preprocessAllImages: true, preprocessByImageId: {} })
+    params: skeletonizationParamsSchema.default({
+      preprocessAllImages: true,
+      preprocessByImageId: {},
+      outputFormat: "PNG"
+    })
   })
   .refine((data) => data.algorithms.length > 0, {
     message: "At least one algorithm must be selected",

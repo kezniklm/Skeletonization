@@ -1,4 +1,5 @@
 import { type Algorithm } from "@/algorithms";
+import { type FileOutputFormat } from "@/database/zod";
 
 export const QUEUE_NAMES = {
   SKELETONIZATION_JOBS: process.env.JOBS_QUEUE ?? "skeletonization:jobs",
@@ -11,6 +12,7 @@ export type SkeletonizationJob = {
     image_key: string;
     algorithm: Algorithm;
     should_run_preprocessing: boolean;
+    outputFormat: FileOutputFormat;
   }>;
 };
 

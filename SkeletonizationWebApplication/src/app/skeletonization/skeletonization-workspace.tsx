@@ -19,6 +19,7 @@ import type { Algorithm } from "@/algorithms";
 import { StepIndicator } from "@/components/ui/step-indicator";
 import { runConfigurationSchema, type RunConfiguration } from "@/database/zod/run";
 import { type FilterType } from "@/components/filters";
+import { type FileOutputFormat } from "@/database/zod";
 
 import { ImageFilters } from "../images/image-filters";
 import { ImageSort } from "../images/image-sort";
@@ -29,6 +30,7 @@ import { AlgorithmMultiSelector } from "./algorithm-multi-selector";
 
 type SkeletonizationWorkspaceProps = {
   images: SelectImage[];
+  defaultOutputFormat: FileOutputFormat;
 };
 
 type Step = {
@@ -58,7 +60,7 @@ type RunFormErrors = {
   imageIds?: string;
 };
 
-export const SkeletonizationWorkspace = ({ images }: SkeletonizationWorkspaceProps) => {
+export const SkeletonizationWorkspace = ({ images, defaultOutputFormat }: SkeletonizationWorkspaceProps) => {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedImageIds, setSelectedImageIds] = useState<string[]>([]);
@@ -220,7 +222,8 @@ export const SkeletonizationWorkspace = ({ images }: SkeletonizationWorkspacePro
         ...runConfig,
         params: {
           preprocessAllImages,
-          preprocessByImageId: selectedOverrides
+          preprocessByImageId: selectedOverrides,
+          outputFormat: defaultOutputFormat
         }
       });
 

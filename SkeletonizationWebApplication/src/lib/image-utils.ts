@@ -1,4 +1,4 @@
-type MimeType = "image/png" | "image/jpeg" | "image/bmp" | "application/octet-stream";
+type MimeType = "image/png" | "image/jpeg" | "image/bmp" | "image/tiff" | "application/octet-stream";
 
 export type ImageDimensions = {
   width: number;
@@ -59,6 +59,7 @@ export const getMimeTypeFromFilename = (filename: string): MimeType => {
   if (normalized.endsWith(".png")) return "image/png";
   if (normalized.endsWith(".jpg") || normalized.endsWith(".jpeg")) return "image/jpeg";
   if (normalized.endsWith(".bmp")) return "image/bmp";
+  if (normalized.endsWith(".tif") || normalized.endsWith(".tiff")) return "image/tiff";
   return "application/octet-stream";
 };
 

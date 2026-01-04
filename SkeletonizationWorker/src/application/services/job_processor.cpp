@@ -7,6 +7,7 @@
 #include <glog/logging.h>
 
 #include "SkeletonizationWorker/application/services/job_processor.hpp"
+#include "SkeletonizationWorker/domain/output_format.hpp"
 
 namespace worker::application::services
 {
@@ -97,7 +98,7 @@ namespace worker::application::services
 		const bool can_use_local_input = file_exists(task.path);
 
 		LOG(INFO) << "Storage backend: " << (is_remote ? "remote (S3)" : "local")
-		          << ", local file exists: " << (can_use_local_input ? "yes" : "no");
+			<< ", local file exists: " << (can_use_local_input ? "yes" : "no");
 
 		const std::filesystem::path inputs_dir = std::filesystem::path(output_directory_) / "inputs";
 		const std::filesystem::path outputs_dir = std::filesystem::path(output_directory_) / "outputs";
@@ -179,8 +180,12 @@ namespace worker::application::services
 		}
 
 		const std::filesystem::path input_name_for_output = input_path_local;
+
+		const std::string output_extension{job::to_extension(task.format)};
+		const std::string output_mime_type{job::to_mime_type(task.format)};
+
 		const std::string output_filename = sanitize_filename(
-			job_id + "_" + input_name_for_output.stem().string() + "_" + task.algorithm + input_name_for_output.extension().string());
+			job_id + "_" + input_name_for_output.stem().string() + "_" + task.algorithm + "." + output_extension);
 
 		const std::filesystem::path output_path_local = outputs_dir / output_filename;
 
@@ -204,7 +209,9 @@ namespace worker::application::services
 		if (object_storage_.is_remote_backend())
 		{
 			const std::string output_key = std::string{"outputs/"} + output_filename;
-			const auto ul = object_storage_.upload_from_file(output_path_local, output_key);
+			interfaces::object_put_options put_options{};
+			put_options.content_type = output_mime_type;
+			const auto ul = object_storage_.upload_from_file(output_path_local, output_key, put_options);
 			if (!ul)
 			{
 				const auto error = "Failed to upload output image: " + ul.error();
