@@ -1,8 +1,8 @@
 import { type Algorithm } from "@/algorithms";
 
 export const QUEUE_NAMES = {
-  SKELETONIZATION_JOBS: "skeletonization:jobs",
-  SKELETONIZATION_RESULTS: "skeletonization:results"
+  SKELETONIZATION_JOBS: process.env.JOBS_QUEUE ?? "skeletonization:jobs",
+  SKELETONIZATION_RESULTS: process.env.RESULTS_QUEUE ?? "skeletonization:results"
 } as const;
 
 export type SkeletonizationJob = {

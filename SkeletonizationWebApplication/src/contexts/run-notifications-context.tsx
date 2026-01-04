@@ -9,8 +9,10 @@ import { showSkeletonizationCompleteNotification } from "@/lib/notifications";
 type RunCompletedEvent = {
   runId: string;
   runName: string | null;
-  status: "completed";
+  status: "completed" | "failed";
   jobCount: number;
+  failedCount: number;
+  succeededCount: number;
   completedAt: string;
 };
 
@@ -45,9 +47,15 @@ export const RunNotificationsProvider = ({ children, enabled }: PropsWithChildre
           showSkeletonizationCompleteNotification(displayName, data.jobCount);
         }
 
-        toast.success(`Run "${displayName}" completed`, {
-          description: `${data.jobCount} image${data.jobCount !== 1 ? "s" : ""} processed successfully`
-        });
+        if (data.status === "failed") {
+          toast.error(`Run "${displayName}" finished with errors`, {
+            description: `${data.succeededCount} succeeded, ${data.failedCount} failed`
+          });
+        } else {
+          toast.success(`Run "${displayName}" completed`, {
+            description: `${data.jobCount} image${data.jobCount !== 1 ? "s" : ""} processed successfully`
+          });
+        }
       } catch (err) {
         console.error("Error parsing run-completed event:", err);
       }

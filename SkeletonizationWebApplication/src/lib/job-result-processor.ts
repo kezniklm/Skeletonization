@@ -4,32 +4,39 @@ import { upsertJobStats } from "@/repositories/job-stats";
 import { getRunOwnerAndName, getRunStatus, updateRunStatus } from "@/repositories/run";
 
 import { copyOutputFile } from "./output-file-handler";
-import { createQueueConsumer, QUEUE_NAMES, type SkeletonizationWorkerResult } from "./redis/index";
+import { redisClientManager } from "./redis/client";
+import { QUEUE_NAMES, type SkeletonizationWorkerResult } from "./redis/index";
 import { publishRunCompletedEvent } from "./run-events";
 
 const checkRunCompletion = async (runId: string): Promise<void> => {
   const status = await getRunStatus(runId);
-  if (status === "completed") return;
+  if (status === "completed" || status === "failed" || status === "cancelled") return;
 
   const jobs = await getJobsByRunId(runId);
   const allComplete = jobs.every((j) => j.status === "completed" || j.status === "failed");
 
   if (!allComplete) return;
 
-  const anyFailed = jobs.some((j) => j.status === "failed");
+  const failedCount = jobs.filter((j) => j.status === "failed").length;
+  const anyFailed = failedCount > 0;
+  const succeededCount = jobs.filter((j) => j.status === "completed").length;
   const completedAt = new Date();
 
-  const [runDetails] = await Promise.all([getRunOwnerAndName(runId), updateRunStatus(runId, "completed", completedAt)]);
+  const finalStatus = anyFailed ? "failed" : "completed";
 
-  console.log(`Run ${runId} finished (anyFailed=${anyFailed})`);
+  const [runDetails] = await Promise.all([getRunOwnerAndName(runId), updateRunStatus(runId, finalStatus, completedAt)]);
+
+  console.log(`Run ${runId} finished (status=${finalStatus}, failed=${failedCount}, succeeded=${succeededCount})`);
 
   if (runDetails?.userId) {
     await publishRunCompletedEvent({
       runId,
       userId: runDetails.userId,
       runName: runDetails.name,
-      status: "completed",
+      status: finalStatus,
       jobCount: jobs.length,
+      failedCount,
+      succeededCount,
       completedAt: completedAt.toISOString()
     });
   }
@@ -56,7 +63,7 @@ const processSuccessfulResult = async (jobInfo: JobWithOwner, outputPath: string
   await updateJobStatus(jobInfo.jobId, "completed");
 };
 
-const processResult = async (result: SkeletonizationWorkerResult): Promise<void> => {
+export const processResult = async (result: SkeletonizationWorkerResult): Promise<void> => {
   const jobInfo = await getJobWithOwner(result.job_id);
 
   if (!jobInfo) {
@@ -91,45 +98,54 @@ const processResult = async (result: SkeletonizationWorkerResult): Promise<void>
   await checkRunCompletion(jobInfo.runId);
 };
 
-const createJobResultProcessor = () => {
-  type Consumer = ReturnType<typeof createQueueConsumer<SkeletonizationWorkerResult>>;
-  let consumer: Consumer | null = null;
-  let running = false;
-
-  return {
-    start: async () => {
-      if (running) {
-        console.log("Job result processor is already running");
-        return;
-      }
-
-      running = true;
-      consumer = createQueueConsumer<SkeletonizationWorkerResult>(QUEUE_NAMES.SKELETONIZATION_RESULTS);
-
-      console.log("Starting job result processor...");
-
-      consumer
-        .consume(async (result) => {
-          console.log(`Processing result for job ${result.job_id}, algorithm ${result.algorithm}`);
-          await processResult(result);
-        })
-        .catch((error) => {
-          console.error("Job result processor crashed:", error);
-          running = false;
-        });
-    },
-
-    stop: () => {
-      consumer?.stop();
-      consumer = null;
-      running = false;
-      console.log("Job result processor stopped");
-    },
-
-    get isRunning() {
-      return running;
-    }
-  };
+export type BatchProcessResult = {
+  processed: number;
+  errors: number;
+  duration: number;
+  stoppedEarly: boolean;
 };
 
-export const jobResultProcessor = createJobResultProcessor();
+export const processBatch = async (maxBatchSize = 20, maxExecutionTimeMs = 10000): Promise<BatchProcessResult> => {
+  const startTime = Date.now();
+  let processed = 0;
+  let errors = 0;
+
+  const client = await redisClientManager.getClient();
+  const queueName = QUEUE_NAMES.SKELETONIZATION_RESULTS;
+
+  console.log(`[Batch] Starting batch processing from queue: ${queueName}`);
+
+  while (processed < maxBatchSize) {
+    if (Date.now() - startTime > maxExecutionTimeMs) {
+      console.log(`[Batch] Approaching time limit, stopping after ${processed} items`);
+      break;
+    }
+
+    const item = await client.rPop(queueName);
+
+    if (!item) {
+      console.log(`[Batch] Queue empty after processing ${processed} items`);
+      break;
+    }
+
+    try {
+      const result = JSON.parse(item) as SkeletonizationWorkerResult;
+      console.log(`[Batch] Processing result for job ${result.job_id}, algorithm ${result.algorithm}`);
+      await processResult(result);
+      processed++;
+    } catch (error) {
+      errors++;
+      console.error(`[Batch] Error processing result:`, error);
+    }
+  }
+
+  const duration = Date.now() - startTime;
+  console.log(`[Batch] Completed: ${processed} processed, ${errors} errors, ${duration}ms`);
+
+  return {
+    processed,
+    errors,
+    duration,
+    stoppedEarly: processed >= maxBatchSize || Date.now() - startTime > maxExecutionTimeMs
+  };
+};

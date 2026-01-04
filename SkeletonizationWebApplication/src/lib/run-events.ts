@@ -4,8 +4,10 @@ export type RunCompletedEvent = {
   runId: string;
   userId: string;
   runName: string | null;
-  status: "completed";
+  status: "completed" | "failed";
   jobCount: number;
+  failedCount: number;
+  succeededCount: number;
   completedAt: string;
 };
 
