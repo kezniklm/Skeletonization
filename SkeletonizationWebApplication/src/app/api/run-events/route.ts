@@ -5,6 +5,10 @@ import { subscribeToRunEvents } from "@/lib/run-events";
 
 export const dynamic = "force-dynamic";
 
+export const maxDuration = 60;
+
+const SSE_CONNECTION_TTL_MS = 50_000;
+
 export const GET = async (request: Request) => {
   const session = await auth.api.getSession({ headers: await headers() });
 
@@ -17,6 +21,7 @@ export const GET = async (request: Request) => {
 
   let heartbeatInterval: ReturnType<typeof setInterval> | null = null;
   let unsubscribe: (() => void) | null = null;
+  let ttlTimeout: ReturnType<typeof setTimeout> | null = null;
 
   const abortHandler = () => {
     cleanup();
@@ -26,6 +31,10 @@ export const GET = async (request: Request) => {
     if (heartbeatInterval) {
       clearInterval(heartbeatInterval);
       heartbeatInterval = null;
+    }
+    if (ttlTimeout) {
+      clearTimeout(ttlTimeout);
+      ttlTimeout = null;
     }
     if (unsubscribe) {
       unsubscribe();
@@ -48,6 +57,16 @@ export const GET = async (request: Request) => {
           cleanup();
         }
       };
+
+      ttlTimeout = setTimeout(() => {
+        try {
+          sendEvent("server-restart", { reason: "ttl", ts: Date.now() });
+          cleanup();
+          controller.close();
+        } catch {
+          cleanup();
+        }
+      }, SSE_CONNECTION_TTL_MS);
 
       heartbeatInterval = setInterval(() => {
         sendEvent("heartbeat", { ts: Date.now() });
