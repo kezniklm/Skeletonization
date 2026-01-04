@@ -1,13 +1,14 @@
 import { headers } from "next/headers";
 
 import { auth } from "@/auth";
-import { subscribeToRunEvents } from "@/lib/run-events";
+import { getRecentRunEvents, subscribeToRunEvents } from "@/lib/run-events";
 
 export const dynamic = "force-dynamic";
 
 export const maxDuration = 60;
 
 const SSE_CONNECTION_TTL_MS = 50_000;
+const RECENT_EVENTS_POLL_MS = 2000;
 
 export const GET = async (request: Request) => {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -22,6 +23,7 @@ export const GET = async (request: Request) => {
   let heartbeatInterval: ReturnType<typeof setInterval> | null = null;
   let unsubscribe: (() => void) | null = null;
   let ttlTimeout: ReturnType<typeof setTimeout> | null = null;
+  let recentPollInterval: ReturnType<typeof setInterval> | null = null;
 
   const abortHandler = () => {
     cleanup();
@@ -36,6 +38,10 @@ export const GET = async (request: Request) => {
       clearTimeout(ttlTimeout);
       ttlTimeout = null;
     }
+    if (recentPollInterval) {
+      clearInterval(recentPollInterval);
+      recentPollInterval = null;
+    }
     if (unsubscribe) {
       unsubscribe();
       unsubscribe = null;
@@ -45,8 +51,10 @@ export const GET = async (request: Request) => {
 
   request.signal.addEventListener("abort", abortHandler);
 
+  const sentEventKeys = new Set<string>();
+
   const stream = new ReadableStream({
-    start: (controller) => {
+    start: async (controller) => {
       const sendEvent = (event: string, data: unknown) => {
         if (request.signal.aborted) return;
 
@@ -56,6 +64,13 @@ export const GET = async (request: Request) => {
         } catch {
           cleanup();
         }
+      };
+
+      const sendRunCompleted = (event: { runId: string; completedAt?: string }) => {
+        const key = `${event.runId}:${event.completedAt ?? ""}`;
+        if (sentEventKeys.has(key)) return;
+        sentEventKeys.add(key);
+        sendEvent("run-completed", event);
       };
 
       ttlTimeout = setTimeout(() => {
@@ -73,10 +88,25 @@ export const GET = async (request: Request) => {
       }, 30_000);
 
       unsubscribe = subscribeToRunEvents(userId, (event) => {
-        sendEvent("run-completed", event);
+        sendRunCompleted(event);
       });
 
       sendEvent("connected", { userId });
+
+      const pollRecentEvents = async () => {
+        try {
+          const recentEvents = await getRecentRunEvents(userId);
+          for (const event of recentEvents) {
+            sendRunCompleted(event);
+          }
+        } catch (err) {
+          console.error("Failed to poll recent run events:", err);
+        }
+      };
+
+      recentPollInterval = setInterval(() => {
+        void pollRecentEvents();
+      }, RECENT_EVENTS_POLL_MS);
     },
     cancel: () => cleanup()
   });

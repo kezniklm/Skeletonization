@@ -13,8 +13,6 @@ export type RunCompletedEvent = {
 
 const CHANNEL_PREFIX = "run-events:";
 
-const notifiedRuns = new Set<string>();
-
 const userChannels = new Map<string, ReturnType<typeof createPubSubChannel<RunCompletedEvent>>>();
 
 const getUserChannel = (userId: string) => {
@@ -30,13 +28,6 @@ export const subscribeToRunEvents = (userId: string, callback: (event: RunComple
   const channel = getUserChannel(userId);
 
   return channel.subscribe((event) => {
-    if (notifiedRuns.has(event.runId)) {
-      return;
-    }
-    notifiedRuns.add(event.runId);
-
-    setTimeout(() => notifiedRuns.delete(event.runId), 60_000);
-
     callback(event);
   });
 };
@@ -45,4 +36,9 @@ export const publishRunCompletedEvent = async (event: RunCompletedEvent): Promis
   const channel = getUserChannel(event.userId);
   await channel.publish(event);
   console.log(`Published run-completed event for run ${event.runId} to user ${event.userId}`);
+};
+
+export const getRecentRunEvents = async (userId: string): Promise<RunCompletedEvent[]> => {
+  const channel = getUserChannel(userId);
+  return channel.getRecentEvents();
 };

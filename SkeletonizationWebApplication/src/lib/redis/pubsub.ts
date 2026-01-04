@@ -5,12 +5,20 @@ type Callback<T> = (event: T) => void;
 export type PubSubChannel<T> = {
   publish(event: T): Promise<void>;
   subscribe(callback: Callback<T>): () => void;
+  getRecentEvents(): Promise<T[]>;
 };
+
+const EVENT_TTL_SECONDS = 120;
+const MAX_RECENT_EVENTS = 50;
+
+const getBackupListKey = (channelName: string): string => `${channelName}:recent`;
 
 export const createPubSubChannel = <T>(channelName: string): PubSubChannel<T> => {
   const callbacks = new Set<Callback<T>>();
   let isSubscribed = false;
   let subscriberClient: Awaited<ReturnType<typeof redisClientManager.createSubscriberClient>> | null = null;
+
+  const backupListKey = getBackupListKey(channelName);
 
   const ensureSubscribed = async () => {
     if (isSubscribed) return;
@@ -54,7 +62,13 @@ export const createPubSubChannel = <T>(channelName: string): PubSubChannel<T> =>
   return {
     publish: async (event: T) => {
       const client = await redisClientManager.getClient();
-      await client.publish(channelName, JSON.stringify(event));
+      const payload = JSON.stringify(event);
+
+      await client.publish(channelName, payload);
+
+      await client.lPush(backupListKey, payload);
+      await client.lTrim(backupListKey, 0, MAX_RECENT_EVENTS - 1);
+      await client.expire(backupListKey, EVENT_TTL_SECONDS);
     },
     subscribe: (callback: Callback<T>) => {
       callbacks.add(callback);
@@ -64,6 +78,20 @@ export const createPubSubChannel = <T>(channelName: string): PubSubChannel<T> =>
         callbacks.delete(callback);
         unsubscribeIfEmpty().catch(console.error);
       };
+    },
+    getRecentEvents: async (): Promise<T[]> => {
+      const client = await redisClientManager.getClient();
+      const items = await client.lRange(backupListKey, 0, -1);
+      const events: T[] = [];
+      for (const item of items) {
+        try {
+          events.push(JSON.parse(item) as T);
+        } catch {
+          // skip malformed
+        }
+      }
+
+      return events.reverse();
     }
   };
 };
