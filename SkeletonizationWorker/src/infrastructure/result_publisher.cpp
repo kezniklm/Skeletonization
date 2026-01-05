@@ -8,9 +8,21 @@
 
 namespace worker::infrastructure
 {
-	result_publisher::result_publisher(application::interfaces::i_result_transport& result_sink)
-		: result_sink_(result_sink)
+	result_publisher::result_publisher(application::interfaces::i_result_transport& result_sink,
+	                                   configuration::dependency_injection::worker_id_t worker_id,
+	                                   skeletonizer::skeletonizer_type processor_type)
+		: result_sink_(result_sink),
+		  worker_id_(std::move(worker_id.value))
 	{
+		const auto type_view = skeletonizer::to_string_view(processor_type);
+		if (type_view == "thread")
+		{
+			worker_type_ = "mt";
+		}
+		else
+		{
+			worker_type_ = std::string{type_view};
+		}
 	}
 
 	std::expected<void, std::string> result_publisher::publish_task_result(
@@ -30,6 +42,14 @@ namespace worker::infrastructure
 		document.AddMember(
 			"job_id", rapidjson::Value(job_id.c_str(), static_cast<rapidjson::SizeType>(job_id.size()), allocator),
 			allocator);
+		document.AddMember("worker_id",
+		                   rapidjson::Value(worker_id_.c_str(), static_cast<rapidjson::SizeType>(worker_id_.size()),
+		                                    allocator),
+		                   allocator);
+		document.AddMember("worker_type",
+		                   rapidjson::Value(worker_type_.c_str(), static_cast<rapidjson::SizeType>(worker_type_.size()),
+		                                    allocator),
+		                   allocator);
 		document.AddMember("image_path",
 		                   rapidjson::Value(image_path.c_str(), static_cast<rapidjson::SizeType>(image_path.size()),
 		                                    allocator), allocator);

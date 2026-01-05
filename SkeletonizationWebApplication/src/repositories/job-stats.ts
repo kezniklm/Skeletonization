@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 
 import { db } from "@/database";
 import { jobStats } from "@/database/schema/job-stats";
-import { type InsertJobStats, type UpdateJobStats } from "@/database/zod/job-stats";
+import { insertJobStatsSchema, type UpdateJobStats } from "@/database/zod/job-stats";
 
 export const getJobStatsByJobId = async (jobId: string) => {
   const [result] = await db.select().from(jobStats).where(eq(jobStats.jobId, jobId));
@@ -13,10 +13,8 @@ export const upsertJobStats = async (jobId: string, stats: Partial<Omit<UpdateJo
   const existing = await getJobStatsByJobId(jobId);
 
   if (!existing) {
-    const [created] = await db
-      .insert(jobStats)
-      .values({ jobId, ...stats } satisfies InsertJobStats)
-      .returning();
+    const insertValues = insertJobStatsSchema.parse({ jobId, ...stats });
+    const [created] = await db.insert(jobStats).values(insertValues).returning();
     return created;
   }
 

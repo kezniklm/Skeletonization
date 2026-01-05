@@ -11,3 +11,5 @@ export const updateJobStatsSchema = insertJobStatsSchema.partial().required({ jo
 export type InsertJobStats = z.infer<typeof insertJobStatsSchema>;
 export type SelectJobStats = z.infer<typeof selectJobStatsSchema>;
 export type UpdateJobStats = z.infer<typeof updateJobStatsSchema>;
+
+export type WorkerType = z.infer<typeof selectJobStatsSchema.shape.workerType>;

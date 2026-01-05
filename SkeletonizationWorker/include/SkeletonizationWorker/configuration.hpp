@@ -130,8 +130,9 @@ namespace worker::configuration
 
 	struct configuration
 	{
-		std::string redis_url;
+		std::string worker_id;
 
+		std::string redis_url;
 		std::string jobs_queue;
 		std::string processing_queue;
 		std::string results_queue;
@@ -166,6 +167,11 @@ namespace worker::configuration
 		};
 
 		struct output_directory_t
+		{
+			std::string value;
+		};
+
+		struct worker_id_t
 		{
 			std::string value;
 		};

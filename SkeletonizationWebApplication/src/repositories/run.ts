@@ -7,6 +7,7 @@ import { image } from "@/database/schema/image";
 import { job } from "@/database/schema/job";
 import { jobStats } from "@/database/schema/job-stats";
 import { run } from "@/database/schema/run";
+import { type WorkerType } from "@/database/zod/job-stats";
 import { type InsertRun, type RunStatus, type UpdateRun } from "@/database/zod/run";
 
 export type LabJob = {
@@ -15,6 +16,8 @@ export type LabJob = {
   status: string;
   algorithm: Algorithm;
   processingTimeMs: number;
+  workerId: string;
+  workerType: WorkerType;
   image: {
     id: string;
     name: string;
@@ -72,7 +75,9 @@ export const getRunsWithDetailsByUserId = async (userId: string): Promise<LabRun
         algorithm: job.algorithm
       },
       jobStats: {
-        processingTimeMs: jobStats.processingTimeMs
+        processingTimeMs: jobStats.processingTimeMs,
+        workerId: jobStats.workerId,
+        workerType: jobStats.workerType
       },
       inputImage: {
         id: inputImage.id,
@@ -122,6 +127,8 @@ export const getRunsWithDetailsByUserId = async (userId: string): Promise<LabRun
         status: row.job.status ?? "pending",
         algorithm: row.job.algorithm as Algorithm,
         processingTimeMs: row.jobStats?.processingTimeMs ?? 0,
+        workerId: row.jobStats?.workerId ?? "unknown",
+        workerType: row.jobStats?.workerType ?? "cpu",
         image: {
           id: row.inputImage.id,
           name: row.inputImage.name ?? "",

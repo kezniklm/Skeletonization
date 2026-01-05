@@ -1,11 +1,11 @@
 import { createImage } from "@/repositories/image";
-import { getJobsByRunId, getJobWithOwner, type JobWithOwner, updateJobStatus } from "@/repositories/job";
+import { getJobsByRunId, getJobWithOwner, updateJobStatus, type JobWithOwner } from "@/repositories/job";
 import { upsertJobStats } from "@/repositories/job-stats";
 import { getRunOwnerAndName, getRunStatus, updateRunStatus } from "@/repositories/run";
 
 import { copyOutputFile } from "./output-file-handler";
 import { redisClientManager } from "./redis/client";
-import { QUEUE_NAMES, type SkeletonizationWorkerResult } from "./redis/index";
+import { QUEUE_NAMES, skeletonizationWorkerResultSchema, type SkeletonizationWorkerResult } from "./redis/index";
 import { publishRunCompletedEvent } from "./run-events";
 
 const checkRunCompletion = async (runId: string): Promise<void> => {
@@ -79,6 +79,8 @@ export const processResult = async (result: SkeletonizationWorkerResult): Promis
   const errorMessage = result.error_message ?? result.error ?? "Unknown error";
 
   await upsertJobStats(jobInfo.jobId, {
+    workerId: result.worker_id,
+    workerType: result.worker_type,
     processingTimeMs: Math.round(result.processing_time_ms),
     lastError: result.success ? null : errorMessage,
     finishedAt: new Date()
@@ -129,7 +131,7 @@ export const processBatch = async (maxBatchSize = 20, maxExecutionTimeMs = 10000
     }
 
     try {
-      const result = JSON.parse(item) as SkeletonizationWorkerResult;
+      const result = skeletonizationWorkerResultSchema.parse(JSON.parse(item)) as SkeletonizationWorkerResult;
       console.log(`[Batch] Processing result for job ${result.job_id}, algorithm ${result.algorithm}`);
       await processResult(result);
       processed++;

@@ -112,6 +112,7 @@ namespace worker::configuration
 		loader.load();
 
 		configuration configuration{
+			.worker_id = get_env<std::string>("WORKER_ID"),
 			.redis_url = get_env<std::string>("REDIS_URL"),
 			.jobs_queue = get_env<std::string>("JOBS_QUEUE"),
 			.processing_queue = get_env<std::string>("PROCESSING_QUEUE"),

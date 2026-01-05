@@ -34,6 +34,7 @@ namespace worker::infrastructure::dependency_injection
 
 		return di::make_injector(
 			di::bind<configuration::configuration>.to(configuration),
+			di::bind<worker_id_t>.to(worker_id_t{configuration.worker_id}),
 			di::bind<jobs_queue_t>.to(jobs_queue_t{configuration.jobs_queue}),
 			di::bind<processing_queue_t>.to(processing_queue_t{configuration.processing_queue}),
 			di::bind<results_queue_t>.to(results_queue_t{configuration.results_queue}),
