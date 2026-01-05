@@ -1,7 +1,6 @@
 import { Network } from "lucide-react";
 
-import { GithubSignInButton } from "./github-sign-in-button";
-import { GoogleSignInButton } from "./google-sign-in-button";
+import { SocialSignInButtons } from "./social-sign-in-buttons";
 import { signInFeatures } from "./sign-in-features";
 
 export const SignInCard = () => (
@@ -33,9 +32,8 @@ export const SignInCard = () => (
           </p>
         </header>
 
-        <div className="space-y-4 xl:space-y-3 2xl:space-y-4">
-          <GoogleSignInButton />
-          <GithubSignInButton />
+        <div className="space-y-2.5">
+          <SocialSignInButtons />
 
           <div className="relative" role="separator" aria-label="Authentication method separator">
             <div className="absolute inset-0 flex items-center">
