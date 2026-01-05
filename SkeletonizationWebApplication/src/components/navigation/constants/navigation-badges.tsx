@@ -22,7 +22,7 @@ export const navigationBadges: NavigationBadge[] = [
   },
   {
     icon: <Cloud className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" />,
-    label: "Auto-Scale",
+    label: "Cloud Native",
     visibility: "public"
   },
   {
