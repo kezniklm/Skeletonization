@@ -12,7 +12,7 @@ export const run = pgTable("run", {
   name: text("name").notNull(),
   params: jsonb("params"),
   status: text("status", { enum: RUN_STATUS_ENUM }).default("pending").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  startedAt: timestamp("started_at"),
-  completedAt: timestamp("completed_at")
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  startedAt: timestamp("started_at", { withTimezone: true }),
+  completedAt: timestamp("completed_at", { withTimezone: true })
 });

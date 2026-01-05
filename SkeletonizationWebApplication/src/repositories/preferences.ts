@@ -28,6 +28,15 @@ export const getUserPushNotificationsPreferences = async (userId: string) => {
   return pushNotifications;
 };
 
+export const getUserTimezonePreferences = async (userId: string) => {
+  const [{ timezone }] = await db
+    .select({ timezone: userPreferences.timezone })
+    .from(userPreferences)
+    .where(eq(userPreferences.userId, userId));
+
+  return timezone;
+};
+
 export const createUserPreferences = async (userId: string) => {
   const [newPreferences] = await db.insert(userPreferences).values({ userId }).returning();
 

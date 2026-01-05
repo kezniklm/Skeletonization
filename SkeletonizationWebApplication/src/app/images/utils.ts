@@ -1,5 +1,6 @@
 import { type SizeFilter } from "@/components/filters";
 import type { SelectImage } from "@/database/zod/image";
+import { formatDateInTimezone } from "@/lib/date-time";
 
 export const getSizeLabel = (size: SizeFilter): string => {
   switch (size) {
@@ -22,14 +23,17 @@ export const formatFileSize = (bytes: number): string => {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
 
-export const formatDate = (date: Date | string | null | undefined): string => {
-  if (!date) return "N/A";
-  return new Date(date).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric"
-  });
-};
+export const formatDate = (date: Date | string | null | undefined, timezone?: string | null): string =>
+  formatDateInTimezone(
+    date,
+    timezone,
+    {
+      month: "short",
+      day: "numeric",
+      year: "numeric"
+    },
+    "en-US"
+  );
 
 export const getStatusLabel = (status: SelectImage["status"]): string =>
   status.charAt(0).toUpperCase() + status.slice(1);

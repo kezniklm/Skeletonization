@@ -20,5 +20,5 @@ export const image = pgTable("image", {
   status: text("status", { enum: IMAGE_STATUS_ENUM }).default("uploaded").notNull(),
   parentImageId: uuid("parent_image_id").references((): AnyPgColumn => image.id, { onDelete: "set null" }),
   generatedByJobId: uuid("generated_by_job_id"),
-  createdAt: timestamp("created_at").defaultNow().notNull()
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull()
 });

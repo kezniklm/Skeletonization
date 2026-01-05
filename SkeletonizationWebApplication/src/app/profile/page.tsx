@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { auth } from "@/auth";
 import { getImagesCountByUserId, getImagesCountByUserIdAndStatus, getRunCountByUserId } from "@/repositories";
+import { getUserTimezonePreferences } from "@/repositories/preferences";
 
 import { ProfileHeader } from "./profile-header";
 import { ProfileSection } from "./profile-section";
@@ -18,10 +19,11 @@ const ProfilePage = async () => {
 
   const user = session.user;
 
-  const [userImagesCount, userRunsCount, userSkeletonizedImagesCount] = await Promise.all([
+  const [userImagesCount, userRunsCount, userSkeletonizedImagesCount, timezone] = await Promise.all([
     getImagesCountByUserId(user.id),
     getRunCountByUserId(user.id),
-    getImagesCountByUserIdAndStatus(user.id, "skeletonized")
+    getImagesCountByUserIdAndStatus(user.id, "skeletonized"),
+    getUserTimezonePreferences(user.id)
   ]);
 
   return (
@@ -43,7 +45,7 @@ const ProfilePage = async () => {
       />
 
       <div className="space-y-6 xl:space-y-5 2xl:space-y-6">
-        {getProfileSections(user).map((section) => (
+        {getProfileSections(user, timezone).map((section) => (
           <ProfileSection key={section.title} title={section.title} icon={section.icon} fields={section.fields} />
         ))}
       </div>

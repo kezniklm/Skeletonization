@@ -19,5 +19,5 @@ export const job = pgTable("job", {
   ordinal: integer("ordinal").notNull(),
   params: jsonb("params"),
   status: text("status", { enum: JOB_STATUS_ENUM }).default("queued").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull()
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull()
 });

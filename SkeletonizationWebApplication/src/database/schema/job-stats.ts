@@ -10,7 +10,7 @@ export const jobStats = pgTable("job_stats", {
   lastError: text("last_error"),
   logs: text("logs"),
   processingTimeMs: integer("processing_time_ms"),
-  startedAt: timestamp("started_at"),
-  finishedAt: timestamp("finished_at"),
-  createdAt: timestamp("created_at").defaultNow().notNull()
+  startedAt: timestamp("started_at", { withTimezone: true }),
+  finishedAt: timestamp("finished_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull()
 });

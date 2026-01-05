@@ -10,7 +10,9 @@ import { type UserPreferences, userPreferencesSchema } from "@/database/zod/pref
 import { updatePreferencesAction } from "@/server-actions/preferences";
 import { useTheme } from "@/contexts/theme-context";
 import { useCompactMode } from "@/contexts/compact-mode-context";
+import { useTimezone } from "@/contexts/timezone-context";
 import { defaultPreferences } from "@/database/schema";
+import { detectTimezone, getTimezoneOptions } from "@/lib/timezone-utils";
 
 import { SettingsCard } from "./settings-card";
 
@@ -22,10 +24,19 @@ type SettingsFormProps = {
 export const SettingsForm = ({ userId, initialPreferences }: SettingsFormProps) => {
   const { setTheme } = useTheme();
   const { setCompactMode } = useCompactMode();
+  const { setTimezone } = useTimezone();
+
+  const timezoneOptions = getTimezoneOptions();
 
   const methods = useForm<UserPreferences>({
     resolver: zodResolver(userPreferencesSchema),
-    defaultValues: initialPreferences
+    defaultValues: {
+      ...initialPreferences,
+      timezone:
+        initialPreferences.timezone === "UTC"
+          ? detectTimezone(defaultPreferences.timezone)
+          : initialPreferences.timezone
+    }
   });
 
   const {
@@ -39,6 +50,7 @@ export const SettingsForm = ({ userId, initialPreferences }: SettingsFormProps) 
       await updatePreferencesAction(data, userId);
       setTheme(data.theme);
       setCompactMode(data.compactMode);
+      setTimezone(data.timezone);
       toast.success("Settings saved successfully!");
     } catch (error) {
       toast.error("Failed to save settings. Please try again.");
@@ -47,7 +59,11 @@ export const SettingsForm = ({ userId, initialPreferences }: SettingsFormProps) 
   };
 
   const handleReset = () => {
-    reset(defaultPreferences);
+    reset({
+      ...defaultPreferences,
+      timezone: detectTimezone(defaultPreferences.timezone)
+    });
+    setTimezone(detectTimezone(defaultPreferences.timezone));
     toast.info("Settings reset to defaults.");
   };
 
@@ -103,17 +119,7 @@ export const SettingsForm = ({ userId, initialPreferences }: SettingsFormProps) 
               {
                 label: "Timezone",
                 description: "Set your local timezone for accurate timestamps",
-                control: (
-                  <FormSelect
-                    name="timezone"
-                    options={[
-                      { value: "UTC", label: "UTC" },
-                      { value: "Europe/Prague", label: "Europe/Prague" },
-                      { value: "America/New_York", label: "America/New_York" },
-                      { value: "Asia/Tokyo", label: "Asia/Tokyo" }
-                    ]}
-                  />
-                )
+                control: <FormSelect name="timezone" options={timezoneOptions} />
               }
             ]}
           />

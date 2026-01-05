@@ -8,6 +8,8 @@ import { type Algorithm } from "@/algorithms";
 import { type LabJob, type LabRun } from "@/repositories/run";
 import { formatAlgorithmName, formatStatus } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { useTimezone } from "@/contexts/timezone-context";
+import { formatDateTimeInTimezone } from "@/lib/date-time";
 
 import { JobViewerDialog } from "./job-viewer-dialog";
 import { useJobViewer } from "./use-job-viewer";
@@ -39,18 +41,14 @@ const getStatusPillClass = (status: string) => {
 const getRunDisplayName = (run: Pick<LabRun, "name" | "id">) =>
   run.name?.trim() ? run.name.trim() : `Run ${run.id.slice(0, 8)}`;
 
-const formatDateTime = (iso: string | null) => {
-  if (!iso) return null;
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return null;
-  return new Intl.DateTimeFormat(undefined, {
+const formatDateTime = (iso: string | null, timezone: string) =>
+  formatDateTimeInTimezone(iso, timezone, {
     year: "numeric",
     month: "short",
     day: "2-digit",
     hour: "2-digit",
     minute: "2-digit"
-  }).format(date);
-};
+  });
 
 const formatDuration = (startIso: string | null, endIso: string | null) => {
   if (!startIso || !endIso) return null;
@@ -113,11 +111,12 @@ const groupJobsByImage = (jobs: readonly LabJob[]): GroupedImageJobs[] => {
 
 export const RunDetails = ({ run, className }: { run: LabRun; className?: string }) => {
   const [expanded, setExpanded] = useState(false);
+  const { resolvedTimezone } = useTimezone();
 
   const { viewerOpen, viewerTitle, viewerOriginalSrc, viewerSelectedSrc, viewerSelection, openViewer, closeViewer } =
     useJobViewer();
 
-  const createdLabel = formatDateTime(run.createdAt);
+  const createdLabel = formatDateTime(run.createdAt, resolvedTimezone);
   const durationLabel = formatDuration(run.startedAt, run.completedAt);
 
   const algorithms = getUniqueAlgorithms(run.jobs);

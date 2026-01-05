@@ -34,6 +34,7 @@ const RootLayout = async ({
         <Providers
           initialTheme={userPreferences?.theme ?? defaultPreferences.theme}
           compactMode={userPreferences?.compactMode ?? defaultPreferences.compactMode}
+          timezone={userPreferences?.timezone ?? defaultPreferences.timezone}
           isLoggedIn={isLoggedIn}
         >
           {isLoggedIn ? <PrivateLayout>{children}</PrivateLayout> : <PublicLayout>{children}</PublicLayout>}

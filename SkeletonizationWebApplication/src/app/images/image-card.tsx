@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { useTimezone } from "@/contexts/timezone-context";
 
 import { formatDate, formatFileSize, getStatusBadgeClass, getStatusLabel } from "./utils";
 
@@ -24,6 +25,7 @@ type ImageCardProps = {
 };
 
 export const ImageCard = ({ image, onDelete, onRename, onArchive, onUnarchive }: ImageCardProps) => {
+  const { resolvedTimezone } = useTimezone();
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -198,7 +200,7 @@ export const ImageCard = ({ image, onDelete, onRename, onArchive, onUnarchive }:
                 <Calendar className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
               </div>
               <span className="text-xs font-medium text-gray-700 xl:text-[11px] 2xl:text-xs dark:text-gray-300">
-                {formatDate(image.createdAt)}
+                {formatDate(image.createdAt, resolvedTimezone)}
               </span>
             </div>
 
