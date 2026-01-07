@@ -40,8 +40,10 @@ namespace skeletonizer
 	enum class skeletonizer_type
 	{
 		cpu,
-		thread,
+		thread
+#if SKELETONIZATION_WITH_GPU
 		gpu
+#endif
 	};
 
 	[[nodiscard]] constexpr std::string_view to_string_view(const skeletonizer_type type) noexcept
@@ -52,7 +54,9 @@ namespace skeletonizer
 		{
 		case cpu: return "cpu";
 		case thread: return "thread";
+#if SKELETONIZATION_WITH_GPU
 		case gpu: return "gpu";
+#endif
 		default: return "unknown";
 		}
 	}
@@ -74,11 +78,12 @@ namespace skeletonizer
 
 	[[nodiscard]] inline std::optional<skeletonizer_type> from_string(const std::string_view value)
 	{
+#if SKELETONIZATION_WITH_GPU
 		if (equals_ascii(value, "gpu"))
 		{
 			return skeletonizer_type::gpu;
 		}
-
+#endif
 		if (equals_ascii(value, "thread"))
 		{
 			return skeletonizer_type::thread;
