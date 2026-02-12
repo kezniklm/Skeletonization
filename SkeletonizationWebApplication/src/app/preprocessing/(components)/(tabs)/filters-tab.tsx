@@ -218,6 +218,30 @@ export const FiltersTab = ({ filters, setFilters, onResetFilters, onAddHistory }
             <Settings2 className="mr-2 size-4" />
             Adaptive Threshold
           </Button>
+          <Button
+            variant={filters.opening ? "default" : "outline"}
+            size="sm"
+            onClick={() => {
+              setFilters((prev) => ({ ...prev, opening: !prev.opening }));
+              onAddHistory(`Toggled opening ${!filters.opening ? "on" : "off"}`);
+            }}
+            className="justify-start"
+          >
+            <Sparkles className="mr-2 size-4" />
+            Opening
+          </Button>
+          <Button
+            variant={filters.closing ? "default" : "outline"}
+            size="sm"
+            onClick={() => {
+              setFilters((prev) => ({ ...prev, closing: !prev.closing }));
+              onAddHistory(`Toggled closing ${!filters.closing ? "on" : "off"}`);
+            }}
+            className="justify-start"
+          >
+            <Sparkles className="mr-2 size-4" />
+            Closing
+          </Button>
         </div>
       </div>
 

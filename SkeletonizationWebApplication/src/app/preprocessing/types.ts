@@ -8,6 +8,8 @@ export type FilterState = {
   edgeDetection: boolean;
   sobelEdgeDetection: boolean;
   adaptiveThreshold: boolean;
+  opening: boolean;
+  closing: boolean;
   grayscale: boolean;
   denoise: number;
   saturation: number;
@@ -49,6 +51,8 @@ export const initialFilters: FilterState = {
   edgeDetection: false,
   sobelEdgeDetection: false,
   adaptiveThreshold: false,
+  opening: false,
+  closing: false,
   grayscale: false,
   denoise: 0,
   saturation: 1,

@@ -169,6 +169,44 @@ const applyAdaptiveThreshold = (cv: CV, filters: FilterState, dst: Mat) => {
   }
 };
 
+const applyOpening = (cv: CV, filters: FilterState, dst: Mat) => {
+  if (!filters.opening) {
+    return;
+  }
+
+  const gray = new cv.Mat();
+  const opened = new cv.Mat();
+  const kernel = cv.Mat.ones(3, 3, cv.CV_8U);
+  try {
+    cv.cvtColor(dst, gray, cv.COLOR_RGBA2GRAY);
+    cv.morphologyEx(gray, opened, cv.MORPH_OPEN, kernel);
+    cv.cvtColor(opened, dst, cv.COLOR_GRAY2RGBA);
+  } finally {
+    gray.delete();
+    opened.delete();
+    kernel.delete();
+  }
+};
+
+const applyClosing = (cv: CV, filters: FilterState, dst: Mat) => {
+  if (!filters.closing) {
+    return;
+  }
+
+  const gray = new cv.Mat();
+  const closed = new cv.Mat();
+  const kernel = cv.Mat.ones(3, 3, cv.CV_8U);
+  try {
+    cv.cvtColor(dst, gray, cv.COLOR_RGBA2GRAY);
+    cv.morphologyEx(gray, closed, cv.MORPH_CLOSE, kernel);
+    cv.cvtColor(closed, dst, cv.COLOR_GRAY2RGBA);
+  } finally {
+    gray.delete();
+    closed.delete();
+    kernel.delete();
+  }
+};
+
 const applySharpen = (cv: CV, filters: FilterState, dst: Mat) => {
   if (filters.sharpen <= 0) return;
 
@@ -226,6 +264,8 @@ const runProcessingPipeline = ({ cv, filters, transforms, img, canvas, setProces
     applyEdgeDetection(cv, filters, dst);
     applySobelEdgeDetection(cv, filters, dst);
     applyAdaptiveThreshold(cv, filters, dst);
+    applyOpening(cv, filters, dst);
+    applyClosing(cv, filters, dst);
     applySharpen(cv, filters, dst);
     applyFlip(cv, transforms, dst);
     applyRotationAndScale(cv, transforms, dst);
