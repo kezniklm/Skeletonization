@@ -3,6 +3,7 @@ export type FilterState = {
   sharpen: number;
   brightness: number;
   contrast: number;
+  thresholding: boolean;
   threshold: number;
   edgeDetection: boolean;
   sobelEdgeDetection: boolean;
@@ -43,7 +44,8 @@ export const initialFilters: FilterState = {
   sharpen: 0,
   brightness: 0,
   contrast: 1,
-  threshold: 127,
+  thresholding: false,
+  threshold: 0,
   edgeDetection: false,
   sobelEdgeDetection: false,
   adaptiveThreshold: false,

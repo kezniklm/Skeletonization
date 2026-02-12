@@ -159,6 +159,18 @@ export const FiltersTab = ({ filters, setFilters, onResetFilters, onAddHistory }
         <Label>Special Filters</Label>
         <div className="flex flex-col gap-2">
           <Button
+            variant={filters.thresholding ? "default" : "outline"}
+            size="sm"
+            onClick={() => {
+              setFilters((prev) => ({ ...prev, thresholding: !prev.thresholding }));
+              onAddHistory(`Toggled thresholding ${!filters.thresholding ? "on" : "off"}`);
+            }}
+            className="justify-start"
+          >
+            <Settings2 className="mr-2 size-4" />
+            Thresholding
+          </Button>
+          <Button
             variant={filters.grayscale ? "default" : "outline"}
             size="sm"
             onClick={() => {
@@ -209,11 +221,13 @@ export const FiltersTab = ({ filters, setFilters, onResetFilters, onAddHistory }
         </div>
       </div>
 
-      {filters.grayscale && (
+      {filters.thresholding && (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <Label htmlFor="threshold">Threshold</Label>
-            <span className="text-muted-foreground text-xs">{filters.threshold}</span>
+            <span className="text-muted-foreground text-xs">
+              {filters.threshold === 0 ? "Automatic" : filters.threshold}
+            </span>
           </div>
           <Slider
             id="threshold"
@@ -222,7 +236,11 @@ export const FiltersTab = ({ filters, setFilters, onResetFilters, onAddHistory }
             step={1}
             value={[filters.threshold]}
             onValueChange={([value]) => setFilters((prev) => ({ ...prev, threshold: value }))}
-            onValueCommit={() => onAddHistory(`Adjusted threshold to ${filters.threshold}`)}
+            onValueCommit={() =>
+              onAddHistory(
+                filters.threshold === 0 ? "Set threshold to Otsu auto" : `Adjusted threshold to ${filters.threshold}`
+              )
+            }
           />
         </div>
       )}

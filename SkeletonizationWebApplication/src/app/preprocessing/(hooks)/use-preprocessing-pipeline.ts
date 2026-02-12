@@ -103,10 +103,14 @@ const applySaturationAndHue = (cv: CV, filters: FilterState, dst: Mat) => {
 };
 
 const applyThreshold = (cv: CV, filters: FilterState, dst: Mat) => {
-  if (filters.threshold <= 0 || !filters.grayscale) return;
+  if (!filters.thresholding) {
+    return;
+  }
 
   cv.cvtColor(dst, dst, cv.COLOR_RGBA2GRAY);
-  cv.threshold(dst, dst, filters.threshold, 255, cv.THRESH_BINARY);
+  const thresholdType = filters.threshold <= 0 ? cv.THRESH_BINARY | cv.THRESH_OTSU : cv.THRESH_BINARY;
+  const thresholdValue = filters.threshold <= 0 ? 0 : filters.threshold;
+  cv.threshold(dst, dst, thresholdValue, 255, thresholdType);
   cv.cvtColor(dst, dst, cv.COLOR_GRAY2RGBA);
 };
 
