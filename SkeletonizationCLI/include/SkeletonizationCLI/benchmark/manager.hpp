@@ -16,7 +16,7 @@ namespace skeletonization_benchmark
 	public:
 		void register_all();
 
-		static std::string run_all();
+		std::string run_all();
 
 		void add_runner(const configuration::image_benchmark_metadata& image_metadata);
 
