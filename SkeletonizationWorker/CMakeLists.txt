@@ -17,7 +17,7 @@ find_path(BEXT_DI_INCLUDE_DIRS "boost/di.hpp")
 set(DOTENV_SRC  "${CMAKE_CURRENT_SOURCE_DIR}/.env")
 set(DOTENV_DEST "${CMAKE_CURRENT_BINARY_DIR}/.env")
 
-option(ENABLE_DOTENV_COPY "Copy .env into the build dir (dev/deploy only)" OFF)
+option(ENABLE_DOTENV_COPY "Copy .env into the build dir (dev/deploy only)" ON)
 
 if(ENABLE_DOTENV_COPY)
   if(EXISTS "${DOTENV_SRC}")
