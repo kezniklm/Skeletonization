@@ -8,6 +8,10 @@
 #include <benchmark/benchmark.h>
 #include <opencv2/opencv.hpp>
 
+#if SKELETONIZATION_WITH_GPU
+#include <opencv2/core/cuda_stream_accessor.hpp>
+#endif
+
 #include "glog/logging.h"
 #include "SkeletonizationCLI/commandline/arguments.hpp"
 #include "SkeletonizationCLI/visual_inspector/image_container.hpp"
@@ -80,12 +84,36 @@ namespace skeletonization_benchmark
 			return;
 		}
 
+#if SKELETONIZATION_WITH_GPU
+		const bool is_gpu_benchmark = name.find("/GPU") != std::string::npos;
+#else
+		constexpr bool is_gpu_benchmark = false;
+#endif
+
 		benchmark::RegisterBenchmark(
 			name,
 			[this,
 				name,
+				is_gpu_benchmark,
 				skeletonizer = std::move(skeletonizer_instance)](benchmark::State& state) mutable
 			{
+#if SKELETONIZATION_WITH_GPU
+
+				if (is_gpu_benchmark && state.thread_index() == 0)
+				{
+					constexpr int warmup_iterations = 3;
+
+					for (int warmup_iteration = 0; warmup_iteration < warmup_iterations; ++warmup_iteration)
+					{
+						auto warmup_image = binary_image_.clone();
+
+						skeletonizer->apply(warmup_image);
+					}
+
+					cv::cuda::Stream::Null().waitForCompletion();
+				}
+#endif
+
 				for (auto _ : state)
 				{
 					auto image = binary_image_.clone();
