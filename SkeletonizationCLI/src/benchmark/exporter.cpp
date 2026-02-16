@@ -25,6 +25,25 @@ namespace skeletonization_benchmark
 {
 	namespace
 	{
+		std::filesystem::path create_timestamped_output_directory()
+		{
+			const auto now = std::chrono::system_clock::now();
+			const auto time = std::chrono::system_clock::to_time_t(now);
+			std::tm tm{};
+#ifdef _WIN32
+			localtime_s(&tm, &time);
+#else
+			localtime_r(&time, &tm);
+#endif
+			std::ostringstream oss;
+			oss << std::put_time(&tm, "%Y%m%d_%H%M%S");
+
+			const auto outputs_dir = std::filesystem::path("outputs") / oss.str();
+			std::filesystem::create_directories(outputs_dir);
+
+			return outputs_dir;
+		}
+
 		using rapidjson_allocator = rapidjson::Document::AllocatorType;
 
 		void set_string_member(rapidjson::Value& obj,
@@ -443,5 +462,126 @@ namespace skeletonization_benchmark
 		{
 			return false;
 		}
+	}
+
+	bool exporter::write_configuration_json(
+		const std::vector<configuration::image_benchmark_metadata>& configs,
+		const std::filesystem::path& out_json_path,
+		const exporter_options& opts)
+	{
+		if (out_json_path.empty())
+		{
+			return false;
+		}
+
+		try
+		{
+			std::filesystem::create_directories(out_json_path.parent_path());
+
+			rapidjson::Document document;
+
+			document.SetObject();
+
+			auto& allocator = document.GetAllocator();
+
+			add_timestamp_member(document, allocator);
+
+			rapidjson::Value configurations(rapidjson::kArrayType);
+
+			for (const auto& config : configs)
+			{
+				rapidjson::Value config_obj(rapidjson::kObjectType);
+
+				set_string_member(config_obj, "name", config.name, allocator);
+				set_string_member(config_obj, "path", config.path, allocator);
+
+				rapidjson::Value variants(rapidjson::kArrayType);
+			
+				for (const auto& [type, algorithm] : config.variants)
+				{
+					rapidjson::Value variant_obj(rapidjson::kObjectType);
+					set_string_member(variant_obj, "type", type, allocator);
+					set_string_member(variant_obj, "algorithm", algorithm, allocator);
+					variants.PushBack(variant_obj, allocator);
+				}
+
+				config_obj.AddMember("skeletonizers", variants, allocator);
+				configurations.PushBack(config_obj, allocator);
+			}
+
+			document.AddMember("configurations", configurations, allocator);
+
+			if (opts.atomic_write)
+			{
+				const auto tmp = out_json_path.string() + ".tmp";
+				{
+					std::ofstream ofstream(tmp, std::ios::binary | std::ios::trunc);
+
+					if (!ofstream)
+					{
+						return false;
+					}
+
+					rapidjson::OStreamWrapper o_stream_wrapper(ofstream);
+
+					if (opts.pretty)
+					{
+						rapidjson::PrettyWriter writer(o_stream_wrapper);
+						writer.SetIndent(' ', 2);
+						document.Accept(writer);
+					}
+					else
+					{
+						rapidjson::Writer writer(o_stream_wrapper);
+						document.Accept(writer);
+					}
+				}
+
+				std::error_code error_code;
+				std::filesystem::rename(tmp, out_json_path, error_code);
+
+				if (error_code)
+				{
+					return false;
+				}
+			}
+			else
+			{
+				std::ofstream ofstream(out_json_path,
+									   std::ios::binary | std::ios::trunc);
+
+				if (!ofstream)
+				{
+					return false;
+				}
+
+				rapidjson::OStreamWrapper osw(ofstream);
+
+				if (opts.pretty)
+				{
+					rapidjson::PrettyWriter writer(osw);
+					writer.SetIndent(' ', 2);
+					document.Accept(writer);
+				}
+				else
+				{
+					rapidjson::Writer writer(osw);
+					document.Accept(writer);
+				}
+			}
+
+			return true;
+		}
+		catch (...)
+		{
+			return false;
+		}
+	}
+
+	std::filesystem::path exporter::create_timestamped_output_path(const std::string& filename)
+	{
+		const auto output_dir = create_timestamped_output_directory();
+
+		return output_dir / filename;
 	}
 }

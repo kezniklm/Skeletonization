@@ -26,10 +26,12 @@ namespace skeletonization_benchmark
 		const auto& arguments = global_arguments();
 
 		const auto configs = arguments.configuration_path.empty()
-			                     ? configuration::load_skeletonizer_configuration(
-				                     arguments.skeletonizer_configuration)
-			                     : configuration::load_skeletonizer_configuration(
-				                     arguments.configuration_path);
+								 ? configuration::load_skeletonizer_configuration(
+									 arguments.skeletonizer_configuration)
+								 : configuration::load_skeletonizer_configuration(
+									 arguments.configuration_path);
+
+		configurations_ = configs;
 
 		for (const auto& image_metadata : configs)
 		{
@@ -89,10 +91,23 @@ namespace skeletonization_benchmark
 		const auto visualizer_path = std::filesystem::path(VISUALIZER_ASSETS_DIR);
 		const auto visualizer_index_path = visualizer_path / "index.html";
 		const auto visualizer_output_json = visualizer_path / "benchmark_data.json";
+		const auto visualizer_config_json = visualizer_path / "configuration.json";
+
+		const auto& args = global_arguments();
+
+		const auto timestamped_output_json = args.benchmark_out.empty()
+													 ? std::filesystem::path{}
+													 : exporter::create_timestamped_output_path("benchmark_data.json");
+
+		const auto timestamped_config_json = args.benchmark_out.empty()
+												  ? std::filesystem::path{}
+												  : exporter::create_timestamped_output_path("configuration.json");
 
 		const auto export_result =
 			exporter::write_output_json(packages, visualizer_output_json) &&
-			exporter::write_output_json(packages, global_arguments().benchmark_out);
+			exporter::write_output_json(packages, timestamped_output_json) &&
+			exporter::write_configuration_json(configurations_, visualizer_config_json) &&
+			(timestamped_config_json.empty() || exporter::write_configuration_json(configurations_, timestamped_config_json));
 
 		if (!export_result)
 		{

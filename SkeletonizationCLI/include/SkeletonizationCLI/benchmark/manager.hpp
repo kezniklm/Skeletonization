@@ -26,5 +26,6 @@ namespace skeletonization_benchmark
 
 	private:
 		std::vector<std::pair<std::string, std::unique_ptr<runner>>> runners_;
+		std::vector<configuration::image_benchmark_metadata> configurations_;
 	};
 }

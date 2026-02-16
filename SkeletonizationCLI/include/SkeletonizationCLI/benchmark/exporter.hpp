@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "aggregator.hpp"
+#include "SkeletonizationCore/configuration/types.hpp"
 
 namespace skeletonization_benchmark
 {
@@ -33,5 +34,13 @@ namespace skeletonization_benchmark
 			const std::vector<aggregator::package>& packages,
 			const std::filesystem::path& out_json_path,
 			const exporter_options& opts = {});
+
+		[[nodiscard]] static bool write_configuration_json(
+			const std::vector<configuration::image_benchmark_metadata>& configs,
+			const std::filesystem::path& out_json_path,
+			const exporter_options& opts = {});
+
+		[[nodiscard]] static std::filesystem::path create_timestamped_output_path(
+			const std::string& filename);
 	};
 }
