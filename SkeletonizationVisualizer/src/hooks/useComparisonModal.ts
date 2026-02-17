@@ -6,23 +6,30 @@ import type { ComparisonMode, ImageData } from "../types";
 export const useComparisonModal = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [comparisonMode, setComparisonMode] = useState<ComparisonMode>("side-by-side");
-  const [comparisonImages, setComparisonImages] = useState<[ImageData | null, ImageData | null]>([null, null]);
+  const [comparisonOriginal, setComparisonOriginal] = useState<ImageData | null>(null);
+  const [comparisonProcessed, setComparisonProcessed] = useState<ImageData[]>([]);
   const [sliderPosition, setSliderPosition] = useState<number>(APP_CONFIG.DEFAULT_SLIDER_POSITION);
 
-  const openComparison = (original: ImageData, processed: ImageData) => {
-    setComparisonImages([original, processed]);
+  const openComparison = (original: ImageData, processed: ImageData[]) => {
+    if (!processed.length) {
+      return;
+    }
+    setComparisonOriginal(original);
+    setComparisonProcessed(processed);
     setIsOpen(true);
   };
 
   const closeComparison = () => {
-    setComparisonImages([null, null]);
+    setComparisonOriginal(null);
+    setComparisonProcessed([]);
     setIsOpen(false);
   };
 
   return {
     isOpen,
     comparisonMode,
-    comparisonImages,
+    comparisonOriginal,
+    comparisonProcessed,
     sliderPosition,
     setComparisonMode,
     setSliderPosition,

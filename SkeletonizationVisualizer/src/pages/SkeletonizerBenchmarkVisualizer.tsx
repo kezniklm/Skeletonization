@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 
-import type { ImageContainer } from "../types";
+import type { ImageContainer, ImageData } from "../types";
 import { StatsDashboard } from "../components/StatsComponents";
 import { downloadImage, exportAllImages } from "../utils";
 import { useBenchmarkData } from "../hooks/useBenchmarkData";
@@ -24,8 +24,10 @@ const SkeletonizerBenchmarkVisualizer = () => {
   const { selectedImage, selectedContainer, openImageModal, closeImageModal, navigateToImage } = useImageModal();
 
   const {
+    isOpen: isComparisonOpen,
     comparisonMode,
-    comparisonImages,
+    comparisonOriginal,
+    comparisonProcessed,
     sliderPosition,
     setComparisonMode,
     setSliderPosition,
@@ -40,10 +42,71 @@ const SkeletonizerBenchmarkVisualizer = () => {
   });
 
   const [filteredContainers, setFilteredContainers] = useState<ImageContainer[]>([]);
+  const [selectedComparisonIds, setSelectedComparisonIds] = useState<Record<string, string[]>>({});
 
   const handleFiltersChange = useCallback((containers: ImageContainer[]) => {
     setFilteredContainers(containers);
   }, []);
+
+  const toggleComparisonSelection = useCallback((containerName: string, image: ImageData) => {
+    setSelectedComparisonIds((prev) => {
+      const existing = prev[containerName] ?? [];
+      const isSelected = existing.includes(image.id);
+      const next = isSelected ? existing.filter((id) => id !== image.id) : [...existing, image.id];
+
+      if (next.length === 0) {
+        const { [containerName]: _removed, ...rest } = prev;
+        return rest;
+      }
+
+      return {
+        ...prev,
+        [containerName]: next
+      };
+    });
+  }, []);
+
+  const clearComparisonSelection = useCallback((containerName: string) => {
+    setSelectedComparisonIds((prev) => {
+      const { [containerName]: _removed, ...rest } = prev;
+      return rest;
+    });
+  }, []);
+
+  const selectAllComparisonImages = useCallback((container: ImageContainer) => {
+    const selectedIds = container.images.slice(1).map((image) => image.id);
+
+    setSelectedComparisonIds((prev) => {
+      if (selectedIds.length === 0) {
+        const { [container.name]: _removed, ...rest } = prev;
+        return rest;
+      }
+
+      return {
+        ...prev,
+        [container.name]: selectedIds
+      };
+    });
+  }, []);
+
+  const openSelectedComparison = useCallback(
+    (container: ImageContainer) => {
+      const [original, ...processedCandidates] = container.images;
+      if (!original) {
+        return;
+      }
+
+      const selectedIds = selectedComparisonIds[container.name] ?? [];
+      const selectedProcessed = processedCandidates.filter((image) => selectedIds.includes(image.id));
+
+      if (!selectedProcessed.length) {
+        return;
+      }
+
+      openComparison(original, selectedProcessed);
+    },
+    [openComparison, selectedComparisonIds]
+  );
 
   if (loading) {
     return (
@@ -79,7 +142,11 @@ const SkeletonizerBenchmarkVisualizer = () => {
         filteredContainers={filteredContainers}
         onImageClick={openImageModal}
         onDownload={downloadImage}
-        onCompare={openComparison}
+        selectedComparisonIds={selectedComparisonIds}
+        onToggleComparisonSelection={toggleComparisonSelection}
+        onClearComparisonSelection={clearComparisonSelection}
+        onSelectAllComparison={selectAllComparisonImages}
+        onCompareSelected={openSelectedComparison}
       />
 
       {selectedImage && data && (
@@ -93,11 +160,11 @@ const SkeletonizerBenchmarkVisualizer = () => {
         />
       )}
 
-      {comparisonImages[0] && comparisonImages[1] && (
+      {isComparisonOpen && comparisonOriginal && comparisonProcessed.length > 0 && (
         <ComparisonModal
-          original={comparisonImages[0]}
-          processed={comparisonImages[1]}
-          isOpen
+          original={comparisonOriginal}
+          processedImages={comparisonProcessed}
+          isOpen={isComparisonOpen}
           onClose={closeComparison}
           comparisonMode={comparisonMode}
           onComparisonModeChange={setComparisonMode}

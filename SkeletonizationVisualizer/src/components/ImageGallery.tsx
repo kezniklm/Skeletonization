@@ -6,10 +6,17 @@ type ImageGalleryProps = {
   container: ImageContainer;
   onImageClick: (image: ImageData, container: ImageContainer) => void;
   onDownload: (image: ImageData) => void;
-  onCompare: (original: ImageData, processed: ImageData) => void;
+  selectedComparisonIds: string[];
+  onToggleComparisonSelection: (image: ImageData) => void;
 };
 
-export const ImageGallery = ({ container, onImageClick, onDownload, onCompare }: ImageGalleryProps) => (
+export const ImageGallery = ({
+  container,
+  onImageClick,
+  onDownload,
+  selectedComparisonIds,
+  onToggleComparisonSelection
+}: ImageGalleryProps) => (
   <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
     {container.images.map((image, index) => (
       <ImageCard
@@ -19,7 +26,8 @@ export const ImageGallery = ({ container, onImageClick, onDownload, onCompare }:
         index={index}
         onImageClick={onImageClick}
         onDownload={onDownload}
-        onCompare={onCompare}
+        isSelectedForComparison={selectedComparisonIds.includes(image.id)}
+        onToggleComparisonSelection={onToggleComparisonSelection}
       />
     ))}
   </div>

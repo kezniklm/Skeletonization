@@ -7,10 +7,19 @@ type ImageCardProps = {
   index: number;
   onImageClick: (image: ImageData, container: ImageContainer) => void;
   onDownload: (image: ImageData) => void;
-  onCompare: (original: ImageData, processed: ImageData) => void;
+  isSelectedForComparison: boolean;
+  onToggleComparisonSelection: (image: ImageData) => void;
 };
 
-export const ImageCard = ({ image, container, index, onImageClick, onDownload, onCompare }: ImageCardProps) => {
+export const ImageCard = ({
+  image,
+  container,
+  index,
+  onImageClick,
+  onDownload,
+  isSelectedForComparison,
+  onToggleComparisonSelection
+}: ImageCardProps) => {
   const { theme, getThemeClasses } = useTheme();
   const themeClasses = getThemeClasses();
 
@@ -88,14 +97,18 @@ export const ImageCard = ({ image, container, index, onImageClick, onDownload, o
           </button>
           {index > 0 && (
             <button
-              className="col-span-2 flex h-9 items-center justify-center rounded-lg bg-[#764ba2] px-3 py-2 text-xs font-medium whitespace-nowrap text-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(118,75,162,0.4)]"
+              className={`col-span-2 flex h-9 items-center justify-center rounded-lg px-3 py-2 text-xs font-medium whitespace-nowrap text-white shadow-sm transition-all hover:-translate-y-0.5 ${
+                isSelectedForComparison
+                  ? "bg-[#7c3aed] hover:shadow-[0_4px_12px_rgba(124,58,237,0.4)]"
+                  : "bg-[#764ba2] hover:shadow-[0_4px_12px_rgba(118,75,162,0.4)]"
+              }`}
               onClick={(e) => {
                 e.stopPropagation();
-                onCompare(container.images[0], image);
+                onToggleComparisonSelection(image);
               }}
-              title="Compare with Original"
+              title="Select for Multi-Comparison"
             >
-              🔀 Compare
+              {isSelectedForComparison ? "✅ Selected" : "➕ Select"}
             </button>
           )}
         </div>
