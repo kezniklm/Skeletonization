@@ -46,7 +46,7 @@ export const SearchAndFilter = ({ containers, onFiltersChange }: SearchAndFilter
           </h2>
           <div className={`flex items-center gap-2 text-sm md:gap-4 md:text-base ${themeClasses.textMuted}`}>
             <span className="rounded-full bg-[#667eea]/10 px-3 py-1 font-medium text-[#667eea]">
-              {filteredContainers?.length || 0} algorithms
+              {filteredContainers?.length || 0} benchmarks
             </span>
             <span className={themeClasses.textMuted}>•</span>
             <span className="rounded-full bg-[#764ba2]/10 px-3 py-1 font-medium text-[#764ba2]">
@@ -60,7 +60,7 @@ export const SearchAndFilter = ({ containers, onFiltersChange }: SearchAndFilter
             <input
               type="text"
               className={`w-full rounded-lg py-3 pr-12 pl-12 ${themeClasses.bgTertiary} border ${themeClasses.borderMuted} ${themeClasses.text} placeholder-gray-500 transition-all focus:border-[#667eea] focus:ring-2 focus:ring-[#667eea] focus:outline-none`}
-              placeholder="Search algorithms, images, or descriptions..."
+              placeholder="Search benchmarks, images, or descriptions..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -81,7 +81,7 @@ export const SearchAndFilter = ({ containers, onFiltersChange }: SearchAndFilter
           >
             {getAlgorithmList().map((algo) => (
               <option key={algo} value={algo}>
-                {algo === "all" ? "📁 All Algorithms" : `🔬 ${algo}`}
+                {algo === "all" ? "📁 All Benchmarks" : `🔬 ${algo}`}
               </option>
             ))}
           </select>
