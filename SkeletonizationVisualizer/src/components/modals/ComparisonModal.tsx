@@ -146,6 +146,11 @@ export const ComparisonModal = ({
   };
 
   const sideBySideImages = [original, ...processedImages];
+  const sideBySideCount = sideBySideImages.length;
+  const isSmallSideBySide = sideBySideCount <= 3;
+
+  const sideBySideCardWidth =
+    sideBySideCount === 2 ? "min(700px, 90vw)" : sideBySideCount === 3 ? "min(560px, 85vw)" : "min(500px, 80vw)";
 
   return (
     <div
@@ -256,12 +261,16 @@ export const ComparisonModal = ({
 
         <div className={`flex-1 overflow-auto p-4 md:p-6 ${themeClasses.bg}`}>
           {comparisonMode === "side-by-side" && (
-            <div className="comparison-scrollbar flex h-full gap-4 overflow-x-auto pb-4 md:gap-6">
+            <div
+              className={`comparison-scrollbar flex h-full gap-4 overflow-x-auto pb-4 md:gap-6 ${
+                isSmallSideBySide ? "justify-center" : ""
+              }`}
+            >
               {sideBySideImages.map((image) => (
                 <figure
                   key={image.id}
                   className={`relative flex-shrink-0 ${themeClasses.bgSecondary} overflow-hidden rounded-xl border shadow-lg ${themeClasses.border}`}
-                  style={{ width: "min(500px, 80vw)", height: "100%" }}
+                  style={{ width: sideBySideCardWidth, height: "100%" }}
                 >
                   <img
                     src={`data:image/png;base64,${image.data}`}
