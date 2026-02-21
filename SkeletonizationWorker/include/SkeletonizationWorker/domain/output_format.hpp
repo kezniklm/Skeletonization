@@ -19,11 +19,11 @@ namespace job
 	{
 		switch (format)
 		{
-			case output_format::png: return "png";
-			case output_format::jpeg: return "jpg";
-			case output_format::bmp: return "bmp";
-			case output_format::tiff: return "tiff";
-			default: return "png";
+		case output_format::png: return "png";
+		case output_format::jpeg: return "jpg";
+		case output_format::bmp: return "bmp";
+		case output_format::tiff: return "tiff";
+		default: return "png";
 		}
 	}
 
@@ -31,11 +31,11 @@ namespace job
 	{
 		switch (format)
 		{
-			case output_format::png: return "image/png";
-			case output_format::jpeg: return "image/jpeg";
-			case output_format::bmp: return "image/bmp";
-			case output_format::tiff: return "image/tiff";
-			default: return "image/png";
+		case output_format::png: return "image/png";
+		case output_format::jpeg: return "image/jpeg";
+		case output_format::bmp: return "image/bmp";
+		case output_format::tiff: return "image/tiff";
+		default: return "image/png";
 		}
 	}
 

@@ -80,8 +80,7 @@ namespace worker::infrastructure
 				binary_image = normalized.value();
 			}
 
-			const algorithm_factory factory(processor_type_);
-			const auto skeletonizer = factory.create(algorithm_name);
+			const auto skeletonizer = skeletonizer::algorithm_factory::create(algorithm_name, processor_type_);
 
 			if (!skeletonizer)
 			{

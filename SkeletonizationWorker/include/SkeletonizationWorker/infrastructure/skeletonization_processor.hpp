@@ -3,9 +3,8 @@
 #include <expected>
 #include <string>
 
-#include "SkeletonizationCore/skeletonizer/skeletonizer.hpp"
+#include "SkeletonizationCore/skeletonizer/algorithm_factory.hpp"
 
-#include "SkeletonizationWorker/infrastructure/algorithm_factory.hpp"
 #include "SkeletonizationWorker/application/interfaces/skeletonization_processor.hpp"
 
 namespace worker::infrastructure

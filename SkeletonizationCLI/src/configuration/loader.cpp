@@ -72,7 +72,7 @@ namespace configuration
 				auto& type_ref = const_cast<std::string&>(type);
 				const auto type_enum = parse_type(type_ref);
 
-				auto creators = make_algorithm_creators(type_enum, algorithm);
+				auto creators = skeletonizer::algorithm_factory::creators_for(algorithm, type_enum);
 
 				auto& existing = meta.skeletonizers[type_enum];
 				existing.insert(existing.end(),

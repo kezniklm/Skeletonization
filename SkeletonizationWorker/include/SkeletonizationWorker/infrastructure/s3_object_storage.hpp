@@ -17,13 +17,14 @@ namespace worker::infrastructure
 	{
 	public:
 		s3_object_storage(const aws_sdk_initializer& aws,
-		                 const configuration::s3_configuration& configuration);
+		                  const configuration::s3_configuration& configuration);
 
 		std::expected<void, std::string> download_to_file(const std::string& key,
-			                                            const std::filesystem::path& destination_path) override;
+		                                                  const std::filesystem::path& destination_path) override;
 		std::expected<void, std::string> upload_from_file(const std::filesystem::path& source_path,
-			                                             const std::string& key,
-			                                             const application::interfaces::object_put_options& options) override;
+		                                                  const std::string& key,
+		                                                  const application::interfaces::object_put_options&
+		                                                  options) override;
 		std::expected<void, std::string> remove(const std::string& key) override;
 
 		bool is_remote_backend() const noexcept override;

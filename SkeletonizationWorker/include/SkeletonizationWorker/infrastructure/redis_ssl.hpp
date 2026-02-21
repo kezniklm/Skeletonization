@@ -27,7 +27,7 @@ namespace worker::infrastructure::redis
 
 		std::expected<void, std::string> apply_to_context(redisContext* ctx) const;
 
-		
+
 		[[nodiscard]] bool is_initialized() const noexcept;
 
 		[[nodiscard]] redisSSLContext* get() const noexcept;

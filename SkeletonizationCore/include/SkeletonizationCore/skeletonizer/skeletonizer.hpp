@@ -4,6 +4,7 @@
 #include <optional>
 
 #include "opencv2/core.hpp"
+
 #include "SkeletonizationCore/extensions/string.hpp"
 
 namespace skeletonizer
@@ -18,11 +19,11 @@ namespace skeletonizer
 
 		virtual std::string name() const = 0;
 
-	protected:
 		static constexpr int foreground = ForegroundValue;
 		static constexpr int background = BackgroundValue;
 		static constexpr int skeleton = SkeletonValue;
 
+	protected:
 		virtual bool has_changed(cv::InputArray& difference) const
 		{
 			return cv::countNonZero(difference) > 0;

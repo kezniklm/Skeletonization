@@ -8,7 +8,7 @@
 
 #include "SkeletonizationCore/configuration/types.hpp"
 #include "SkeletonizationCore/skeletonizer/skeletonizer.hpp"
-#include "SkeletonizationCLI/configuration/creators.hpp"
+#include "SkeletonizationCore/skeletonizer/factory.hpp"
 
 namespace configuration
 {
@@ -76,7 +76,7 @@ namespace configuration
 			metadata.variants.push_back(variant);
 
 			auto type_enum = parse_type(variant.type);
-			auto creators = make_algorithm_creators(type_enum, variant.algorithm);
+			auto creators = skeletonizer::algorithm_factory::creators_for(variant.algorithm, type_enum);
 
 			auto& existing = metadata.skeletonizers[type_enum];
 			existing.insert(

@@ -18,12 +18,12 @@ namespace worker::application::interfaces
 		virtual ~i_object_storage() = default;
 
 		virtual std::expected<void, std::string> download_to_file(const std::string& key,
-			                                                    const std::filesystem::path& destination_path) = 0;
+		                                                          const std::filesystem::path& destination_path) = 0;
 		virtual std::expected<void, std::string> upload_from_file(const std::filesystem::path& source_path,
-			                                                     const std::string& key,
-			                                                     const object_put_options& options = {}) = 0;
+		                                                          const std::string& key,
+		                                                          const object_put_options& options = {}) = 0;
 		virtual std::expected<void, std::string> remove(const std::string& key) = 0;
- 
+
 		virtual bool is_remote_backend() const noexcept = 0;
 	};
 }

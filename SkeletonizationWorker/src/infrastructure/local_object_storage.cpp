@@ -6,16 +6,18 @@
 namespace worker::infrastructure
 {
 	std::expected<void, std::string> local_object_storage::download_to_file(const std::string& key,
-	                                                                        const std::filesystem::path& destination_path)
+	                                                                        const std::filesystem::path&
+	                                                                        destination_path)
 	{
 		std::error_code ec;
 
 		std::filesystem::create_directories(destination_path.parent_path(), ec);
 		std::filesystem::copy_file(key, destination_path, std::filesystem::copy_options::overwrite_existing, ec);
-		
+
 		if (ec)
 		{
-			return std::unexpected("Failed to copy file: " + std::string{key} + " -> " + destination_path.string() + ": " + ec.message());
+			return std::unexpected(
+				"Failed to copy file: " + std::string{key} + " -> " + destination_path.string() + ": " + ec.message());
 		}
 
 		return {};
@@ -23,7 +25,9 @@ namespace worker::infrastructure
 
 	std::expected<void, std::string> local_object_storage::upload_from_file(const std::filesystem::path& source_path,
 	                                                                        const std::string& key,
-	                                                                        const application::interfaces::object_put_options& /*options*/)
+	                                                                        const
+	                                                                        application::interfaces::object_put_options&
+	                                                                        /*options*/)
 	{
 		std::error_code ec;
 
@@ -32,7 +36,7 @@ namespace worker::infrastructure
 		std::filesystem::create_directories(key_path.parent_path(), ec);
 
 		std::filesystem::copy_file(source_path, key_path, std::filesystem::copy_options::overwrite_existing, ec);
-		
+
 		if (ec)
 		{
 			return std::unexpected("Failed to copy file: " + source_path.string() + " -> " + key + ": " + ec.message());

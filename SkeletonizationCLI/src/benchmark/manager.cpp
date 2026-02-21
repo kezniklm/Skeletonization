@@ -39,7 +39,7 @@ namespace skeletonization_benchmark
 		}
 	}
 
-	std::string manager::run_all()
+	std::string manager::run_all() const
 	{
 		std::cout << "Starting Skeletonization Algorithms Benchmarks\n\n"
 			<< std::endl;

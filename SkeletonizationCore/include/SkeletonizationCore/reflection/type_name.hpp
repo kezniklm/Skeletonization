@@ -8,9 +8,9 @@ constexpr std::string_view type_name()
 {
 	constexpr std::string_view p = __PRETTY_FUNCTION__;
 
-	const auto a = p.find("T = ") + 4;
+	constexpr auto a = p.find("T = ") + 4;
 
-	const auto b = p.rfind(']');
+	constexpr auto b = p.rfind(']');
 
 	return p.substr(a, b - a);
 }

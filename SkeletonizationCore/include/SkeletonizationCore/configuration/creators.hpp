@@ -6,15 +6,14 @@
 #include <vector>
 
 #include "SkeletonizationCore/skeletonizer/skeletonizer.hpp"
+#include "SkeletonizationCore/reflection/class_name.hpp"
 
+#include "concepts.hpp"
 #include "types.hpp"
 
 namespace configuration
 {
-	template <class T>
-	concept skeletonizer_implementation = std::is_base_of_v<skeletonizer::skeletonizer<>, T>;
-
-	template <class SkeletonizerImplementation>
+	template <skeletonizer_implementation SkeletonizerImplementation>
 	skeletonizer_creator make_creator()
 	{
 		return []() -> std::unique_ptr<skeletonizer::skeletonizer<>>
@@ -31,6 +30,10 @@ namespace configuration
 	{
 		const std::string_view name;
 
+		using cpu_type = CpuImplementation;
+		using thread_type = ThreadedImplementation;
+		using gpu_type = GpuImplementation;
+
 		static constexpr bool has_cpu =
 			!std::is_same_v<CpuImplementation, std::nullptr_t>;
 		static constexpr bool has_thread =
@@ -46,12 +49,14 @@ namespace configuration
 		              "AlgorithmEntry must have at least one implementation "
 		              "type (cpu/thread/gpu)");
 
-		static_assert(!has_cpu || skeletonizer_implementation<CpuImplementation>,
+		static_assert(!has_cpu || (skeletonizer_implementation<CpuImplementation> && cpu_backend<CpuImplementation>),
 		              "CpuImplementation must derive from skeletonizer<>");
-		static_assert(!has_thread || skeletonizer_implementation<ThreadedImplementation>,
-		              "ThreadedImplementation must derive from skeletonizer<>");
+		static_assert(
+			!has_thread || (skeletonizer_implementation<ThreadedImplementation> && threaded_backend<
+				ThreadedImplementation>),
+			"ThreadedImplementation must derive from skeletonizer<>");
 #if SKELETONIZATION_WITH_GPU
-		static_assert(!has_gpu || skeletonizer_implementation<GpuImplementation>,
+		static_assert(!has_gpu || (skeletonizer_implementation<GpuImplementation> && gpu_backend<GpuImplementation>), 
 		              "GpuImplementation must derive from skeletonizer<>");
 #endif
 
@@ -89,8 +94,8 @@ namespace configuration
 	template <class CpuT = std::nullptr_t,
 	          class ThreadT = std::nullptr_t,
 	          class GpuT = std::nullptr_t>
-	constexpr algorithm_entry<CpuT, ThreadT, GpuT> make_entry(const char* name)
+	constexpr algorithm_entry<CpuT, ThreadT, GpuT> make_entry()
 	{
-		return algorithm_entry<CpuT, ThreadT, GpuT>{name};
+		return algorithm_entry<CpuT, ThreadT, GpuT>{class_name<CpuT>()};
 	}
 }

@@ -74,9 +74,11 @@ namespace worker::infrastructure
 			}
 			task.algorithm = task_json_object["algorithm"].GetString();
 
-			if (!task_json_object.HasMember("should_run_preprocessing") || !task_json_object["should_run_preprocessing"].IsBool())
+			if (!task_json_object.HasMember("should_run_preprocessing") || !task_json_object["should_run_preprocessing"]
+				.IsBool())
 			{
-				return std::unexpected("Missing or invalid task.should_run_preprocessing at index " + std::to_string(i));
+				return std::unexpected(
+					"Missing or invalid task.should_run_preprocessing at index " + std::to_string(i));
 			}
 
 			task.should_run_preprocessing = task_json_object["should_run_preprocessing"].GetBool();
@@ -86,7 +88,8 @@ namespace worker::infrastructure
 				return std::unexpected("Missing or invalid task.output_format at index " + std::to_string(i));
 			}
 
-			const auto parse_output_format_result = job::parse_output_format(task_json_object["output_format"].GetString());
+			const auto parse_output_format_result = job::parse_output_format(
+				task_json_object["output_format"].GetString());
 
 			if (!parse_output_format_result)
 			{
