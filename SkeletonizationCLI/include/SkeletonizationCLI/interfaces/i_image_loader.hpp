@@ -20,7 +20,7 @@ namespace cli::interfaces
 		 * @brief Load an image from the specified path.
 		 * @param path Path to the image file.
 		 * @return Loaded image as cv::Mat.
-		 * @throws std::exception if image cannot be loaded.
+		 * @throws image_loading_exception if image cannot be loaded.
 		 */
 		[[nodiscard]] virtual cv::Mat load(const std::filesystem::path& path) const = 0;
 

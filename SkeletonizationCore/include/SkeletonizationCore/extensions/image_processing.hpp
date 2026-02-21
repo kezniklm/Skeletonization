@@ -1,5 +1,6 @@
 #pragma once
 
+#include <expected>
 #include <string>
 
 #include "opencv2/core/mat.hpp"
@@ -8,7 +9,7 @@ constexpr auto default_ratio = 255;
 constexpr auto high = 255;
 constexpr auto low = 0;
 
-cv::Mat read_image(const std::string& path);
+std::expected<cv::Mat, std::string> read_image(const std::string& path);
 cv::Mat convert_greyscale(const cv::Mat& image);
 cv::Mat blur(const cv::Mat& image);
 cv::Mat threshold(const cv::Mat& image);

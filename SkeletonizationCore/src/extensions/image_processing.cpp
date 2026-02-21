@@ -1,4 +1,4 @@
-#include <stdexcept>
+#include <expected>
 #include <string>
 
 #include "opencv2/core.hpp"
@@ -8,13 +8,13 @@
 #include "SkeletonizationCore/extensions/image_processing.hpp"
 #include "SkeletonizationCore/extensions/pipeline.hpp"
 
-cv::Mat read_image(const std::string& path)
+std::expected<cv::Mat, std::string> read_image(const std::string& path)
 {
-	const auto input_image = cv::imread(path);
+	auto input_image = cv::imread(path);
 
 	if (input_image.empty())
 	{
-		throw std::runtime_error("Failed to load image: " + path);
+		return std::unexpected("Failed to load image: " + path);
 	}
 
 	return input_image;
@@ -65,6 +65,7 @@ cv::Mat threshold(const cv::Mat& image)
 cv::Mat clean_noise(const cv::Mat& image)
 {
 	cv::Mat cleaned;
+
 	cv::morphologyEx(
 		image,
 		cleaned,
@@ -72,12 +73,14 @@ cv::Mat clean_noise(const cv::Mat& image)
 		cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)),
 		cv::Point(-1, -1),
 		2);
+
 	return cleaned;
 }
 
 cv::Mat connect_components(const cv::Mat& image)
 {
 	cv::Mat connected;
+
 	cv::dilate(
 		image,
 		connected,
@@ -89,6 +92,7 @@ cv::Mat connect_components(const cv::Mat& image)
 cv::Mat extract_filled_contours(const cv::Mat& image)
 {
 	std::vector<std::vector<cv::Point>> contours;
+
 	cv::findContours(
 		image,
 		contours,
@@ -96,6 +100,7 @@ cv::Mat extract_filled_contours(const cv::Mat& image)
 		cv::CHAIN_APPROX_SIMPLE);
 
 	cv::Mat filled = cv::Mat::zeros(image.size(), CV_8UC1);
+
 	for (const auto& c : contours)
 	{
 		if (constexpr auto min_area = 100.0; cv::contourArea(c) > min_area)

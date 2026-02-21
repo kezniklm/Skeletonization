@@ -49,6 +49,30 @@ namespace cli::exceptions
 	};
 
 	/**
+	 * @brief Exception thrown when image loading fails.
+	 */
+	class image_loading_exception final : public cli_exception
+	{
+	public:
+		explicit image_loading_exception(const std::filesystem::path& path,
+		                                 const std::string& reason = "")
+			: cli_exception(
+				  "Failed to load image from: " + path.string() +
+				  (reason.empty() ? "" : " - " + reason))
+			  , path_(path)
+		{
+		}
+
+		[[nodiscard]] const std::filesystem::path& path() const noexcept
+		{
+			return path_;
+		}
+
+	private:
+		std::filesystem::path path_;
+	};
+
+	/**
 	 * @brief Exception thrown when image encoding fails.
 	 */
 	class image_encoding_exception final : public export_exception
