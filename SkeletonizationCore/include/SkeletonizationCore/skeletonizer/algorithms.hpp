@@ -147,7 +147,7 @@ namespace skeletonizer::algorithms
 	public:
 		std::string name() const final
 		{
-			return "Choi_Lam_Siu";
+			return "Choi-Lam-Siu";
 		}
 
 	protected:
@@ -345,7 +345,7 @@ namespace skeletonizer::algorithms
 	public:
 		std::string name() const final
 		{
-			return "Liu_Zhang";
+			return "Liu-Zhang";
 		}
 	};
 
@@ -358,12 +358,4 @@ namespace skeletonizer::algorithms
 		}
 	};
 
-	class serra : public virtual skeletonizer<>
-	{
-	public:
-		std::string name() const final
-		{
-			return "Serra";
-		}
-	};
 }
