@@ -1,9 +1,12 @@
+#include <exception>
 #include <string>
 
-#include "SkeletonizationCore/logger/logger.hpp"
+#include "glog/logging.h"
 
-#include "SkeletonizationCLI/commandline/parser.hpp"
 #include "SkeletonizationCLI/benchmark/manager.hpp"
+#include "SkeletonizationCLI/commandline/parser.hpp"
+#include "SkeletonizationCLI/dependency_injection/dependency_injection.hpp"
+#include "SkeletonizationCore/logger/logger.hpp"
 
 int main(const int argc, const char* const * argv)
 {
@@ -13,17 +16,34 @@ int main(const int argc, const char* const * argv)
 
 	logger.initialize();
 
-	const commandline::parser commandline_parser(argc, argv);
+	try
+	{
+		const commandline::parser commandline_parser(argc, argv);
 
-	commandline_parser.parse();
+		const auto arguments = commandline_parser.parse();
 
-	skeletonization_benchmark::manager manager;
+		const auto injector = cli::dependency_injection::configure(arguments);
 
-	manager.register_all();
+		auto manager = injector.create<skeletonization_benchmark::manager>();
 
-	const auto output_json = manager.run_all();
+		manager.register_all();
 
-	manager.show_results(output_json);
+		const auto output_json = manager.run_all();
 
-	return 0;
+		manager.show_results(output_json);
+	}
+	catch (const std::exception& e)
+	{
+		LOG(ERROR) << "Fatal error: " << e.what();
+
+		return EXIT_FAILURE;
+	}
+	catch (...)
+	{
+		LOG(ERROR) << "Unknown fatal error occurred.";
+
+		return EXIT_FAILURE;
+	}
+
+	return EXIT_SUCCESS;
 }

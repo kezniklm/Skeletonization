@@ -1,7 +1,6 @@
 #include "SkeletonizationCLI/benchmark/runner.hpp"
 
 #include <functional>
-#include <map>
 #include <string>
 #include <utility>
 
@@ -13,7 +12,6 @@
 #endif
 
 #include "glog/logging.h"
-#include "SkeletonizationCLI/commandline/arguments.hpp"
 #include "SkeletonizationCLI/visual_inspector/image_container.hpp"
 #include "SkeletonizationCore/configuration/types.hpp"
 #include "SkeletonizationCore/extensions/image_processing.hpp"
@@ -22,11 +20,15 @@
 
 namespace skeletonization_benchmark
 {
-	runner::runner(const configuration::image_benchmark_metadata& image_metadata)
+	runner::runner(const configuration::image_benchmark_metadata& image_metadata,
+	               std::shared_ptr<cli::interfaces::i_arguments_provider> args_provider,
+	               const cli::interfaces::i_image_loader& image_loader,
+	               const cli::interfaces::i_image_preprocessor& image_preprocessor)
 		: image_metadata_(image_metadata)
-		  , input_image_(read_image(image_metadata.path))
-		  , binary_image_(global_arguments().run_image_preprocessing
-			                  ? preprocess_image(input_image_)
+		  , args_provider_(std::move(args_provider))
+		  , input_image_(image_loader.load(image_metadata.path))
+		  , binary_image_(args_provider_->run_image_preprocessing()
+			                  ? image_preprocessor.preprocess(input_image_)
 			                  : input_image_)
 	{
 	}
@@ -73,8 +75,6 @@ namespace skeletonization_benchmark
 	void runner::register_benchmark(const std::string& name,
 	                                std::unique_ptr<skeletonizer::skeletonizer<>> skeletonizer_instance)
 	{
-		const auto& arguments = global_arguments();
-
 		if (name.size() > max_total_algorithm_name_length)
 		{
 			LOG(WARNING) << "Skipping benchmark for \"" << name
@@ -116,13 +116,22 @@ namespace skeletonization_benchmark
 
 				for (auto _ : state)
 				{
-					auto image = binary_image_.clone();
+					try
+					{
+						auto image = binary_image_.clone();
 
-					skeletonizer->apply(image);
+						skeletonizer->apply(image);
 
-					results_[name] = scale(image);
+						results_[name] = scale(image);
+					}
+					catch (const std::exception& e)
+					{
+						LOG(ERROR) << "Skeletonizer '" << name << "' failed: " << e.what();
+						state.SkipWithError(e.what());
+						break;
+					}
 				}
-			})->Iterations(arguments.number_of_benchmark_iterations);
+			})->Iterations(args_provider_->benchmark_iterations());
 	}
 
 	std::string runner::create_benchmark_name(const std::string& skeletonizer_name,

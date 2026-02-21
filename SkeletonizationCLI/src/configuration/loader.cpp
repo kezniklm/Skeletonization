@@ -1,3 +1,5 @@
+#include "SkeletonizationCLI/configuration/loader.hpp"
+
 #include <filesystem>
 #include <fstream>
 #include <string>
@@ -8,18 +10,25 @@
 
 #include "glog/logging.h"
 
+#include "SkeletonizationCLI/exceptions/configuration_exception.hpp"
 #include "SkeletonizationCore/configuration/types.hpp"
-#include <SkeletonizationCLI/configuration/creators.hpp>
+#include "SkeletonizationCore/skeletonizer/algorithm_factory.hpp"
+#include "SkeletonizationCore/skeletonizer/skeletonizer.hpp"
+#include "SkeletonizationCore/extensions/string.hpp"
 #include <SkeletonizationCLI/configuration/parser.hpp>
 
 namespace configuration
 {
-	std::vector<image_benchmark_metadata> load_skeletonizer_configuration(const std::string& filename)
+	using configuration::image_benchmark_metadata;
+	using configuration::skeletonizer_config;
+
+	std::vector<image_benchmark_metadata> configuration_loader::load(const std::string& filename) const
 	{
 		std::ifstream file(filename);
+
 		if (!file)
 		{
-			LOG(FATAL) << "Cannot open configuration file: " << filename;
+			throw cli::exceptions::configuration_file_not_found_exception(std::filesystem::path(filename));
 		}
 
 		rapidjson::IStreamWrapper isw(file);
@@ -28,13 +37,14 @@ namespace configuration
 
 		if (document.HasParseError())
 		{
-			LOG(FATAL) << "Failed to parse JSON file: " << filename;
+			throw cli::exceptions::configuration_parse_exception(
+				filename, "JSON parse error code: " + std::to_string(document.GetParseError()));
 		}
 
 		if (!document.IsArray() || document.Empty())
 		{
-			LOG(FATAL)
-				<< "Configuration file must contain a list of skeletonizers.";
+			throw cli::exceptions::configuration_validation_exception(
+				"Configuration file must contain a non-empty array of skeletonizers");
 		}
 
 		std::vector<image_benchmark_metadata> all_entries;
@@ -54,8 +64,8 @@ namespace configuration
 		return all_entries;
 	}
 
-	std::vector<image_benchmark_metadata> load_skeletonizer_configuration(
-		const std::vector<skeletonizer_config>& skeletonizer_configurations)
+	std::vector<image_benchmark_metadata> configuration_loader::load(
+		const std::vector<skeletonizer_config>& skeletonizer_configurations) const
 	{
 		std::vector<image_benchmark_metadata> all_entries;
 
@@ -67,20 +77,28 @@ namespace configuration
 
 			for (const auto& [type, algorithm] : skeletonizers)
 			{
-				meta.variants.push_back({type, algorithm});
+				try
+				{
+					meta.variants.push_back({type, algorithm});
 
-				auto& type_ref = const_cast<std::string&>(type);
-				const auto type_enum = parse_type(type_ref);
-
-				auto creators = skeletonizer::algorithm_factory::creators_for(algorithm, type_enum);
-
-				auto& existing = meta.skeletonizers[type_enum];
-				existing.insert(existing.end(),
-				                std::make_move_iterator(creators.begin()),
-				                std::make_move_iterator(creators.end()));
+					process_skeletonizer_variant(type, algorithm, meta);
+				}
+				catch (const std::exception& e)
+				{
+					LOG(WARNING) << "Skipping skeletonizer variant (" << type << ":" << algorithm
+						<< ") in entry '" << meta.name << "': " << e.what();
+				}
 			}
 
-			all_entries.push_back(std::move(meta));
+			if (!meta.skeletonizers.empty())
+			{
+				all_entries.push_back(std::move(meta));
+			}
+			else
+			{
+				LOG(WARNING) << "Skipping entry '" << meta.name
+					<< "': no valid skeletonizers after filtering invalid variants.";
+			}
 		}
 
 		return all_entries;

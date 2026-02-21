@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <cctype>
-#include <cstdlib>
 #include <filesystem>
 #include <memory>
 #include <stdexcept>
@@ -13,6 +12,7 @@
 #include "CLI/CLI.hpp"
 #include "glog/logging.h"
 #include "SkeletonizationCLI/commandline/arguments.hpp"
+#include "SkeletonizationCLI/exceptions/configuration_exception.hpp"
 #include "SkeletonizationCore/configuration/types.hpp"
 
 namespace
@@ -35,9 +35,9 @@ namespace
 
 			return ext == ".json" ? std::string{} : std::string{"must end with .json"};
 		}
-		catch (...)
+		catch (const std::exception& e)
 		{
-			return "invalid path";
+			return "invalid path: " + std::string(e.what());
 		}
 	}
 
@@ -58,9 +58,9 @@ namespace commandline
 	{
 	}
 
-	void parser::parse() const
+	arguments parser::parse() const
 	{
-		auto& args = global_arguments();
+		arguments args;
 
 		CLI::App app{"Skeletonization benchmark"};
 
@@ -152,7 +152,7 @@ namespace commandline
 
 					if (position == std::string::npos)
 					{
-						throw std::runtime_error(
+						throw cli::exceptions::configuration_validation_exception(
 							"--skeleton must be type:algorithm, e.g., cpu:zhang_suen");
 					}
 
@@ -171,36 +171,38 @@ namespace commandline
 		}
 		catch (const CLI::ParseError& e)
 		{
-			std::exit(app.exit(e));
+			throw cli::exceptions::configuration_validation_exception(
+				"Command-line parse error: " + std::string(e.what()));
 		}
 
 		finalize_current_leaf();
 
-		args.skeletonizer_configuration =
+		args.skeletonizer_configurations =
 			std::move(skeletonizer_configurations);
 
 		const bool has_cli_leaves =
-			!args.skeletonizer_configuration.empty();
+			!args.skeletonizer_configurations.empty();
 
 		const bool has_json_config = !args.configuration_path.empty();
 
 		if (has_cli_leaves && has_json_config)
 		{
-			LOG(FATAL)
-				<< "Error: you cannot specify both --config and CLI leaves "
-				"(--leaf-name, --leaf-path, --skeleton).";
+			throw cli::exceptions::configuration_validation_exception(
+				"Cannot specify both --config and CLI leaves "
+				"(--leaf-name, --leaf-path, --skeleton)");
 		}
 
 		if (!has_cli_leaves && !has_json_config)
 		{
-			LOG(FATAL)
-				<< "Error: either --config or at least one CLI leaf must be "
-				"specified.";
+			throw cli::exceptions::configuration_validation_exception(
+				"Either --config or at least one CLI leaf must be specified");
 		}
 
 		if (has_cli_leaves)
 		{
 			args.configuration_path.clear();
 		}
+
+		return args;
 	}
 }

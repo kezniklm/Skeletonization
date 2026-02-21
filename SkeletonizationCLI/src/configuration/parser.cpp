@@ -1,52 +1,27 @@
+#include "SkeletonizationCLI/configuration/parser.hpp"
+
 #include <algorithm>
-#include <cctype>
 #include <ranges>
 #include <stdexcept>
 #include <string>
 
 #include <rapidjson/document.h>
 
+#include "glog/logging.h"
+#include "SkeletonizationCLI/exceptions/configuration_exception.hpp"
 #include "SkeletonizationCore/configuration/types.hpp"
 #include "SkeletonizationCore/skeletonizer/skeletonizer.hpp"
-#include "SkeletonizationCore/skeletonizer/factory.hpp"
+#include "SkeletonizationCore/skeletonizer/algorithm_factory.hpp"
+#include "SkeletonizationCore/extensions/string.hpp"
 
 namespace configuration
 {
-	skeletonizer::skeletonizer_type parse_type(std::string& skeletonizer_type_string)
-	{
-		std::ranges::transform(skeletonizer_type_string, skeletonizer_type_string.begin(), [](unsigned char c)
-		{
-			return static_cast<char>(std::tolower(c));
-		});
-
-		if (skeletonizer_type_string == "cpu")
-		{
-			return skeletonizer::skeletonizer_type::cpu;
-		}
-		if (skeletonizer_type_string == "thread")
-		{
-			return skeletonizer::skeletonizer_type::thread;
-		}
-		if (skeletonizer_type_string == "gpu")
-		{
-#if SKELETONIZATION_WITH_GPU
-			return skeletonizer::skeletonizer_type::gpu;
-#else
-			throw std::runtime_error(
-				"GPU requested in configuration but not compiled in.");
-#endif
-		}
-
-		throw std::runtime_error(
-			"Unknown skeletonizer type: " + skeletonizer_type_string);
-	}
-
 	skeletonizer_variant parse_variant(const rapidjson::Value& json_variant)
 	{
 		if (!json_variant.HasMember("type") || !json_variant["type"].IsString() ||
 			!json_variant.HasMember("algorithm") || !json_variant["algorithm"].IsString())
 		{
-			throw std::runtime_error(
+			throw cli::exceptions::configuration_validation_exception(
 				"Missing or invalid 'type' or 'algorithm' in variant.");
 		}
 
@@ -56,13 +31,49 @@ namespace configuration
 		};
 	}
 
+	void process_skeletonizer_variant(
+		const std::string& type,
+		const std::string& algorithm,
+		image_benchmark_metadata& metadata)
+	{
+		const auto type_enum = skeletonizer::from_string(type);
+
+		if (!type_enum)
+		{
+#if !SKELETONIZATION_WITH_GPU
+			if (equals_ascii(type, "gpu"))
+			{
+				throw cli::exceptions::configuration_validation_exception(
+					"GPU skeletonizer requested but not compiled in. Rebuild with SKELETONIZATION_WITH_GPU=ON");
+			}
+#endif
+			throw cli::exceptions::configuration_validation_exception(
+				"Unknown skeletonizer type: " + type + ". Valid types: cpu, thread" +
+#if SKELETONIZATION_WITH_GPU
+				", gpu"
+#else
+				""
+#endif
+			);
+		}
+
+		auto creators = skeletonizer::algorithm_factory::creators_for(algorithm, type_enum.value());
+
+		auto& existing = metadata.skeletonizers[type_enum.value()];
+
+		existing.insert(
+			existing.end(),
+			std::make_move_iterator(creators.begin()),
+			std::make_move_iterator(creators.end()));
+	}
+
 	image_benchmark_metadata parse_image_entry(const rapidjson::Value& entry)
 	{
 		if (!entry.HasMember("name") || !entry["name"].IsString() ||
 			!entry.HasMember("path") || !entry["path"].IsString() ||
 			!entry.HasMember("skeletonizers") || !entry["skeletonizers"].IsArray())
 		{
-			throw std::runtime_error(
+			throw cli::exceptions::configuration_validation_exception(
 				"Missing 'name', 'path', or 'skeletonizers' in entry.");
 		}
 
@@ -72,17 +83,25 @@ namespace configuration
 
 		for (const auto& json_variant : entry["skeletonizers"].GetArray())
 		{
-			auto variant = parse_variant(json_variant);
-			metadata.variants.push_back(variant);
+			try
+			{
+				auto variant = parse_variant(json_variant);
 
-			auto type_enum = parse_type(variant.type);
-			auto creators = skeletonizer::algorithm_factory::creators_for(variant.algorithm, type_enum);
+				metadata.variants.push_back(variant);
 
-			auto& existing = metadata.skeletonizers[type_enum];
-			existing.insert(
-				existing.end(),
-				std::make_move_iterator(creators.begin()),
-				std::make_move_iterator(creators.end()));
+				process_skeletonizer_variant(variant.type, variant.algorithm, metadata);
+			}
+			catch (const std::exception& e)
+			{
+				LOG(WARNING) << "Skipping skeletonizer variant in entry '" << metadata.name
+					<< "': " << e.what();
+			}
+		}
+
+		if (metadata.skeletonizers.empty())
+		{
+			throw cli::exceptions::configuration_validation_exception(
+				"Entry '" + metadata.name + "' has no valid skeletonizers after filtering invalid variants.");
 		}
 
 		return metadata;

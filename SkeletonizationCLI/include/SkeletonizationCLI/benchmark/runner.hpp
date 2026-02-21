@@ -6,16 +6,29 @@
 
 #include <opencv2/core.hpp>
 
+#include "SkeletonizationCLI/interfaces/i_arguments_provider.hpp"
+#include "SkeletonizationCLI/interfaces/i_image_loader.hpp"
+#include "SkeletonizationCLI/interfaces/i_image_preprocessor.hpp"
 #include "SkeletonizationCLI/visual_inspector/image_container.hpp"
 #include "SkeletonizationCore/configuration/types.hpp"
 #include "SkeletonizationCore/skeletonizer/skeletonizer.hpp"
 
 namespace skeletonization_benchmark
 {
+	/**
+	 * @brief Manages benchmark execution for a single image configuration.
+	 *
+	 * Coordinates image loading, preprocessing, benchmark registration,
+	 * and result collection. Uses dependency injection for all external
+	 * dependencies to improve testability and flexibility.
+	 */
 	class runner
 	{
 	public:
-		explicit runner(const configuration::image_benchmark_metadata& image_metadata);
+		runner(const configuration::image_benchmark_metadata& image_metadata,
+		       std::shared_ptr<cli::interfaces::i_arguments_provider> args_provider,
+		       const cli::interfaces::i_image_loader& image_loader,
+		       const cli::interfaces::i_image_preprocessor& image_preprocessor);
 
 		void register_all_benchmarks();
 
@@ -37,6 +50,7 @@ namespace skeletonization_benchmark
 			max_algorithm_type_length;
 
 		configuration::image_benchmark_metadata image_metadata_;
+		std::shared_ptr<cli::interfaces::i_arguments_provider> args_provider_;
 		cv::Mat input_image_;
 		cv::Mat binary_image_;
 		std::map<std::string, cv::Mat> results_;

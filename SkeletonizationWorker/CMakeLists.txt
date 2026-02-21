@@ -41,12 +41,8 @@ target_sources(SkeletonizationWorker
 
 target_include_directories(SkeletonizationWorker PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include ${BEXT_DI_INCLUDE_DIRS} ${AWSSDK_INCLUDE_DIRS})
 
-target_link_libraries(SkeletonizationWorker PRIVATE Skeletonization::Core Skeletonization::CoreCPU RapidJSON rapidjson hiredis::hiredis hiredis::hiredis_ssl libenvpp::libenvpp ${AWSSDK_LIBRARIES})
+target_link_libraries(SkeletonizationWorker PRIVATE Skeletonization::Core Skeletonization::CoreCPU Skeletonization::CoreMT RapidJSON rapidjson hiredis::hiredis hiredis::hiredis_ssl libenvpp::libenvpp ${AWSSDK_LIBRARIES})
 
 if(SKELETONIZATION_ENABLE_GPU)
     target_link_libraries(SkeletonizationWorker PRIVATE Skeletonization::CoreGPU)
-endif()
-
-if(SKELETONIZATION_ENABLE_MT)
-    target_link_libraries(SkeletonizationWorker PRIVATE Skeletonization::CoreMT)
 endif()

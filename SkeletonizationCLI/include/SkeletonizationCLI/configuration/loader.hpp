@@ -3,12 +3,23 @@
 #include <string>
 #include <vector>
 
-#include <SkeletonizationCore/configuration/types.hpp>
+#include "SkeletonizationCLI/interfaces/i_configuration_loader.hpp"
+#include "SkeletonizationCore/configuration/types.hpp"
 
 namespace configuration
 {
-	std::vector<image_benchmark_metadata> load_skeletonizer_configuration(const std::string& filename);
+	/**
+	 * @brief Concrete implementation of i_configuration_loader.
+	 *
+	 * Loads skeletonizer configuration from JSON files or in-memory structures.
+	 */
+	class configuration_loader final : public cli::interfaces::i_configuration_loader
+	{
+	public:
+		[[nodiscard]] std::vector<image_benchmark_metadata>
+		load(const std::string& filename) const override;
 
-	std::vector<image_benchmark_metadata> load_skeletonizer_configuration(
-		const std::vector<skeletonizer_config>& skeletonizer_configurations);
+		[[nodiscard]] std::vector<image_benchmark_metadata>
+		load(const std::vector<skeletonizer_config>& configs) const override;
+	};
 }

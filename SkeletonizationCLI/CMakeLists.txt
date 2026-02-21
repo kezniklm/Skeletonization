@@ -13,6 +13,8 @@ file(GLOB_RECURSE CLI_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp"
 )
 
+find_path(BEXT_DI_INCLUDE_DIRS "boost/di.hpp")
+
 add_executable(SkeletonizationCLI)
 
 target_sources(SkeletonizationCLI
@@ -29,6 +31,7 @@ file(COPY "${CMAKE_SOURCE_DIR}/skeletonizer_config.json" DESTINATION "${CMAKE_BI
 target_include_directories(SkeletonizationCLI
     PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    ${BEXT_DI_INCLUDE_DIRS}
 )
 
 target_link_libraries(SkeletonizationCLI
@@ -41,8 +44,7 @@ target_link_libraries(SkeletonizationCLI
     CLI11::CLI11
     RapidJSON
     rapidjson
-    Drogon::Drogon
-)
+    Drogon::Drogon)
 
 if(SKELETONIZATION_ENABLE_GPU)
     target_link_libraries(SkeletonizationCLI PRIVATE SkeletonizationCoreGPU)

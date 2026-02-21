@@ -1,5 +1,6 @@
 #include <chrono>
 #include <filesystem>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -7,46 +8,29 @@
 #include <opencv2/opencv.hpp>
 #include "glog/logging.h"
 
-#ifdef _WIN32
-#include <shellapi.h>
-#include <windows.h>
-#endif
-
+#include "SkeletonizationCLI/exceptions/visualization_exception.hpp"
+#include "SkeletonizationCLI/interfaces/i_browser_launcher.hpp"
+#include "SkeletonizationCLI/utils/system_browser_launcher.hpp"
 #include "SkeletonizationCLI/visual_inspector/visualiser.hpp"
 #include "SkeletonizationCLI/visual_inspector/image_container.hpp"
 
 namespace visual_inspector
 {
-	void open_in_browser(const std::string& url)
-	{
-#ifdef _WIN32
-		const std::string cmd = "start " + url;
-#elifdef __APPLE__
-		const std::string cmd = "open " + url;
-#else
-		const std::string cmd = "xdg-open " + url;
-#endif
-		const auto return_code = std::system(cmd.c_str());
-
-		if (return_code != 0)
-		{
-			LOG(ERROR) << "Failed to open browser with URL: " << url << ". Return code: " << return_code;
-		}
-	}
-
 	class visualizer_server final : public std::enable_shared_from_this<visualizer_server>
 	{
 	public:
-		visualizer_server(const std::filesystem::path& web_root, const uint16_t port)
+		visualizer_server(const std::filesystem::path& web_root,
+		                  const uint16_t port,
+		                  std::unique_ptr<cli::interfaces::i_browser_launcher> browser_launcher)
 			: root_(std::filesystem::is_regular_file(web_root)
 				        ? web_root.parent_path()
-				        : web_root),
-			  port_(port)
+				        : web_root)
+			  , port_(port)
+			  , browser_launcher_(std::move(browser_launcher))
 		{
 			if (!std::filesystem::exists(root_))
 			{
-				throw std::runtime_error(
-					"[visualizer_server] Root does not exist: " + root_.string());
+				throw cli::exceptions::web_root_not_found_exception(root_);
 			}
 
 			auto& app = drogon::app();
@@ -95,27 +79,23 @@ namespace visual_inspector
 		{
 			const auto url = "http://127.0.0.1:" + std::to_string(port_) + "/";
 
-#ifdef _WIN32
-			if (ShellExecuteA(nullptr, "open", url.c_str(), nullptr, nullptr, SW_SHOWNORMAL) <= reinterpret_cast<
-				HINSTANCE>(32))
+			// Use the injected browser launcher or create a default one
+			if (browser_launcher_)
 			{
-				LOG(ERROR) << "Failed to open browser with URL: " << url;
+				const bool opened = browser_launcher_->open(url);
+				if (!opened)
+				{
+					LOG(WARNING) << "Failed to open browser automatically. Please navigate to " << url;
+				}
 			}
-#elifdef __APPLE__
-			const auto return_code = std::system(std::string("open \"" + url + "\"").c_str());
-
-			if (return_code != 0)
+			else
 			{
-				LOG(ERROR) << "Failed to open browser with URL: " << url << ". Return code: " << return_code;
+				const bool opened = cli::utils::system_browser_launcher{}.open(url);
+				if (!opened)
+				{
+					LOG(WARNING) << "Failed to open browser automatically. Please navigate to " << url;
+				}
 			}
-#else
-			const auto return_code = std::system(std::string("xdg-open \"" + url + "\"").c_str());
-
-			if (return_code != 0)
-			{
-				LOG(ERROR) << "Failed to open browser with URL: " << url << ". Return code: " << return_code;
-			}
-#endif
 
 			drogon::app().run();
 		}
@@ -133,6 +113,7 @@ namespace visual_inspector
 	private:
 		std::filesystem::path root_;
 		uint16_t port_;
+		std::unique_ptr<cli::interfaces::i_browser_launcher> browser_launcher_;
 	};
 
 	void visualiser::add_benchmark_image_container(const image_container& image_container)
@@ -142,9 +123,11 @@ namespace visual_inspector
 	}
 
 	void visualiser::show(const std::filesystem::path& web_root_or_index,
-	                      const uint16_t port)
+	                      const std::uint16_t port)
 	{
-		visualizer_server server(web_root_or_index, port);
+		// Use default browser launcher
+		auto browser_launcher = std::make_unique<cli::utils::system_browser_launcher>();
+		visualizer_server server(web_root_or_index, port, std::move(browser_launcher));
 
 		try
 		{

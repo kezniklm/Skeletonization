@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "image_container.hpp"
+#include "SkeletonizationCLI/interfaces/i_visualizer.hpp"
 
 namespace visual_inspector
 {
@@ -27,12 +28,20 @@ namespace visual_inspector
 		double compression_ratio = 0.0;
 	};
 
-	class visualiser
+	/**
+	 * @brief Visualizer for benchmark results using web interface.
+	 *
+	 * Implements i_visualizer interface for dependency injection.
+	 */
+	class visualiser final : public cli::interfaces::i_visualizer
 	{
 	public:
 		void add_benchmark_image_container(const image_container& image_container);
 
-		static void show(const std::filesystem::path& web_root_or_index, uint16_t port = 8787);
+		/**
+		 * @brief Display the visualization web interface.
+		 */
+		void show(const std::filesystem::path& web_root, std::uint16_t port = 8787) override;
 
 	private:
 		std::vector<image_container> benchmark_image_containers_;

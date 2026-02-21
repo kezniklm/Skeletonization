@@ -15,11 +15,13 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/core.hpp>
 
+#include "glog/logging.h"
 #include "rapidjson/document.h"
 #include "rapidjson/ostreamwrapper.h"
 #include "rapidjson/prettywriter.h"
 #include "rapidjson/writer.h"
 #include "SkeletonizationCLI/benchmark/aggregator.hpp"
+#include "SkeletonizationCLI/utils/base64_encoder.hpp"
 
 namespace skeletonization_benchmark
 {
@@ -119,92 +121,19 @@ namespace skeletonization_benchmark
 			document.AddMember(key, value, allocator);
 		}
 
-		bool base64_encode(const std::vector<uchar>& in, std::string& out)
-		{
-			static constexpr char tbl[] =
-				"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-
-			const std::size_t n = in.size();
-
-			if (n == 0)
-			{
-				out.clear();
-				return true;
-			}
-
-			const std::size_t out_len = 4 * ((n + 2) / 3);
-
-			out.clear();
-			out.reserve(out_len);
-
-			std::size_t i = 0;
-
-			while (i + 3 <= n)
-			{
-				const uint32_t b0 = in[i++];
-				const uint32_t b1 = in[i++];
-				const uint32_t b2 = in[i++];
-
-				out.push_back(tbl[(b0 & 0xfc) >> 2]);
-				out.push_back(tbl[((b0 & 0x03) << 4) | ((b1 & 0xf0) >> 4)]);
-				out.push_back(tbl[((b1 & 0x0f) << 2) | ((b2 & 0xc0) >> 6)]);
-				out.push_back(tbl[b2 & 0x3f]);
-			}
-
-			const std::size_t rem = n - i;
-			if (rem == 1)
-			{
-				const uint32_t b0 = in[i];
-				out.push_back(tbl[(b0 & 0xfc) >> 2]);
-				out.push_back(tbl[(b0 & 0x03) << 4]);
-				out.push_back('=');
-				out.push_back('=');
-			}
-			else if (rem == 2)
-			{
-				const uint32_t b0 = in[i];
-				const uint32_t b1 = in[i + 1];
-				out.push_back(tbl[(b0 & 0xfc) >> 2]);
-				out.push_back(tbl[((b0 & 0x03) << 4) | ((b1 & 0xf0) >> 4)]);
-				out.push_back(tbl[(b1 & 0x0f) << 2]);
-				out.push_back('=');
-			}
-
-			return true;
-		}
-
-		bool equal_icase(std::string_view a, std::string_view b)
-		{
-			if (a.size() != b.size())
-			{
-				return false;
-			}
-
-			for (std::size_t index = 0; index < a.size(); ++index)
-			{
-				if (std::tolower(static_cast<unsigned char>(a[index])) !=
-					std::tolower(static_cast<unsigned char>(b[index])))
-				{
-					return false;
-				}
-			}
-
-			return true;
-		}
-
 		bool encode_mat_to_base64(const cv::Mat& matrix,
 		                          const exporter_options& opts,
 		                          std::string& out_b64)
 		{
 			std::vector<int> params;
 
-			if (equal_icase(opts.image_ext, ".png"))
+			if (cli::utils::equals_ignore_case(opts.image_ext, ".png"))
 			{
 				params.push_back(cv::IMWRITE_PNG_COMPRESSION);
 				params.push_back(std::clamp(opts.png_compression, 0, 9));
 			}
-			else if (equal_icase(opts.image_ext, ".jpg") ||
-				equal_icase(opts.image_ext, ".jpeg"))
+			else if (cli::utils::equals_ignore_case(opts.image_ext, ".jpg") ||
+				cli::utils::equals_ignore_case(opts.image_ext, ".jpeg"))
 			{
 				params.push_back(cv::IMWRITE_JPEG_QUALITY);
 				params.push_back(std::clamp(opts.jpeg_quality, 1, 100));
@@ -216,7 +145,7 @@ namespace skeletonization_benchmark
 				return false;
 			}
 
-			return base64_encode(encoded, out_b64);
+			return cli::utils::base64_encoder::encode(encoded, out_b64);
 		}
 
 		std::string sanitize_id_component(std::string_view s)
@@ -261,6 +190,100 @@ namespace skeletonization_benchmark
 			id.append(label_name).push_back('_');
 			id.append(std::to_string(index));
 			return id;
+		}
+
+		/**
+		 * @brief Write a RapidJSON document to a file with optional atomic write.
+		 * @param document The RapidJSON document to write
+		 * @param out_path The output file path
+		 * @param opts Export options (pretty printing, atomic write)
+		 * @param error_context Context string for error messages (e.g., "output JSON", "configuration JSON")
+		 * @return true if successful, false otherwise
+		 */
+		bool write_json_document(
+			const rapidjson::Document& document,
+			const std::filesystem::path& out_path,
+			const exporter_options& opts,
+			const std::string& error_context)
+		{
+			try
+			{
+				if (opts.atomic_write)
+				{
+					const auto tmp = out_path.string() + ".tmp";
+					{
+						std::ofstream ofstream(tmp, std::ios::binary | std::ios::trunc);
+
+						if (!ofstream)
+						{
+							LOG(ERROR) << "Failed to open temporary file for writing: " << tmp;
+							return false;
+						}
+
+						rapidjson::OStreamWrapper o_stream_wrapper(ofstream);
+
+						if (opts.pretty)
+						{
+							rapidjson::PrettyWriter writer(o_stream_wrapper);
+							writer.SetIndent(' ', 2);
+							document.Accept(writer);
+						}
+						else
+						{
+							rapidjson::Writer writer(o_stream_wrapper);
+							document.Accept(writer);
+						}
+					}
+
+					std::error_code error_code;
+					std::filesystem::rename(tmp, out_path, error_code);
+
+					if (error_code)
+					{
+						LOG(ERROR) << "Failed to rename temporary file '" << tmp
+							<< "' to '" << out_path.string()
+							<< "': " << error_code.message();
+						return false;
+					}
+				}
+				else
+				{
+					std::ofstream ofstream(out_path, std::ios::binary | std::ios::trunc);
+
+					if (!ofstream)
+					{
+						LOG(ERROR) << "Failed to open " << error_context << " file for writing: " << out_path.string();
+						return false;
+					}
+
+					rapidjson::OStreamWrapper osw(ofstream);
+
+					if (opts.pretty)
+					{
+						rapidjson::PrettyWriter writer(osw);
+						writer.SetIndent(' ', 2);
+						document.Accept(writer);
+					}
+					else
+					{
+						rapidjson::Writer writer(osw);
+						document.Accept(writer);
+					}
+				}
+
+				return true;
+			}
+			catch (const std::exception& e)
+			{
+				LOG(ERROR) << "Failed to write " << error_context << " '" << out_path.string()
+					<< "': " << e.what();
+				return false;
+			}
+			catch (...)
+			{
+				LOG(ERROR) << "Unknown error while writing " << error_context << ": " << out_path.string();
+				return false;
+			}
 		}
 	}
 
@@ -397,69 +420,17 @@ namespace skeletonization_benchmark
 
 			document.AddMember("containers", containers, allocator);
 
-			if (opts.atomic_write)
-			{
-				const auto tmp = out_json_path.string() + ".tmp";
-				{
-					std::ofstream ofstream(tmp, std::ios::binary | std::ios::trunc);
-
-					if (!ofstream)
-					{
-						return false;
-					}
-
-					rapidjson::OStreamWrapper o_stream_wrapper(ofstream);
-
-					if (opts.pretty)
-					{
-						rapidjson::PrettyWriter writer(o_stream_wrapper);
-						writer.SetIndent(' ', 2);
-						document.Accept(writer);
-					}
-					else
-					{
-						rapidjson::Writer writer(o_stream_wrapper);
-						document.Accept(writer);
-					}
-				}
-
-				std::error_code error_code;
-				std::filesystem::rename(tmp, out_json_path, error_code);
-
-				if (error_code)
-				{
-					return false;
-				}
-			}
-			else
-			{
-				std::ofstream ofstream(out_json_path,
-				                       std::ios::binary | std::ios::trunc);
-
-				if (!ofstream)
-				{
-					return false;
-				}
-
-				rapidjson::OStreamWrapper osw(ofstream);
-
-				if (opts.pretty)
-				{
-					rapidjson::PrettyWriter writer(osw);
-					writer.SetIndent(' ', 2);
-					document.Accept(writer);
-				}
-				else
-				{
-					rapidjson::Writer writer(osw);
-					document.Accept(writer);
-				}
-			}
-
-			return true;
+			return write_json_document(document, out_json_path, opts, "output JSON");
+		}
+		catch (const std::exception& e)
+		{
+			LOG(ERROR) << "Failed to write output JSON '" << out_json_path.string()
+				<< "': " << e.what();
+			return false;
 		}
 		catch (...)
 		{
+			LOG(ERROR) << "Unknown error while writing output JSON: " << out_json_path.string();
 			return false;
 		}
 	}
@@ -496,7 +467,7 @@ namespace skeletonization_benchmark
 				set_string_member(config_obj, "path", config.path, allocator);
 
 				rapidjson::Value variants(rapidjson::kArrayType);
-			
+
 				for (const auto& [type, algorithm] : config.variants)
 				{
 					rapidjson::Value variant_obj(rapidjson::kObjectType);
@@ -511,69 +482,17 @@ namespace skeletonization_benchmark
 
 			document.AddMember("configurations", configurations, allocator);
 
-			if (opts.atomic_write)
-			{
-				const auto tmp = out_json_path.string() + ".tmp";
-				{
-					std::ofstream ofstream(tmp, std::ios::binary | std::ios::trunc);
-
-					if (!ofstream)
-					{
-						return false;
-					}
-
-					rapidjson::OStreamWrapper o_stream_wrapper(ofstream);
-
-					if (opts.pretty)
-					{
-						rapidjson::PrettyWriter writer(o_stream_wrapper);
-						writer.SetIndent(' ', 2);
-						document.Accept(writer);
-					}
-					else
-					{
-						rapidjson::Writer writer(o_stream_wrapper);
-						document.Accept(writer);
-					}
-				}
-
-				std::error_code error_code;
-				std::filesystem::rename(tmp, out_json_path, error_code);
-
-				if (error_code)
-				{
-					return false;
-				}
-			}
-			else
-			{
-				std::ofstream ofstream(out_json_path,
-									   std::ios::binary | std::ios::trunc);
-
-				if (!ofstream)
-				{
-					return false;
-				}
-
-				rapidjson::OStreamWrapper osw(ofstream);
-
-				if (opts.pretty)
-				{
-					rapidjson::PrettyWriter writer(osw);
-					writer.SetIndent(' ', 2);
-					document.Accept(writer);
-				}
-				else
-				{
-					rapidjson::Writer writer(osw);
-					document.Accept(writer);
-				}
-			}
-
-			return true;
+			return write_json_document(document, out_json_path, opts, "configuration JSON");
+		}
+		catch (const std::exception& e)
+		{
+			LOG(ERROR) << "Failed to write configuration JSON '" << out_json_path.string()
+				<< "': " << e.what();
+			return false;
 		}
 		catch (...)
 		{
+			LOG(ERROR) << "Unknown error while writing configuration JSON: " << out_json_path.string();
 			return false;
 		}
 	}

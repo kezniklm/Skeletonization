@@ -348,4 +348,22 @@ namespace skeletonizer::algorithms
 			return "Liu_Zhang";
 		}
 	};
+
+	class lantuejoul : public virtual skeletonizer<>
+	{
+	public:
+		std::string name() const final
+		{
+			return "Lantuejoul";
+		}
+	};
+
+	class serra : public virtual skeletonizer<>
+	{
+	public:
+		std::string name() const final
+		{
+			return "Serra";
+		}
+	};
 }

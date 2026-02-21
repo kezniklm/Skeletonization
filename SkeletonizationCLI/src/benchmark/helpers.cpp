@@ -1,5 +1,6 @@
 #include <string_view>
 
+#include "glog/logging.h"
 #include "rapidjson/document.h"
 
 #include "SkeletonizationCLI/benchmark/helpers.hpp"
@@ -17,6 +18,8 @@ namespace skeletonization_benchmark
 
 		if (document.HasParseError() || !document.IsObject())
 		{
+			LOG(WARNING) << "Failed to parse benchmark JSON output (error code: "
+				<< document.GetParseError() << ")";
 			return metrics_by_name;
 		}
 
@@ -25,6 +28,7 @@ namespace skeletonization_benchmark
 		if (!document.HasMember(benchmarks_section_name) ||
 			!document[benchmarks_section_name].IsArray())
 		{
+			LOG(WARNING) << "No 'benchmarks' section found in benchmark JSON output.";
 			return metrics_by_name;
 		}
 
@@ -86,21 +90,15 @@ namespace skeletonization_benchmark
 				}
 			};
 
-			const auto read_real_time = [&](const char* key, double& out)
-			{
-				if (object.HasMember(key) && object[key].IsNumber())
-				{
-					out = to_milliseconds(metrics.real_time, metrics.time_unit);
-				}
-			};
-
 			read_int64(json_iterations_section, metrics.iterations);
 			read_time_unit(json_time_unit_section, metrics.time_unit);
 			read_double(json_real_time_section, metrics.real_time);
 			read_double(json_cpu_time_section, metrics.cpu_time);
 			read_double(json_bytes_per_second_section, metrics.bytes_per_second);
 			read_double(json_items_per_second_section, metrics.items_per_second);
-			read_real_time(json_real_time_section, metrics.execution_time_ms);
+
+			// Convert real_time to milliseconds for consistent display
+			metrics.execution_time_ms = to_milliseconds(metrics.real_time, metrics.time_unit);
 
 			metrics_by_name.emplace(std::move(benchmark_name),
 			                        std::move(metrics));
