@@ -15,7 +15,7 @@ namespace skeletonizer::cpu::algorithms
 		cv::Mat eroded = binary_image.clone();
 		cv::Mat tmp, opened, subset;
 
-		while (cv::countNonZero(eroded) > 0)
+		while (has_changed(eroded))
 		{
 			// opened = (X ⊖ nB) ∘ B
 			cv::erode(eroded, tmp, B, cv::Point(-1, -1), 1, cv::BORDER_CONSTANT, 0);
