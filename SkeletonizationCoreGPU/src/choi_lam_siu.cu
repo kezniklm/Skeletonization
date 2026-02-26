@@ -31,6 +31,8 @@ namespace skeletonizer::gpu::algorithms
 		gpu_binary_image.download(binary_image);
 
 		clear_border(binary_image);
+
+		cudaDeviceSynchronize();
 	}
 }
 
