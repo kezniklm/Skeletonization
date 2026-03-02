@@ -1,5 +1,5 @@
-import { useTheme } from "../contexts/ThemeContext";
-import type { BenchmarkData } from "../types";
+import { useTheme } from "../../../contexts/ThemeContext";
+import type { BenchmarkData } from "../../../types";
 
 type NavigationProps = {
   data: BenchmarkData;

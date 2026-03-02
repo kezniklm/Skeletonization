@@ -1,5 +1,5 @@
-import { useTheme } from "../contexts/ThemeContext";
-import type { ImageData, ImageContainer } from "../types";
+import { useTheme } from "../../../contexts/ThemeContext";
+import type { ImageData, ImageContainer } from "../../../types";
 
 type ImageCardProps = {
   image: ImageData;

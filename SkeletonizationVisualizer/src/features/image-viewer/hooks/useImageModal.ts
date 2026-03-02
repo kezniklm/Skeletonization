@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import type { ImageContainer, ImageData } from "../types";
+import type { ImageContainer, ImageData } from "../../../types";
 
 export const useImageModal = () => {
   const [isOpen, setIsOpen] = useState(false);

@@ -1,4 +1,4 @@
-import type { ImageData, ImageContainer } from "../types";
+import type { ImageData, ImageContainer } from "../../../types";
 
 import { ImageCard } from "./ImageCard";
 

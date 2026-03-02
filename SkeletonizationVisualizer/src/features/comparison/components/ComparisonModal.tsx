@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
-import { useTheme } from "../../contexts/ThemeContext";
-import type { ImageData, ComparisonMode } from "../../types";
+import { useTheme } from "../../../contexts/ThemeContext";
+import type { ImageData, ComparisonMode } from "../../../types";
 
 type ComparisonModalProps = {
   original: ImageData | null;

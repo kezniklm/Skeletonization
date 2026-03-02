@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import type { BenchmarkData, ImageContainer, ImageData } from "../types";
+import type { BenchmarkData, ImageContainer, ImageData } from "../../../types";
 
 type UseImageNavigationProps = {
   data: BenchmarkData | null;

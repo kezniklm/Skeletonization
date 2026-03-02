@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 
-import { useTheme } from "../contexts/ThemeContext";
-import type { ImageContainer } from "../types";
+import { useTheme } from "../../../contexts/ThemeContext";
+import type { ImageContainer } from "../../../types";
 
 type SearchAndFilterProps = {
   containers: ImageContainer[];

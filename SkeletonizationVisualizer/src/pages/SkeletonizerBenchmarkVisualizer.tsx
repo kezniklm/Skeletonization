@@ -1,20 +1,19 @@
 import { useState, useCallback } from "react";
 
 import type { ImageContainer, ImageData } from "../types";
-import { StatsDashboard } from "../components/StatsComponents";
 import { downloadImage, exportAllImages } from "../utils";
-import { useBenchmarkData } from "../hooks/useBenchmarkData";
-import { useImageModal } from "../hooks/useImageModal";
-import { useComparisonModal } from "../hooks/useComparisonModal";
-import { useImageNavigation } from "../hooks/useImageNavigation";
-import { MainContent } from "../components/MainContent";
-import { ComparisonModal } from "../components/modals/ComparisonModal";
-import { ImageModal } from "../components/modals/ImageModal";
-import { Navigation } from "../components/Navigation";
-import { SearchAndFilter } from "../components/SearchAndFilter";
+import { useTheme } from "../contexts/ThemeContext";
+import { BenchmarkGallery } from "../components/BenchmarkGallery";
 import { ErrorDisplay } from "../components/ErrorDisplay";
 import { LoadingSpinner } from "../components/LoadingSpinner";
-import { useTheme } from "../contexts/ThemeContext";
+import { useBenchmarkData } from "../features/benchmark-data/hooks";
+import { ComparisonModal } from "../features/comparison/components";
+import { useComparisonModal } from "../features/comparison/hooks";
+import { ImageModal } from "../features/image-viewer/components";
+import { useImageModal, useImageNavigation } from "../features/image-viewer/hooks";
+import { Navigation } from "../features/navigation/components";
+import { SearchAndFilter } from "../features/search-filter/components";
+import { StatsDashboard } from "../features/stats/components";
 
 const SkeletonizerBenchmarkVisualizer = () => {
   const { toggleTheme, getThemeClasses } = useTheme();
@@ -138,7 +137,7 @@ const SkeletonizerBenchmarkVisualizer = () => {
 
       <SearchAndFilter containers={data.containers} onFiltersChange={handleFiltersChange} />
 
-      <MainContent
+      <BenchmarkGallery
         filteredContainers={filteredContainers}
         onImageClick={openImageModal}
         onDownload={downloadImage}

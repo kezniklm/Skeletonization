@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-import { APP_CONFIG } from "../constants";
-import type { ComparisonMode, ImageData } from "../types";
+import { APP_CONFIG } from "../../../constants";
+import type { ComparisonMode, ImageData } from "../../../types";
 
 export const useComparisonModal = () => {
   const [isOpen, setIsOpen] = useState(false);

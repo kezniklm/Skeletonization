@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 
-import { useTheme } from "../../contexts/ThemeContext";
-import type { ImageData, ImageContainer, ZoomState } from "../../types";
+import { useTheme } from "../../../contexts/ThemeContext";
+import type { ImageData, ImageContainer, ZoomState } from "../../../types";
 
 type ImageModalProps = {
   image: ImageData | null;

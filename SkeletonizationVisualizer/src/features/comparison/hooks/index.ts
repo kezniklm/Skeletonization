@@ -1,0 +1,1 @@
+export { useComparisonModal } from "./useComparisonModal";

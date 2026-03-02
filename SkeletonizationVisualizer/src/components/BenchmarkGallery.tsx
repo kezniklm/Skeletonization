@@ -1,9 +1,8 @@
 import { useTheme } from "../contexts/ThemeContext";
+import { ImageGallery } from "../features/gallery/components";
 import type { ImageContainer, ImageData } from "../types";
 
-import { ImageGallery } from "./ImageGallery";
-
-type MainContentProps = {
+type BenchmarkGalleryProps = {
   filteredContainers: ImageContainer[];
   onImageClick: (image: ImageData, container: ImageContainer) => void;
   onDownload: (image: ImageData) => void;
@@ -14,7 +13,7 @@ type MainContentProps = {
   onCompareSelected: (container: ImageContainer) => void;
 };
 
-export const MainContent = ({
+export const BenchmarkGallery = ({
   filteredContainers,
   onImageClick,
   onDownload,
@@ -23,7 +22,7 @@ export const MainContent = ({
   onClearComparisonSelection,
   onSelectAllComparison,
   onCompareSelected
-}: MainContentProps) => {
+}: BenchmarkGalleryProps) => {
   const { getThemeClasses } = useTheme();
   const themeClasses = getThemeClasses();
 

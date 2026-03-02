@@ -53,6 +53,5 @@ export type ZoomState = {
   translateY: number;
 };
 
-export type ViewMode = "gallery" | "comparison" | "slideshow";
 export type ComparisonMode = "side-by-side" | "slider" | "overlay";
 export type Theme = "light" | "dark";

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
-import { APP_CONFIG } from "../constants";
-import type { BenchmarkData } from "../types";
+import { APP_CONFIG } from "../../../constants";
+import type { BenchmarkData } from "../../../types";
 
 export const useBenchmarkData = () => {
   const [data, setData] = useState<BenchmarkData | null>(null);
