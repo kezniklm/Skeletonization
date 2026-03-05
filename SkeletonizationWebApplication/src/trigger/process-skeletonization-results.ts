@@ -11,11 +11,11 @@ type ProcessingSummary = {
 
 const CRON_EVERY_MINUTE = "*/1 * * * *";
 
-const TIME_BUDGET_MS = 60_000;
+const TIME_BUDGET_MS = 10_000;
 const EMPTY_QUEUE_POLL_SECONDS = 5;
 
 const MAX_BATCH_SIZE = 200;
-const MAX_BATCH_TIME_MS = 25_000;
+const MAX_BATCH_TIME_MS = 5_000;
 
 const remainingMs = (startedAt: number, budgetMs: number): number => Math.max(0, budgetMs - (Date.now() - startedAt));
 
@@ -57,7 +57,7 @@ const processSkeletonizationResultsWithinBudget = async (
 export const processSkeletonizationResults = schedules.task({
   id: "process-skeletonization-results",
   cron: CRON_EVERY_MINUTE,
-  maxDuration: 65,
+  maxDuration: 13,
   run: async () => {
     const startedAt = Date.now();
     const result = await processSkeletonizationResultsWithinBudget(startedAt, TIME_BUDGET_MS);
