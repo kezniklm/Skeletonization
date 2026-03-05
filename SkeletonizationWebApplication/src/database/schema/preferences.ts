@@ -11,7 +11,7 @@ type Theme = (typeof THEME_ENUM)[number];
 
 export const defaultPreferences = {
   theme: "system" satisfies Theme,
-  compactMode: false,
+  animatedBackgroundDisabled: false,
   pushNotifications: true,
   timezone: "UTC",
   defaultOutputFormat: "PNG" satisfies DefaultOutputFormat
@@ -25,7 +25,9 @@ export const userPreferences = pgTable("user_preferences", {
 
   // Appearance
   theme: text("theme", { enum: THEME_ENUM }).default(defaultPreferences.theme).notNull(),
-  compactMode: boolean("compact_mode").default(defaultPreferences.compactMode).notNull(),
+  animatedBackgroundDisabled: boolean("animated_background_disabled")
+    .default(defaultPreferences.animatedBackgroundDisabled)
+    .notNull(),
 
   // Notifications
   pushNotifications: boolean("push_notifications").default(defaultPreferences.pushNotifications).notNull(),

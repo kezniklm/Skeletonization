@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 
-import { useCompactMode } from "@/contexts/compact-mode-context";
+import { useAnimatedBackgroundPreference } from "@/contexts/animated-background-preference-context";
 
 type AnimatedBackgroundProviderProps = {
   children: ReactNode;
@@ -232,10 +232,10 @@ const drawNodes = (ctx: CanvasRenderingContext2D, nodes: Node[], dark: boolean):
 
 export const AnimatedBackgroundProvider = ({ children }: AnimatedBackgroundProviderProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { compactMode } = useCompactMode();
+  const { animatedBackgroundDisabled } = useAnimatedBackgroundPreference();
 
   useEffect(() => {
-    if (compactMode) return;
+    if (animatedBackgroundDisabled) return;
 
     const canvas = canvasRef.current;
 
@@ -284,11 +284,11 @@ export const AnimatedBackgroundProvider = ({ children }: AnimatedBackgroundProvi
       }
       themeObserver.disconnect();
     };
-  }, [compactMode]);
+  }, [animatedBackgroundDisabled]);
 
   return (
     <>
-      {!compactMode && (
+      {!animatedBackgroundDisabled && (
         <canvas ref={canvasRef} className="pointer-events-none fixed inset-0 z-0" style={{ mixBlendMode: "normal" }} />
       )}
       {children}

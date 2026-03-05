@@ -9,7 +9,7 @@ import { FormSelect, FormToggle } from "@/components/form";
 import { type UserPreferences, userPreferencesSchema } from "@/database/zod/preferences";
 import { updatePreferencesAction } from "@/server-actions/preferences";
 import { useTheme } from "@/contexts/theme-context";
-import { useCompactMode } from "@/contexts/compact-mode-context";
+import { useAnimatedBackgroundPreference } from "@/contexts/animated-background-preference-context";
 import { useTimezone } from "@/contexts/timezone-context";
 import { defaultPreferences } from "@/database/schema";
 import { detectTimezone, getTimezoneOptions } from "@/lib/timezone-utils";
@@ -23,7 +23,7 @@ type SettingsFormProps = {
 
 export const SettingsForm = ({ userId, initialPreferences }: SettingsFormProps) => {
   const { setTheme } = useTheme();
-  const { setCompactMode } = useCompactMode();
+  const { setAnimatedBackgroundDisabled } = useAnimatedBackgroundPreference();
   const { setTimezone } = useTimezone();
 
   const timezoneOptions = getTimezoneOptions();
@@ -49,7 +49,7 @@ export const SettingsForm = ({ userId, initialPreferences }: SettingsFormProps) 
     try {
       await updatePreferencesAction(data, userId);
       setTheme(data.theme);
-      setCompactMode(data.compactMode);
+      setAnimatedBackgroundDisabled(data.animatedBackgroundDisabled);
       setTimezone(data.timezone);
       toast.success("Settings saved successfully!");
     } catch (error) {
@@ -91,9 +91,9 @@ export const SettingsForm = ({ userId, initialPreferences }: SettingsFormProps) 
                 )
               },
               {
-                label: "Compact Mode",
-                description: "Use a more condensed layout",
-                control: <FormToggle name="compactMode" aria-label="Enable compact mode" />
+                label: "Animated Background",
+                description: "Enable or disable the animated background",
+                control: <FormToggle name="animatedBackgroundDisabled" aria-label="Toggle animated background" />
               }
             ]}
           />

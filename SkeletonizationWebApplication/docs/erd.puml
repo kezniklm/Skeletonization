@@ -40,7 +40,7 @@ entity user_preferences {
   id: text <<PK>>
   user_id: uuid <<FK to user.id>> <<UNIQUE>>
   theme: text("system"|"light"|"dark") <<DEFAULT=system>>
-  compact_mode: boolean <<DEFAULT=false>>
+  animated_background_disabled: boolean <<DEFAULT=false>>
   push_notifications: boolean <<DEFAULT=false>>
   timezone: text <<DEFAULT=UTC>>
   auto_save_results: boolean <<DEFAULT=true>>

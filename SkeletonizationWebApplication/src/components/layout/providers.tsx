@@ -5,7 +5,7 @@ import { Toaster } from "sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { ThemeProvider } from "@/contexts/theme-context";
-import { CompactModeProvider } from "@/contexts/compact-mode-context";
+import { AnimatedBackgroundPreferenceProvider } from "@/contexts/animated-background-preference-context";
 import { RunNotificationsProvider } from "@/contexts/run-notifications-context";
 import { TimezoneProvider } from "@/contexts/timezone-context";
 
@@ -15,7 +15,7 @@ const queryClient = new QueryClient();
 
 type ProvidersProps = PropsWithChildren<{
   initialTheme?: "light" | "dark" | "system";
-  compactMode?: boolean;
+  animatedBackgroundDisabled?: boolean;
   isLoggedIn?: boolean;
   timezone?: string;
 }>;
@@ -23,20 +23,20 @@ type ProvidersProps = PropsWithChildren<{
 export const Providers = ({
   children,
   initialTheme = "system",
-  compactMode = false,
+  animatedBackgroundDisabled = false,
   isLoggedIn = false,
   timezone
 }: ProvidersProps) => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider initialTheme={initialTheme}>
-      <CompactModeProvider initialCompactMode={compactMode}>
+      <AnimatedBackgroundPreferenceProvider initialAnimatedBackgroundDisabled={animatedBackgroundDisabled}>
         <TimezoneProvider initialTimezone={timezone}>
           <AnimatedBackgroundProvider>
             <RunNotificationsProvider enabled={isLoggedIn}>{children}</RunNotificationsProvider>
             <Toaster richColors />
           </AnimatedBackgroundProvider>
         </TimezoneProvider>
-      </CompactModeProvider>
+      </AnimatedBackgroundPreferenceProvider>
     </ThemeProvider>
   </QueryClientProvider>
 );

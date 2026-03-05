@@ -33,7 +33,9 @@ const RootLayout = async ({
       <body className="flex min-h-full flex-col bg-gray-50 dark:bg-gray-950">
         <Providers
           initialTheme={userPreferences?.theme ?? defaultPreferences.theme}
-          compactMode={userPreferences?.compactMode ?? defaultPreferences.compactMode}
+          animatedBackgroundDisabled={
+            userPreferences?.animatedBackgroundDisabled ?? defaultPreferences.animatedBackgroundDisabled
+          }
           timezone={userPreferences?.timezone ?? defaultPreferences.timezone}
           isLoggedIn={isLoggedIn}
         >
