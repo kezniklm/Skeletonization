@@ -37,6 +37,7 @@ export type HistoryEntry = {
   filters: FilterState;
   transforms: TransformState;
   canvasDataUrl: string;
+  baseCanvasDataUrl: string;
   timestamp: number;
   description: string;
 };

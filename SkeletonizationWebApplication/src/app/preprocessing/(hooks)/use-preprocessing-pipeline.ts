@@ -4,13 +4,14 @@ import { type CV, type Mat } from "mirada/dist/src/types/opencv";
 import { type RefObject, useEffect } from "react";
 
 import type { FilterState, TransformState } from "../types";
-import { drawImageElementToCanvas, get2DContextOrThrow } from "../utils/canvas";
+import { drawImageElementToCanvas } from "../utils/canvas";
 
 type Args = {
   cv: CV;
   filters: FilterState;
   transforms: TransformState;
   originalImageRef: RefObject<HTMLImageElement | null>;
+  baseCanvasRef: RefObject<HTMLCanvasElement | null>;
   canvasRef: RefObject<HTMLCanvasElement | null>;
   comparisonCanvasRef: RefObject<HTMLCanvasElement | null>;
   showComparison: boolean;
@@ -22,7 +23,7 @@ type ProcessingParams = {
   cv: CV;
   filters: FilterState;
   transforms: TransformState;
-  img: HTMLImageElement;
+  sourceCanvas: HTMLCanvasElement;
   canvas: HTMLCanvasElement;
   setProcessing: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -229,30 +230,58 @@ const applyFlip = (cv: CV, transforms: TransformState, dst: Mat) => {
   cv.flip(dst, dst, flipCode);
 };
 
-const applyRotationAndScale = (cv: CV, transforms: TransformState, dst: Mat) => {
-  if (transforms.rotation === 0 && transforms.scale === 1) return;
+const normalizeAngle = (angle: number) => ((angle % 360) + 360) % 360;
+
+const getRotatedSize = (cols: number, rows: number, rotation: number, scale: number) => {
+  const normalizedRotation = normalizeAngle(rotation);
+  const isQuarterTurn = normalizedRotation % 90 === 0 && normalizedRotation % 180 !== 0;
+
+  if (isQuarterTurn) {
+    return {
+      width: Math.max(1, Math.round(rows * scale)),
+      height: Math.max(1, Math.round(cols * scale))
+    };
+  }
+
+  const angleRad = (normalizedRotation * Math.PI) / 180;
+  const absCos = Math.abs(Math.cos(angleRad) * scale);
+  const absSin = Math.abs(Math.sin(angleRad) * scale);
+
+  return {
+    width: Math.max(1, Math.round(cols * absCos + rows * absSin)),
+    height: Math.max(1, Math.round(cols * absSin + rows * absCos))
+  };
+};
+
+const applyRotationAndScale = (cv: CV, transforms: TransformState, dst: Mat): Mat => {
+  if (transforms.rotation === 0 && transforms.scale === 1) return dst;
 
   const center = new cv.Point(dst.cols / 2, dst.rows / 2);
+  const { width, height } = getRotatedSize(dst.cols, dst.rows, transforms.rotation, transforms.scale);
   const rotMat = cv.getRotationMatrix2D(center, transforms.rotation, transforms.scale);
+  const rotated = new cv.Mat();
+
   try {
-    cv.warpAffine(dst, dst, rotMat, new cv.Size(dst.cols, dst.rows));
+    rotMat.doublePtr(0, 2)[0] += width / 2 - center.x;
+    rotMat.doublePtr(1, 2)[0] += height / 2 - center.y;
+
+    cv.warpAffine(dst, rotated, rotMat, new cv.Size(width, height));
   } finally {
     rotMat.delete();
   }
+
+  dst.delete();
+  return rotated;
 };
 
-const runProcessingPipeline = ({ cv, filters, transforms, img, canvas, setProcessing }: ProcessingParams) => {
+const runProcessingPipeline = ({ cv, filters, transforms, sourceCanvas, canvas, setProcessing }: ProcessingParams) => {
   setProcessing(true);
 
   let src: Mat | null = null;
   let dst: Mat | null = null;
 
   try {
-    drawImageElementToCanvas(canvas, img);
-    const ctx = get2DContextOrThrow(canvas, { willReadFrequently: true });
-
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    src = cv.matFromImageData(imageData);
+    src = cv.imread(sourceCanvas);
     dst = src.clone();
 
     applyGrayscale(cv, filters, dst);
@@ -268,7 +297,7 @@ const runProcessingPipeline = ({ cv, filters, transforms, img, canvas, setProces
     applyClosing(cv, filters, dst);
     applySharpen(cv, filters, dst);
     applyFlip(cv, transforms, dst);
-    applyRotationAndScale(cv, transforms, dst);
+    dst = applyRotationAndScale(cv, transforms, dst);
 
     cv.imshow(canvas, dst);
   } catch (err) {
@@ -285,6 +314,7 @@ export const useProcessingPipeline = ({
   filters,
   transforms,
   originalImageRef,
+  baseCanvasRef,
   canvasRef,
   comparisonCanvasRef,
   showComparison,
@@ -298,16 +328,16 @@ export const useProcessingPipeline = ({
       return;
     }
 
-    const img = originalImageRef.current;
-    const baseCanvas = canvasRef.current;
+    const sourceCanvas = baseCanvasRef.current;
+    const outputCanvas = canvasRef.current;
 
-    if (img && baseCanvas) {
+    if (sourceCanvas && outputCanvas) {
       runProcessingPipeline({
         cv,
         filters,
         transforms,
-        img,
-        canvas: baseCanvas,
+        sourceCanvas,
+        canvas: outputCanvas,
         setProcessing
       });
     }
@@ -320,6 +350,7 @@ export const useProcessingPipeline = ({
     filters,
     transforms,
     originalImageRef,
+    baseCanvasRef,
     canvasRef,
     comparisonCanvasRef,
     showComparison,

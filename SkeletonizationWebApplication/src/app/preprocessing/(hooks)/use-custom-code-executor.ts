@@ -10,10 +10,18 @@ type Args = {
   canvasRef: RefObject<HTMLCanvasElement>;
   setProcessing: Dispatch<SetStateAction<boolean>>;
   setCodeError: Dispatch<SetStateAction<string | null>>;
+  commitAsProcessingBase: () => void;
   addToHistory: (description: string) => void;
 };
 
-export const useCustomCodeExecutor = ({ cv, canvasRef, setProcessing, setCodeError, addToHistory }: Args) => {
+export const useCustomCodeExecutor = ({
+  cv,
+  canvasRef,
+  setProcessing,
+  setCodeError,
+  commitAsProcessingBase,
+  addToHistory
+}: Args) => {
   const deleteMatSafe = (mat: Mat | null) => {
     try {
       if (mat && !mat.isDeleted()) {
@@ -43,6 +51,7 @@ export const useCustomCodeExecutor = ({ cv, canvasRef, setProcessing, setCodeErr
   const renderResultToCanvas = (canvas: HTMLCanvasElement, dst: Mat | null) => {
     if (dst && !dst.isDeleted()) {
       cv.imshow(canvas, dst);
+      commitAsProcessingBase();
       addToHistory("Executed custom code");
     }
   };

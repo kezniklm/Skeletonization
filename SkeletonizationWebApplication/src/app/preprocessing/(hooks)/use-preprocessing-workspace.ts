@@ -8,6 +8,7 @@ import type { FileOutputFormat, SelectImage } from "@/database/zod";
 import { savePreprocessedImageAction } from "@/server-actions/images";
 
 import { initialFilters, initialTransforms, type DrawingTool, type FilterState, type TransformState } from "../types";
+import { drawCanvasToCanvas } from "../utils/canvas";
 import { getExtension, getMimeType } from "../utils/format-mapper";
 
 import { useCustomCodeExecutor } from "./use-custom-code-executor";
@@ -50,7 +51,16 @@ export const usePreprocessingWorkspace = ({
 
   const skipNextProcessingRef = useRef(false);
 
-  const { originalImageRef, canvasRef, comparisonCanvasRef } = usePreprocessingCanvas(originalImage);
+  const { originalImageRef, canvasRef, comparisonCanvasRef, baseCanvasRef } = usePreprocessingCanvas(originalImage);
+
+  const commitAsProcessingBase = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    baseCanvasRef.current ??= document.createElement("canvas");
+
+    drawCanvasToCanvas(baseCanvasRef.current, canvas);
+  };
 
   const {
     historyIndex,
@@ -60,7 +70,14 @@ export const usePreprocessingWorkspace = ({
     undo,
     redo,
     resetAll: resetHistory
-  } = useProcessingHistory(setFilters, setTransforms, canvasRef, originalImageRef, skipNextProcessingRef);
+  } = useProcessingHistory(
+    setFilters,
+    setTransforms,
+    canvasRef,
+    baseCanvasRef,
+    originalImageRef,
+    skipNextProcessingRef
+  );
 
   const feedbackDialog = useFeedbackDialog();
   const saveConfirmationDialog = useSaveConfirmationDialog();
@@ -70,6 +87,7 @@ export const usePreprocessingWorkspace = ({
     filters,
     transforms,
     originalImageRef,
+    baseCanvasRef,
     canvasRef,
     comparisonCanvasRef,
     showComparison,
@@ -89,6 +107,7 @@ export const usePreprocessingWorkspace = ({
     canvasRef,
     setProcessing,
     setCodeError,
+    commitAsProcessingBase,
     addToHistory: (desc) => addToHistorySnapshot(desc, filters, transforms)
   });
 
@@ -98,6 +117,7 @@ export const usePreprocessingWorkspace = ({
     activeTool,
     drawColor,
     brushSize,
+    commitAsProcessingBase,
     addToHistory: (desc) => addToHistorySnapshot(desc, filters, transforms),
     onFinishCrop: () => setActiveTool("none")
   });
@@ -119,8 +139,6 @@ export const usePreprocessingWorkspace = ({
   };
 
   const resetAll = () => {
-    setFilters(initialFilters);
-    setTransforms(initialTransforms);
     resetHistory();
   };
 

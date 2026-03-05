@@ -23,6 +23,7 @@ type UseDrawingArgs = {
   activeTool: DrawingTool;
   drawColor: string;
   brushSize: number;
+  commitAsProcessingBase: () => void;
   addToHistory: (description: string) => void;
   onFinishCrop: () => void;
 };
@@ -43,6 +44,7 @@ export const useDrawing = ({
   activeTool,
   drawColor,
   brushSize,
+  commitAsProcessingBase,
   addToHistory,
   onFinishCrop
 }: UseDrawingArgs) => {
@@ -75,6 +77,7 @@ export const useDrawing = ({
       const rect = new cv.Rect(Math.floor(x), Math.floor(y), Math.floor(width), Math.floor(height));
       const cropped = src.roi(rect);
       cv.imshow(canvas, cropped);
+      commitAsProcessingBase();
       src.delete();
       cropped.delete();
       addToHistory("Cropped image");
@@ -94,7 +97,10 @@ export const useDrawing = ({
 
     if (activeTool === "fill") {
       const filled = floodFillCanvas(canvas, point.x, point.y, drawColor);
-      if (filled) addToHistory("Fill applied");
+      if (filled) {
+        commitAsProcessingBase();
+        addToHistory("Fill applied");
+      }
       return;
     }
 
@@ -193,6 +199,7 @@ export const useDrawing = ({
         ctx.lineWidth = brushSize;
 
         drawShape(ctx, activeTool, shapeStart, point);
+        commitAsProcessingBase();
         addToHistory(`Drew ${activeTool}`);
       }
       setShapeStart(null);
@@ -201,6 +208,7 @@ export const useDrawing = ({
     }
 
     if (isDrawing && (activeTool === "pencil" || activeTool === "eraser")) {
+      commitAsProcessingBase();
       addToHistory(activeTool === "pencil" ? "Drew with pencil" : "Erased");
     }
 

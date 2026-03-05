@@ -19,6 +19,7 @@ type ApplyHistoryEntryParams = {
   setTransforms: Dispatch<SetStateAction<TransformState>>;
   setHistoryIndex: Dispatch<SetStateAction<number>>;
   canvasRef: RefObject<HTMLCanvasElement | null>;
+  baseCanvasRef: RefObject<HTMLCanvasElement | null>;
   skipNextProcessingRef?: RefObject<boolean>;
 };
 
@@ -29,6 +30,7 @@ const applyHistoryEntry = ({
   setTransforms,
   setHistoryIndex,
   canvasRef,
+  baseCanvasRef,
   skipNextProcessingRef
 }: ApplyHistoryEntryParams) => {
   if (skipNextProcessingRef) {
@@ -43,6 +45,11 @@ const applyHistoryEntry = ({
     drawDataUrlToCanvas(canvas, entry.canvasDataUrl);
   }
 
+  const baseCanvas = baseCanvasRef.current;
+  if (baseCanvas && entry.baseCanvasDataUrl) {
+    drawDataUrlToCanvas(baseCanvas, entry.baseCanvasDataUrl);
+  }
+
   setHistoryIndex(index);
 };
 
@@ -50,6 +57,7 @@ export const useProcessingHistory = (
   setFilters: Dispatch<SetStateAction<FilterState>>,
   setTransforms: Dispatch<SetStateAction<TransformState>>,
   canvasRef: RefObject<HTMLCanvasElement | null>,
+  baseCanvasRef: RefObject<HTMLCanvasElement | null>,
   originalImageRef: RefObject<HTMLImageElement | null>,
   skipNextProcessingRef?: RefObject<boolean>
 ) => {
@@ -58,12 +66,14 @@ export const useProcessingHistory = (
 
   const addToHistorySnapshot = (description: string, filters: FilterState, transforms: TransformState) => {
     const canvasDataUrl = getCanvasDataUrl(canvasRef);
-    if (!canvasDataUrl) return;
+    const baseCanvasDataUrl = getCanvasDataUrl(baseCanvasRef);
+    if (!canvasDataUrl || !baseCanvasDataUrl) return;
 
     const entry: HistoryEntry = {
       filters: { ...filters },
       transforms: { ...transforms },
       canvasDataUrl,
+      baseCanvasDataUrl,
       timestamp: Date.now(),
       description
     };
@@ -87,6 +97,7 @@ export const useProcessingHistory = (
       setTransforms,
       setHistoryIndex,
       canvasRef,
+      baseCanvasRef,
       skipNextProcessingRef
     });
   };
@@ -102,6 +113,7 @@ export const useProcessingHistory = (
       setTransforms,
       setHistoryIndex,
       canvasRef,
+      baseCanvasRef,
       skipNextProcessingRef
     });
   };
@@ -114,6 +126,10 @@ export const useProcessingHistory = (
       drawImageElementToCanvas(canvas, img);
     }
 
+    if (baseCanvasRef.current && img) {
+      drawImageElementToCanvas(baseCanvasRef.current, img);
+    }
+
     setFilters(initialFilters);
     setTransforms(initialTransforms);
     setHistory([]);
@@ -124,12 +140,14 @@ export const useProcessingHistory = (
     if (history.length !== 0) return;
 
     const canvasDataUrl = getCanvasDataUrl(canvasRef);
-    if (!canvasDataUrl) return;
+    const baseCanvasDataUrl = getCanvasDataUrl(baseCanvasRef);
+    if (!canvasDataUrl || !baseCanvasDataUrl) return;
 
     const entry: HistoryEntry = {
       filters: { ...initialFilters },
       transforms: { ...initialTransforms },
       canvasDataUrl,
+      baseCanvasDataUrl,
       timestamp: Date.now(),
       description: "Initial state"
     };
@@ -154,6 +172,7 @@ export const useProcessingHistory = (
           setTransforms,
           setHistoryIndex,
           canvasRef,
+          baseCanvasRef,
           skipNextProcessingRef
         });
       } else if (e.key === "y" || (e.key === "z" && e.shiftKey)) {
@@ -168,6 +187,7 @@ export const useProcessingHistory = (
           setTransforms,
           setHistoryIndex,
           canvasRef,
+          baseCanvasRef,
           skipNextProcessingRef
         });
       }
@@ -175,7 +195,7 @@ export const useProcessingHistory = (
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [history, historyIndex, setFilters, setTransforms, canvasRef, skipNextProcessingRef]);
+  }, [history, historyIndex, setFilters, setTransforms, canvasRef, baseCanvasRef, skipNextProcessingRef]);
 
   return {
     historyIndex,

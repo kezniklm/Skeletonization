@@ -231,3 +231,14 @@ export const drawDataUrlToCanvas = (canvas: HTMLCanvasElement, dataUrl: string) 
   };
   img.src = dataUrl;
 };
+
+export const drawCanvasToCanvas = (target: HTMLCanvasElement, source: HTMLCanvasElement) => {
+  target.width = source.width;
+  target.height = source.height;
+
+  const ctx = target.getContext("2d");
+  if (!ctx) return;
+
+  ctx.clearRect(0, 0, target.width, target.height);
+  ctx.drawImage(source, 0, 0);
+};
