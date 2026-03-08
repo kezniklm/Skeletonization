@@ -8,6 +8,29 @@
 
 namespace worker::infrastructure
 {
+	skeletonizer::skeletonizer_type resolve_processor_type(const std::string& algorithm_name,
+	                                                       const skeletonizer::skeletonizer_type requested_type)
+	{
+		if (skeletonizer::algorithm_factory::supports(algorithm_name, requested_type))
+		{
+			return requested_type;
+		}
+
+		if (requested_type != skeletonizer::skeletonizer_type::cpu &&
+			skeletonizer::algorithm_factory::supports(algorithm_name, skeletonizer::skeletonizer_type::cpu))
+		{
+			LOG(WARNING)
+				<< "Algorithm '" << algorithm_name
+				<< "' is not available for processor type '" << skeletonizer::to_string(requested_type)
+				<< "'. Falling back to '" << skeletonizer::to_string(skeletonizer::skeletonizer_type::cpu) << "'.";
+
+			return skeletonizer::skeletonizer_type::cpu;
+		}
+
+		return requested_type;
+	}
+
+
 	static std::expected<cv::Mat, std::string> normalize_binary_image(const cv::Mat& input)
 	{
 		if (input.empty())
@@ -80,17 +103,21 @@ namespace worker::infrastructure
 				binary_image = normalized.value();
 			}
 
-			const auto skeletonizer = skeletonizer::algorithm_factory::create(algorithm_name, processor_type_);
+			const auto resolved_processor_type = resolve_processor_type(algorithm_name, processor_type_);
+
+			const auto skeletonizer = skeletonizer::algorithm_factory::create(algorithm_name, resolved_processor_type);
 
 			if (!skeletonizer)
 			{
-				return std::unexpected("Unknown algorithm: " + algorithm_name);
+				return std::unexpected(
+					"Unknown algorithm or unsupported processor type: algorithm='" + algorithm_name +
+					"', processor_type='" + skeletonizer::to_string(processor_type_) + "'");
 			}
 
 			skeletonizer->apply(binary_image);
 
 			LOG(INFO) << "Skeletonization completed: " << algorithm_name << " (" << skeletonizer::to_string(
-					processor_type_)
+					resolved_processor_type)
 				<< ")";
 
 			return scale(binary_image);

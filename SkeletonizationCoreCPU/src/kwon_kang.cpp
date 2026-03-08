@@ -1,8 +1,8 @@
-#include <SkeletonizationCoreCPU/kwon_gi_kang.hpp>
+#include <SkeletonizationCoreCPU/kwon_kang.hpp>
 
 namespace skeletonizer::cpu::algorithms
 {
-	void kwon_gi_kang::apply(cv::Mat& binary_image) const
+	void kwon_kang::apply(cv::Mat& binary_image) const
 	{
 		cv::Mat previous(binary_image.size(), CV_8UC1, cv::Scalar(0));
 		cv::Mat marker(binary_image.size(), CV_8UC1);
@@ -23,7 +23,7 @@ namespace skeletonizer::cpu::algorithms
 		clear_border(binary_image);
 	}
 
-	void kwon_gi_kang::first_iteration(cv::Mat& binary_image, cv::Mat& marker)
+	void kwon_kang::first_iteration(cv::Mat& binary_image, cv::Mat& marker)
 	{
 		marker.setTo(0);
 
@@ -79,7 +79,7 @@ namespace skeletonizer::cpu::algorithms
 		binary_image &= ~marker;
 	}
 
-	void kwon_gi_kang::second_iteration(cv::Mat& binary_image, cv::Mat& marker)
+	void kwon_kang::second_iteration(cv::Mat& binary_image, cv::Mat& marker)
 	{
 		marker.setTo(0);
 
@@ -135,7 +135,7 @@ namespace skeletonizer::cpu::algorithms
 		binary_image &= ~marker;
 	}
 
-	void kwon_gi_kang::cleanup_oblique_corners(cv::Mat& binary_image,
+	void kwon_kang::cleanup_oblique_corners(cv::Mat& binary_image,
 	                                           cv::Mat& marker)
 	{
 		marker.setTo(0);

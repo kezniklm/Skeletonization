@@ -7,7 +7,7 @@
 
 namespace skeletonizer::cpu::algorithms
 {
-	class kwon_gi_kang final : public backend_cpu, public ::skeletonizer::algorithms::kwon_gi_kang
+	class kwon_kang final : public backend_cpu, public ::skeletonizer::algorithms::kwon_kang
 	{
 	public:
 		void apply(cv::Mat& binary_image) const override;

@@ -11,7 +11,7 @@
 #include "SkeletonizationCoreCPU/choi_lam_siu.hpp"
 #include "SkeletonizationCoreCPU/guo_hall.hpp"
 #include "SkeletonizationCoreCPU/han_la_rhee.hpp"
-#include "SkeletonizationCoreCPU/kwon_gi_kang.hpp"
+#include "SkeletonizationCoreCPU/kwon_kang.hpp"
 #include "SkeletonizationCoreCPU/liu_zhang.hpp"
 #include "SkeletonizationCoreCPU/petrosino_salvi.hpp"
 #include "SkeletonizationCoreCPU/tarabek.hpp"
@@ -20,7 +20,7 @@
 #include "SkeletonizationCoreMT/choi_lam_siu.hpp"
 #include "SkeletonizationCoreMT/guo_hal.hpp"
 #include "SkeletonizationCoreMT/han_la_rhee.hpp"
-#include "SkeletonizationCoreMT/kwon_gi_kang.hpp"
+#include "SkeletonizationCoreMT/kwon_kang.hpp"
 #include "SkeletonizationCoreMT/liu_zhang.hpp"
 #include "SkeletonizationCoreMT/petrosino_salvi.hpp"
 #include "SkeletonizationCoreMT/tarabek.hpp"
@@ -30,7 +30,7 @@
 #include "SkeletonizationCoreGPU/choi_lam_siu.cuh"
 #include "SkeletonizationCoreGPU/guo_hall.cuh"
 #include "SkeletonizationCoreGPU/han_la_rhee.cuh"
-#include "SkeletonizationCoreGPU/kwon_gi_kang.cuh"
+#include "SkeletonizationCoreGPU/kwon_kang.cuh"
 #include "SkeletonizationCoreGPU/liu_zhang.cuh"
 #include "SkeletonizationCoreGPU/petrosino_salvi.cuh"
 #include "SkeletonizationCoreGPU/tarabek.cuh"
@@ -83,7 +83,7 @@ namespace skeltest
 		using CLS_CPU = skeletonizer::cpu::algorithms::choi_lam_siu;
 		using GH_CPU = skeletonizer::cpu::algorithms::guo_hall;
 		using HLR_CPU = skeletonizer::cpu::algorithms::han_la_rhee;
-		using KGK_CPU = skeletonizer::cpu::algorithms::kwon_gi_kang;
+		using KGK_CPU = skeletonizer::cpu::algorithms::kwon_kang;
 		using LZ_CPU = skeletonizer::cpu::algorithms::liu_zhang;
 		using PS_CPU = skeletonizer::cpu::algorithms::petrosino_salvi;
 		using TA_CPU = skeletonizer::cpu::algorithms::tarabek;
@@ -92,7 +92,7 @@ namespace skeltest
 		using CLS_MT = skeletonizer::mt::algorithms::choi_lam_siu;
 		using GH_MT = skeletonizer::mt::algorithms::guo_hall;
 		using HLR_MT = skeletonizer::mt::algorithms::han_la_rhee;
-		using KGK_MT = skeletonizer::mt::algorithms::kwon_gi_kang;
+		using KGK_MT = skeletonizer::mt::algorithms::kwon_kang;
 		using LZ_MT = skeletonizer::mt::algorithms::liu_zhang;
 		using PS_MT = skeletonizer::mt::algorithms::petrosino_salvi;
 		using TA_MT = skeletonizer::mt::algorithms::tarabek;

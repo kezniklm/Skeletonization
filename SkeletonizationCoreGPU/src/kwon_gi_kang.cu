@@ -2,7 +2,7 @@
 
 namespace skeletonizer::gpu::algorithms
 {
-	void kwon_gi_kang::apply(cv::Mat& binary_image) const
+	void kwon_kang::apply(cv::Mat& binary_image) const
 	{
 		cv::cuda::GpuMat gpu_src(binary_image);
 		cv::cuda::GpuMat gpu_dst(binary_image.size(), gpu_src.type());
@@ -63,7 +63,7 @@ namespace skeletonizer::gpu::algorithms
 	}
 }
 
-__global__ void kwon_gi_kang_iteration_kernel(
+__global__ void kwon_kang_iteration_kernel(
 	const cv::cuda::PtrStep<uchar> src,
 	cv::cuda::PtrStep<uchar> dst,
 	const int num_rows,
@@ -209,7 +209,7 @@ __global__ void cleanup_oblique_corners_kernel_opt(
 	dst(global_y, global_x) = condition_1 || condition_2 || condition_3 || condition_4 ? background : skeleton;
 }
 
-extern inline void kwon_gi_kang_iteration(
+extern inline void kwon_kang_iteration(
 	const cv::cuda::GpuMat& src,
 	const cv::cuda::GpuMat& dst,
 	const bool first_pass,

@@ -31,7 +31,7 @@ namespace skeletonizer::algorithms
 		}
 	};
 
-	class kwon_gi_kang : public virtual skeletonizer<>
+	class kwon_kang : public virtual skeletonizer<>
 	{
 	public:
 		std::string name() const final

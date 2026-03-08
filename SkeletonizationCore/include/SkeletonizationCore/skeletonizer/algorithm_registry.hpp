@@ -9,7 +9,7 @@
 #include "SkeletonizationCoreCPU/han_la_rhee.hpp"
 #include "SkeletonizationCoreCPU/k3m.hpp"
 #include "SkeletonizationCoreCPU/kmm.hpp"
-#include "SkeletonizationCoreCPU/kwon_gi_kang.hpp"
+#include "SkeletonizationCoreCPU/kwon_kang.hpp"
 #include "SkeletonizationCoreCPU/lantuejoul.hpp"
 #include "SkeletonizationCoreCPU/liu_zhang.hpp"
 #include "SkeletonizationCoreCPU/petrosino_salvi.hpp"
@@ -19,7 +19,7 @@
 #include "SkeletonizationCoreMT/choi_lam_siu.hpp"
 #include "SkeletonizationCoreMT/guo_hal.hpp"
 #include "SkeletonizationCoreMT/han_la_rhee.hpp"
-#include "SkeletonizationCoreMT/kwon_gi_kang.hpp"
+#include "SkeletonizationCoreMT/kwon_kang.hpp"
 #include "SkeletonizationCoreMT/liu_zhang.hpp"
 #include "SkeletonizationCoreMT/petrosino_salvi.hpp"
 #include "SkeletonizationCoreMT/tarabek.hpp"
@@ -29,7 +29,7 @@
 #include "SkeletonizationCoreGPU/choi_lam_siu.cuh"
 #include "SkeletonizationCoreGPU/guo_hall.cuh"
 #include "SkeletonizationCoreGPU/han_la_rhee.cuh"
-#include "SkeletonizationCoreGPU/kwon_gi_kang.cuh"
+#include "SkeletonizationCoreGPU/kwon_kang.cuh"
 #include "SkeletonizationCoreGPU/liu_zhang.cuh"
 #include "SkeletonizationCoreGPU/petrosino_salvi.cuh"
 #include "SkeletonizationCoreGPU/tarabek.cuh"
@@ -56,8 +56,8 @@ namespace configuration
 		>(),
 
 		make_entry<
-			skeletonizer::cpu::algorithms::kwon_gi_kang,
-			skeletonizer::mt::algorithms::kwon_gi_kang
+			skeletonizer::cpu::algorithms::kwon_kang,
+			skeletonizer::mt::algorithms::kwon_kang
 #if SKELETONIZATION_WITH_GPU
 			, skeletonizer::gpu::algorithms::kwon_gi_kang
 #endif
