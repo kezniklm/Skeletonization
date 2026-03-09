@@ -16,8 +16,40 @@ type RunCompletedEvent = {
   completedAt: string;
 };
 
+const SEEN_RUNS_STORAGE_KEY = "skeletonization:seen-run-completions";
+const MAX_SEEN_RUNS = 300;
+
+const readSeenRunKeys = (): Set<string> => {
+  if (typeof window === "undefined") return new Set();
+
+  try {
+    const raw = window.sessionStorage.getItem(SEEN_RUNS_STORAGE_KEY);
+    if (!raw) return new Set();
+
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return new Set();
+
+    const keys = parsed.filter((item): item is string => typeof item === "string");
+    return new Set(keys);
+  } catch {
+    return new Set();
+  }
+};
+
+const writeSeenRunKeys = (keys: Set<string>) => {
+  if (typeof window === "undefined") return;
+
+  try {
+    const sliced = Array.from(keys).slice(-MAX_SEEN_RUNS);
+    window.sessionStorage.setItem(SEEN_RUNS_STORAGE_KEY, JSON.stringify(sliced));
+  } catch {
+    // best effort only
+  }
+};
+
 export const RunNotificationsProvider = ({ children, enabled }: PropsWithChildren<{ enabled: boolean }>) => {
   const eventSourceRef = useRef<EventSource | null>(null);
+  const processedRunIdsRef = useRef<Set<string>>(readSeenRunKeys());
   const router = useRouter();
   const pathname = usePathname();
 
@@ -34,6 +66,14 @@ export const RunNotificationsProvider = ({ children, enabled }: PropsWithChildre
     eventSource.addEventListener("run-completed", (event) => {
       try {
         const data = JSON.parse(event.data) as RunCompletedEvent;
+
+        if (processedRunIdsRef.current.has(data.runId)) {
+          return;
+        }
+
+        processedRunIdsRef.current.add(data.runId);
+        writeSeenRunKeys(processedRunIdsRef.current);
+
         const trimmedName = data.runName?.trim();
         const displayName = trimmedName ?? `Run ${data.runId.slice(0, 8)}`;
 

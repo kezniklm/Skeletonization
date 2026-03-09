@@ -24,7 +24,15 @@ const checkRunCompletion = async (runId: string): Promise<void> => {
 
   const finalStatus = anyFailed ? "failed" : "completed";
 
-  const [runDetails] = await Promise.all([getRunOwnerAndName(runId), updateRunStatus(runId, finalStatus, completedAt)]);
+  const [runDetails, updatedRun] = await Promise.all([
+    getRunOwnerAndName(runId),
+    updateRunStatus(runId, finalStatus, completedAt)
+  ]);
+
+  // Another concurrent worker already finalized this run.
+  if (!updatedRun) {
+    return;
+  }
 
   console.log(`Run ${runId} finished (status=${finalStatus}, failed=${failedCount}, succeeded=${succeededCount})`);
 
@@ -37,7 +45,7 @@ const checkRunCompletion = async (runId: string): Promise<void> => {
       jobCount: jobs.length,
       failedCount,
       succeededCount,
-      completedAt: completedAt.toISOString()
+      completedAt: updatedRun.completedAt?.toISOString() ?? completedAt.toISOString()
     });
   }
 };

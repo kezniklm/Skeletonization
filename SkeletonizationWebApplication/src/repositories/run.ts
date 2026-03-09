@@ -1,4 +1,4 @@
-﻿import { and, asc, desc, eq } from "drizzle-orm";
+﻿import { and, asc, desc, eq, notInArray } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 
 import { type Algorithm } from "@/algorithms";
@@ -189,11 +189,22 @@ export const deleteRun = async (runId: string) => {
 
 export const updateRunStatus = async (runId: string, status: RunStatus, timestamp?: Date) => {
   const updates: Partial<UpdateRun> = { status };
+  const terminalStatuses: RunStatus[] = ["completed", "failed", "cancelled"];
 
   if (status === "running" && timestamp) {
     updates.startedAt = timestamp;
   } else if ((status === "completed" || status === "failed" || status === "cancelled") && timestamp) {
     updates.completedAt = timestamp;
+  }
+
+  if (terminalStatuses.includes(status)) {
+    const [updated] = await db
+      .update(run)
+      .set(updates)
+      .where(and(eq(run.id, runId), notInArray(run.status, terminalStatuses)))
+      .returning();
+
+    return updated ?? null;
   }
 
   return updateRun(runId, updates);
