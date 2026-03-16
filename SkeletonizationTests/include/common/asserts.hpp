@@ -1,3 +1,21 @@
+/**
+*
+* @file asserts.hpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Defines assertion helpers for skeletonization test validation.
+*
+* This header provides reusable gtest assertion helpers for matrix type,
+* binary-value constraints, equality, and subset checks.
+*
+* Main responsibilities:
+* - validate matrix shape and type constraints
+* - verify binary value domain {0,1}
+* - compare skeleton outputs and subset properties
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #pragma once
 
 #include <sstream>
@@ -8,11 +26,23 @@
 
 namespace skeltest
 {
+	/**
+	 * @brief Checks whether matrix is single-channel CV_8U.
+	 *
+	 * @param m Input matrix.
+	 * @return True when matrix is CV_8UC1.
+	 */
 	[[nodiscard]] inline bool is_cv8u1(const cv::Mat& m) noexcept
 	{
 		return m.type() == CV_8U && m.channels() == 1;
 	}
 
+	/**
+	 * @brief Converts matrix size to width-height string.
+	 *
+	 * @param s Matrix size.
+	 * @return Formatted size string.
+	 */
 	[[nodiscard]] inline std::string size_str(const cv::Size& s)
 	{
 		std::ostringstream o;
@@ -20,6 +50,12 @@ namespace skeltest
 		return o.str();
 	}
 
+	/**
+	 * @brief Asserts matrix contains only binary values {0,1}.
+	 *
+	 * @param m Input matrix.
+	 * @return Assertion result.
+	 */
 	[[nodiscard]] inline testing::AssertionResult is_binary01(const cv::Mat& m) noexcept
 	{
 		if (!is_cv8u1(m))
@@ -38,6 +74,13 @@ namespace skeltest
 			       : testing::AssertionSuccess();
 	}
 
+	/**
+	 * @brief Asserts two binary matrices are equal.
+	 *
+	 * @param a First matrix.
+	 * @param b Second matrix.
+	 * @return Assertion result.
+	 */
 	[[nodiscard]] inline testing::AssertionResult mat_equal01(const cv::Mat& a,
 	                                                          const cv::Mat& b) noexcept
 	{
@@ -86,6 +129,13 @@ namespace skeltest
 		return testing::AssertionFailure() << oss.str();
 	}
 
+	/**
+	 * @brief Asserts skeleton matrix is subset of input matrix.
+	 *
+	 * @param sk01 Skeleton matrix.
+	 * @param in01 Input matrix.
+	 * @return Assertion result.
+	 */
 	[[nodiscard]] inline testing::AssertionResult subset01(const cv::Mat& sk01,
 	                                                       const cv::Mat& in01) noexcept
 	{

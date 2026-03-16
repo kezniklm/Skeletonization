@@ -1,3 +1,20 @@
+/**
+*
+* @file dependency_injection_installer.hpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Declares infrastructure-layer dependency injection installer.
+ *
+ * This file defines dependency injection installer for infrastructure layer.
+ *
+ * Main responsibilities:
+ * - register infrastructure implementation bindings
+ * - compose Redis, storage, and processing services
+ * - provide infrastructure installer entry points
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #pragma once
 
 #include <memory>
@@ -28,6 +45,11 @@ namespace worker::infrastructure::dependency_injection
 {
 	namespace di = boost::di;
 
+	/**
+	 * @brief Creates DI installer for configuration-level bindings.
+	 * @param configuration Loaded worker configuration.
+	 * @return Injector containing configuration wrappers and primitives.
+	 */
 	inline auto make_configuration_installer(const configuration::configuration& configuration)
 	{
 		using namespace configuration::dependency_injection;
@@ -50,6 +72,11 @@ namespace worker::infrastructure::dependency_injection
 		);
 	}
 
+	/**
+	 * @brief Creates DI installer for Redis client bindings.
+	 * @param configuration Loaded worker configuration.
+	 * @return Injector containing Redis configuration and client singleton.
+	 */
 	inline auto make_redis_installer(const configuration::configuration& configuration)
 	{
 		auto redis_config = redis::redis_configuration::from_url(configuration.redis_url);
@@ -65,6 +92,11 @@ namespace worker::infrastructure::dependency_injection
 		);
 	}
 
+	/**
+	 * @brief Creates concrete object storage implementation from configuration.
+	 * @param configuration Loaded worker configuration.
+	 * @return Shared object storage implementation instance.
+	 */
 	inline std::shared_ptr<application::interfaces::i_object_storage> make_object_storage(
 		const configuration::configuration& configuration)
 	{
@@ -78,6 +110,11 @@ namespace worker::infrastructure::dependency_injection
 		return std::make_shared<s3_object_storage>(aws_init, configuration.s3);
 	}
 
+	/**
+	 * @brief Creates DI installer for infrastructure service bindings.
+	 * @param configuration Loaded worker configuration.
+	 * @return Injector containing infrastructure service implementations.
+	 */
 	inline auto make_services_installer(const configuration::configuration& configuration)
 	{
 		return di::make_injector(
@@ -92,6 +129,11 @@ namespace worker::infrastructure::dependency_injection
 		);
 	}
 
+	/**
+	 * @brief Creates full infrastructure-layer dependency injector.
+	 * @param configuration Loaded worker configuration.
+	 * @return Composed infrastructure injector.
+	 */
 	inline auto make_installer(const configuration::configuration& configuration)
 	{
 		return di::make_injector(

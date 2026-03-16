@@ -1,3 +1,20 @@
+/**
+*
+* @file tarabek.hpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Declares the multithreaded tarabek thinning algorithm.
+*
+* This header defines the threaded tarabek implementation interface.
+*
+* Main responsibilities:
+* - declare threaded tarabek algorithm class
+* - expose iterative thinning entry point
+* - declare pass and postprocessing helpers
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #pragma once
 
 #include <array>
@@ -12,14 +29,44 @@ namespace skeletonizer::mt::algorithms
 {
 	using std::uint8_t;
 
+	/**
+	 * @class tarabek
+	 * @brief Implements tarabek thinning with threaded processing.
+	 *
+	 * This class performs two iterative passes and final postprocessing.
+	 */
 	class tarabek final : public backend_threads, public ::skeletonizer::algorithms::tarabek
 	{
 	public:
+		/**
+		 * @brief Applies tarabek thinning to a binary image.
+		 *
+		 * @param binary_image Binary image modified in place.
+		 */
 		void apply(cv::Mat& binary_image) const override;
 
 	private:
+		/**
+		 * @brief Executes the first deletion pass.
+		 *
+		 * @param binary_image Binary image modified in place.
+		 * @param marker Temporary marker matrix.
+		 */
 		static void first_iteration(cv::Mat& binary_image, cv::Mat& marker);
+		/**
+		 * @brief Executes the second deletion pass.
+		 *
+		 * @param binary_image Binary image modified in place.
+		 * @param marker Temporary marker matrix.
+		 */
 		static void second_iteration(cv::Mat& binary_image, cv::Mat& marker);
+		/**
+		 * @brief Applies tarabek template-set processing.
+		 *
+		 * @param binary_image Binary image modified in place.
+		 * @param templates_bits Template bit definitions.
+		 * @param background Background pixel value.
+		 */
 
 		template <std::size_t N>
 		static void process_template_set(
@@ -85,6 +132,11 @@ namespace skeletonizer::mt::algorithms
 			while (changed);
 		}
 
+		/**
+		 * @brief Applies tarabek postprocessing refinements.
+		 *
+		 * @param binary_image Binary image modified in place.
+		 */
 		static inline void postprocessing(cv::Mat& binary_image);
 	};
 }

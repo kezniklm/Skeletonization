@@ -1,3 +1,20 @@
+/**
+*
+* @file job_processor.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements worker job processing orchestration.
+*
+* This file implements orchestration of per-task processing operations.
+*
+* Main responsibilities:
+* - download and preprocess task images
+* - run skeletonization algorithms
+* - persist and publish task results
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include <chrono>
 #include <expected>
 #include <filesystem>

@@ -1,7 +1,30 @@
+/**
+*
+* @file petrosino_salvi.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements the CPU petrosino-salvi thinning algorithm.
+*
+* This file applies two petrosino-salvi deletion passes iteratively until the
+* binary image reaches a stable skeleton.
+*
+* Main responsibilities:
+* - run petrosino-salvi iterative thinning loop
+* - execute first and second deletion sub-iterations
+* - clear border pixels after convergence
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include "SkeletonizationCoreCPU/petrosino_salvi.hpp"
 
 namespace skeletonizer::cpu::algorithms
 {
+	/**
+	 * @brief Applies petrosino-salvi thinning until convergence.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 */
 	void petrosino_salvi::apply(cv::Mat& binary_image) const
 	{
 		cv::Mat previous(binary_image.size(), CV_8UC1, cv::Scalar(0));
@@ -21,6 +44,12 @@ namespace skeletonizer::cpu::algorithms
 		clear_border(binary_image);
 	}
 
+	/**
+	 * @brief Executes the first petrosino-salvi deletion pass.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 * @param marker Temporary marker matrix.
+	 */
 	void petrosino_salvi::first_iteration(cv::Mat& binary_image, cv::Mat& marker)
 	{
 		marker.setTo(0);
@@ -81,6 +110,12 @@ namespace skeletonizer::cpu::algorithms
 		binary_image &= ~marker;
 	}
 
+	/**
+	 * @brief Executes the second petrosino-salvi deletion pass.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 * @param marker Temporary marker matrix.
+	 */
 	void petrosino_salvi::second_iteration(cv::Mat& binary_image, cv::Mat& marker)
 	{
 		marker.setTo(0);

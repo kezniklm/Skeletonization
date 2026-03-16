@@ -1,7 +1,30 @@
-﻿#include "SkeletonizationCoreGPU/zhang_suen.cuh"
+/**
+*
+* @file zhang_suen.cu
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements CUDA kernels for zhang-suen thinning.
+*
+* This file executes two-pass zhang-suen thinning on GPU memory until no
+* further pixel changes are detected.
+*
+* Main responsibilities:
+* - run GPU zhang-suen iteration loop
+* - execute first and second CUDA deletion passes
+* - synchronize and download final skeleton result
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
+#include "SkeletonizationCoreGPU/zhang_suen.cuh"
 
 namespace skeletonizer::gpu::algorithms
 {
+	/**
+	 * @brief Applies GPU zhang-suen thinning to a binary image.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 */
 	void zhang_suen::apply(cv::Mat& binary_image) const
 	{
 		cv::cuda::GpuMat gpu_src(binary_image);
@@ -57,6 +80,17 @@ namespace skeletonizer::gpu::algorithms
 	}
 }
 
+/**
+ * @brief Executes one zhang-suen CUDA iteration pass.
+ *
+ * @param src Input device image.
+ * @param dst Output device image.
+ * @param num_rows Number of image rows.
+ * @param num_cols Number of image columns.
+ * @param first_pass True for first pass, false for second pass.
+ * @param d_changed Device flag indicating changes.
+ * @param halo Shared-memory halo size.
+ */
 __global__ void zhang_suen_iteration_kernel(
 	const cv::cuda::PtrStep<uchar> src,
 	cv::cuda::PtrStep<uchar> dst,
@@ -113,7 +147,7 @@ __global__ void zhang_suen_iteration_kernel(
 		return;
 	}
 
-	// A: Transition count (0→1 along neighbors)
+	// A: Transition count (0?1 along neighbors)
 	const int a = (p2 == 0 && p3 == 1) +
 		(p3 == 0 && p4 == 1) +
 		(p4 == 0 && p5 == 1) +
@@ -141,6 +175,17 @@ __global__ void zhang_suen_iteration_kernel(
 	}
 }
 
+/**
+ * @brief Launches zhang-suen CUDA iteration kernel.
+ *
+ * @param src Input device image.
+ * @param dst Output device image.
+ * @param first_pass True for first pass, false for second pass.
+ * @param d_changed Device change flag pointer.
+ * @param grid Kernel grid dimensions.
+ * @param block Kernel block dimensions.
+ * @param halo Shared-memory halo size.
+ */
 extern inline void zhang_suen_iteration(
 	const cv::cuda::GpuMat& src,
 	const cv::cuda::GpuMat& dst,

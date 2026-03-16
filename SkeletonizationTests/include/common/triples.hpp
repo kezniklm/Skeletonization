@@ -1,3 +1,21 @@
+/**
+*
+* @file triples.hpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Defines algorithm triple bindings for CPU, MT, and optional GPU tests.
+*
+* This header builds unified callable triples used by equivalence tests across
+* backend implementations.
+*
+* Main responsibilities:
+* - define triple metadata and callable structure
+* - construct triples from algorithm implementation types
+* - expose static collection of registered triples
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #pragma once
 
 #include <functional>
@@ -39,16 +57,33 @@
 
 namespace skeltest
 {
+	/**
+	 * @class triple
+	 * @brief Stores callable implementations for one algorithm family.
+	 *
+	 * This structure contains CPU and threaded callables and optional GPU
+	 * callable for one algorithm name.
+	 */
 	struct triple
 	{
+		/// Algorithm family name.
 		std::string name;
+		/// CPU implementation callable.
 		std::function<cv::Mat(const cv::Mat&)> cpu;
+		/// Multithreaded implementation callable.
 		std::function<cv::Mat(const cv::Mat&)> mt;
 #if SKELETONIZATION_WITH_GPU
+		/// Optional GPU implementation callable.
 		std::optional<std::function<cv::Mat(const cv::Mat&)>> gpu;
 #endif
 	};
 
+	/**
+	 * @brief Builds one triple from implementation types.
+	 *
+	 * @param name Triple display name.
+	 * @return Triple with bound callables.
+	 */
 	template <class CpuT, class MtT
 #if SKELETONIZATION_WITH_GPU
 	          , class GpuT
@@ -78,6 +113,11 @@ namespace skeltest
 #endif
 	}
 
+	/**
+	 * @brief Returns all configured algorithm triples.
+	 *
+	 * @return Reference to static triple collection.
+	 */
 	inline const std::vector<triple>& triples()
 	{
 		using CLS_CPU = skeletonizer::cpu::algorithms::choi_lam_siu;

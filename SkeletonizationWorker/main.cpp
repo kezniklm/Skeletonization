@@ -1,3 +1,20 @@
+/**
+*
+* @file main.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Defines the Skeletonization Worker application entry point.
+*
+* This file initializes worker runtime dependencies and starts processing loop.
+*
+* Main responsibilities:
+* - load runtime configuration and environment values
+* - compose worker dependencies
+* - run worker loop until shutdown
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include <string>
 
 #include "SkeletonizationCore/logger/logger.hpp"
@@ -24,7 +41,8 @@ int main(const int /*argc*/, const char* const* argv)
 
 		const auto injector = worker::dependency_injection::configure_dependency_injection(configuration);
 
-		auto& cancellation_token = injector.create<worker::configuration::dependency_injection::cancellation_token_t&>();
+		auto& cancellation_token = injector.create<worker::configuration::dependency_injection::cancellation_token_t
+			&>();
 
 		worker::infrastructure::platform::install_console_ctrl_handler(cancellation_token);
 

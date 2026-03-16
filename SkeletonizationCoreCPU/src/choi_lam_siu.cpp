@@ -1,4 +1,22 @@
-﻿#include <array>
+/**
+*
+* @file choi_lam_siu.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements the CPU choi-lam-siu thinning algorithm.
+*
+* This file computes nearest-background offset maps and applies local
+* neighborhood constraints to retain skeleton pixels.
+*
+* Main responsibilities:
+* - compute nearest-background offset maps
+* - evaluate local neighborhood residual-distance constraints
+* - produce filtered skeleton output for binary images
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
+#include <array>
 #include <tuple>
 #include <vector>
 
@@ -6,6 +24,11 @@
 
 namespace skeletonizer::cpu::algorithms
 {
+	/**
+	 * @brief Applies choi-lam-siu thinning and clears borders.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 */
 	void choi_lam_siu::apply(cv::Mat& binary_image) const
 	{
 		const xy_distance_maps distance_maps = get_distance_map(binary_image);
@@ -15,6 +38,14 @@ namespace skeletonizer::cpu::algorithms
 		clear_border(binary_image);
 	}
 
+	/**
+	 * @brief Performs choi-lam-siu skeletonization with residual constraints.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 * @param distance_maps Precomputed nearest-background maps.
+	 * @param minimal_residual_distance Minimum residual distance.
+	 * @param maximal_residual_distance Maximum residual distance.
+	 */
 	void choi_lam_siu::skeletonize(const cv::Mat& binary_image,
 	                               const xy_distance_maps& distance_maps,
 	                               const int minimal_residual_distance,
@@ -49,6 +80,12 @@ namespace skeletonizer::cpu::algorithms
 		skeleton_output.copyTo(binary_image);
 	}
 
+	/**
+	 * @brief Builds nearest-background row and column offset maps.
+	 *
+	 * @param binary_image Input binary image.
+	 * @return Row and column offset map structure.
+	 */
 	choi_lam_siu::xy_distance_maps choi_lam_siu::get_distance_map(const cv::Mat& binary_image)
 	{
 		const auto labels = compute_nearest_background_labels(binary_image);
@@ -63,6 +100,13 @@ namespace skeletonizer::cpu::algorithms
 		                        std::move(nearest_background_column_index));
 	}
 
+	/**
+	 * @brief Builds a lookup from label id to nearest background point.
+	 *
+	 * @param binary_image Input binary image.
+	 * @param label_matrix Label matrix from distance transform.
+	 * @return Label-to-point lookup table.
+	 */
 	std::vector<cv::Point> choi_lam_siu::build_label_to_background_point_lut(
 		const cv::Mat& binary_image,
 		const cv::Mat& label_matrix)
@@ -98,6 +142,14 @@ namespace skeletonizer::cpu::algorithms
 		return label_to_point;
 	}
 
+	/**
+	 * @brief Fills row and column offset maps from label assignments.
+	 *
+	 * @param binary_image Input binary image.
+	 * @param labels Label matrix.
+	 * @param label_to_background_point_lut Label-to-point lookup.
+	 * @return Tuple of row and column offset maps.
+	 */
 	std::tuple<cv::Mat, cv::Mat> choi_lam_siu::fill_offset_maps(
 		const cv::Mat& binary_image,
 		const cv::Mat& labels,
@@ -134,14 +186,25 @@ namespace skeletonizer::cpu::algorithms
 				}
 
 				const auto& q = label_to_background_point_lut[label_id]; // nearest background pixel (absolute)
-				dx_row[x] = q.x - x; // Δx (columns)
-				dy_row[x] = q.y - y; // Δy (rows)
+				dx_row[x] = q.x - x; // ?x (columns)
+				dy_row[x] = q.y - y; // ?y (rows)
 			}
 		}
 
 		return {dy, dx};
 	}
 
+	/**
+	 * @brief Checks whether a pixel neighborhood satisfies residual constraints.
+	 *
+	 * @param dy_map Row offset map.
+	 * @param dx_map Column offset map.
+	 * @param y Row index.
+	 * @param x Column index.
+	 * @param min_d2 Minimum squared distance.
+	 * @param max_d2 Maximum squared distance.
+	 * @return True when neighborhood satisfies all checks.
+	 */
 	bool choi_lam_siu::check_neighbourhood(
 		const cv::Mat& dy_map, // nearestBackgroundRowIndex = Qy - y
 		const cv::Mat& dx_map, // nearestBackgroundColumnIndex = Qx - x
@@ -150,7 +213,7 @@ namespace skeletonizer::cpu::algorithms
 		const int min_d2,
 		const int max_d2)
 	{
-		// 8-neighborhood offsets (Δx, Δy) with center skipped
+		// 8-neighborhood offsets (?x, ?y) with center skipped
 		static constexpr std::array<int, 8> d_x{{-1, 0, 1, -1, 1, -1, 0, 1}};
 		static constexpr std::array<int, 8> d_y{{-1, -1, -1, 0, 0, 1, 1, 1}};
 
@@ -172,18 +235,18 @@ namespace skeletonizer::cpu::algorithms
 			const auto nx = x + d_x[neighbour_index];
 			const auto ny = y + d_y[neighbour_index];
 
-			// Qi = DM(Pi) + (Δx,Δy)
+			// Qi = DM(Pi) + (?x,?y)
 			const auto qix = dx_map.ptr<int>(ny)[nx] + d_x[neighbour_index];
 			const auto qiy = dy_map.ptr<int>(ny)[nx] + d_y[neighbour_index];
 
 			const auto d2 = squared_length(qix - qx, qiy - qy);
 
-			// Δr^2 = |Qi|^2 - |Q|^2
+			// ?r^2 = |Qi|^2 - |Q|^2
 			const auto r2_qi = squared_length(qix, qiy);
 			const auto delta_r2 = r2_qi - r2_q;
 
 			const auto max_dir =
-				std::max(std::abs(qx - qix), std::abs(qy - qiy)); // max(|Δx|,|Δy|)
+				std::max(std::abs(qx - qix), std::abs(qy - qiy)); // max(|?x|,|?y|)
 
 			// CLS connectivity criterion (no division, no sqrt):
 			// 1) D^2 within user [minD2, maxD2]

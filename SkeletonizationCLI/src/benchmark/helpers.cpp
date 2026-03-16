@@ -1,3 +1,21 @@
+/**
+*
+* @file helpers.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements helper utilities for benchmark processing.
+*
+* This file implements helper parsing and conversion utilities used by
+* benchmark processing flows.
+*
+* Main responsibilities:
+* - parse benchmark JSON output payloads
+* - convert and normalize metric values
+* - prepare metrics maps for aggregation
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include <string_view>
 
 #include "glog/logging.h"

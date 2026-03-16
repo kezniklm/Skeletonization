@@ -1,3 +1,20 @@
+/**
+*
+* @file benchmark_executor.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements benchmark execution orchestration.
+*
+* This file executes registered benchmarks and captures structured output.
+*
+* Main responsibilities:
+* - run benchmark registry entries
+* - configure benchmark reporters and formats
+* - return serialized benchmark output
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include "SkeletonizationCLI/benchmark/benchmark_executor.hpp"
 
 #include <sstream>

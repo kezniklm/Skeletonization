@@ -1,3 +1,20 @@
+/**
+*
+* @file s3_object_storage.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements S3-backed object storage operations.
+*
+* This file implements S3 object download, upload, and removal behavior.
+*
+* Main responsibilities:
+* - download objects from S3 to local files
+* - upload local files to S3 object keys
+* - delete S3 objects when requested
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include "SkeletonizationWorker/infrastructure/s3_object_storage.hpp"
 
 #include <fstream>
@@ -13,9 +30,15 @@ namespace worker::infrastructure
 {
 	namespace
 	{
+		/**
+		 * @class parsed_endpoint
+		 * @brief Parsed endpoint host and scheme used for S3 client setup.
+		 */
 		struct parsed_endpoint
 		{
+			/// Endpoint hostname without URL scheme.
 			Aws::String host;
+			/// Endpoint HTTP/HTTPS scheme.
 			Aws::Http::Scheme scheme = Aws::Http::Scheme::HTTPS;
 		};
 

@@ -1,3 +1,21 @@
+/**
+*
+* @file result_presenter.hpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Declares benchmark result presentation helpers.
+*
+* This file defines result presentation services for exporting benchmark
+* outputs and visualizing generated results.
+*
+* Main responsibilities:
+* - aggregate and present benchmark results
+* - export result and configuration artifacts
+* - invoke visualization workflow
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #pragma once
 
 #include <filesystem>
@@ -15,6 +33,7 @@
 namespace skeletonization_benchmark
 {
 	/**
+	 * @class result_presenter
 	 * @brief Presents benchmark results to the user.
 	 *
 	 * Handles result aggregation, export, and visualization,
@@ -23,10 +42,15 @@ namespace skeletonization_benchmark
 	class result_presenter
 	{
 	public:
+		/**
+		 * @brief Constructs a result presenter with default dependencies.
+		 */
 		result_presenter() = default;
 
 		/**
 		 * @brief Construct with injected dependencies.
+		 * @param exporter Export service dependency.
+		 * @param visualizer Visualizer service dependency.
 		 */
 		result_presenter(std::shared_ptr<cli::interfaces::i_exporter> exporter,
 		                 std::shared_ptr<cli::interfaces::i_visualizer> visualizer)
@@ -36,6 +60,7 @@ namespace skeletonization_benchmark
 
 		/**
 		 * @brief Set the configurations for result context.
+		 * @param configs Configuration metadata used for presentation context.
 		 */
 		void set_configurations(std::vector<configuration::image_benchmark_metadata> configs);
 
@@ -63,8 +88,11 @@ namespace skeletonization_benchmark
 		                                  const std::filesystem::path& output_path) const;
 
 	private:
+		/// Loaded configuration metadata for presentation context.
 		std::vector<configuration::image_benchmark_metadata> configurations_;
+		/// Exporter dependency.
 		std::shared_ptr<cli::interfaces::i_exporter> exporter_;
+		/// Visualizer dependency.
 		std::shared_ptr<cli::interfaces::i_visualizer> visualizer_;
 	};
 }

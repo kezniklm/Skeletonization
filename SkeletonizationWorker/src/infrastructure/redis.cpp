@@ -1,3 +1,20 @@
+/**
+*
+* @file redis.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements Redis operations used by worker infrastructure.
+*
+* This file implements Redis client connection and command operations.
+*
+* Main responsibilities:
+* - connect and authenticate Redis sessions
+* - execute queue and key-value commands
+* - apply retries and reconnect behavior
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include <algorithm>
 #include <ranges>
 #include <sstream>
@@ -385,9 +402,15 @@ namespace worker::infrastructure::redis
 		}
 	}
 
+	/**
+	 * @class redis_argv
+	 * @brief Holds argv pointers and lengths for hiredis command API.
+	 */
 	struct redis_argv
 	{
+		/// Command argument pointers.
 		std::vector<const char*> argv;
+		/// Command argument byte lengths.
 		std::vector<size_t> argv_len;
 	};
 

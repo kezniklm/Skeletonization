@@ -1,7 +1,29 @@
-﻿#include "SkeletonizationCoreGPU/tarabek.cuh"
+/**
+*
+* @file tarabek.cu
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements CUDA kernels for tarabek thinning.
+*
+* This file runs tarabek deletion passes and postprocessing on GPU memory.
+*
+* Main responsibilities:
+* - run GPU tarabek iteration loop
+* - evaluate template conditions in CUDA kernels
+* - execute tarabek postprocessing kernel
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
+#include "SkeletonizationCoreGPU/tarabek.cuh"
 
 namespace skeletonizer::gpu::algorithms
 {
+	/**
+	 * @brief Applies GPU tarabek thinning to a binary image.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 */
 	void tarabek::apply(cv::Mat& binary_image) const
 	{
 		cv::cuda::GpuMat gpu_src(binary_image);
@@ -60,6 +82,17 @@ namespace skeletonizer::gpu::algorithms
 	}
 }
 
+/**
+ * @brief Executes one tarabek CUDA deletion pass.
+ *
+ * @param src Input device image.
+ * @param dst Output device image.
+ * @param num_rows Number of rows.
+ * @param num_cols Number of columns.
+ * @param first_pass True for first pass.
+ * @param d_changed Device change flag.
+ * @param halo Shared-memory halo size.
+ */
 __global__ void tarabek_iteration_kernel(
 	const cv::cuda::PtrStep<uchar> src,
 	cv::cuda::PtrStep<uchar> dst,
@@ -169,6 +202,18 @@ __global__ void tarabek_iteration_kernel(
 	atomicExch(d_changed, 1);
 }
 
+
+/**
+ * @brief Launches one tarabek deletion iteration kernel pass.
+ *
+ * @param src Input device image.
+ * @param dst Output device image.
+ * @param first_pass True for first pass, false for second pass.
+ * @param d_changed Device-side convergence flag.
+ * @param grid CUDA grid configuration.
+ * @param block CUDA block configuration.
+ * @param halo Border halo size.
+ */
 extern inline void tarabek_iteration(
 	const cv::cuda::GpuMat& src,
 	const cv::cuda::GpuMat& dst,
@@ -184,12 +229,22 @@ extern inline void tarabek_iteration(
 	                                                         d_changed, halo);
 }
 
+
+/**
+ * @class mask_bits
+ * @brief Encodes tarabek template bit constraints for postprocessing.
+ */
 struct mask_bits
 {
+	/// Bit mask selecting constrained neighborhood positions.
 	uint16_t fixed_mask;
+	/// Expected bit values for selected positions.
 	uint16_t fixed_value;
+	/// Mask for orthogonal (N4) positions.
 	uint16_t n4_mask;
+	/// Mask for diagonal (ND) positions.
 	uint16_t nd_mask;
+	/// Number of marked N4 positions in template.
 	uint8_t n4_marked_count;
 };
 
@@ -211,6 +266,11 @@ __constant__ mask_bits d_templates_b[16] = {
 	{511, 443, 170, 325, 4}, {511, 254, 170, 68, 4}, {511, 509, 168, 325, 3}, {511, 479, 138, 325, 3}
 };
 
+/**
+ * @brief Evaluates tarabek auxiliary template conditions on device.
+ *
+ * @return True when auxiliary conditions are satisfied.
+ */
 __device__ __forceinline__ bool aux_conditions_met_bits_device(const mask_bits& mask_bits,
                                                                const uint16_t neigh_bits) noexcept
 {
@@ -254,6 +314,11 @@ __device__ __forceinline__ bool aux_conditions_met_bits_device(const mask_bits& 
 	return false;
 }
 
+/**
+ * @brief Computes neighborhood bit mask from shared tile.
+ *
+ * @return Encoded neighborhood mask.
+ */
 __device__ __forceinline__ uint16_t compute_neigh_bits_shared(const uchar* shared_tile, const int shared_stride,
                                                               const int local_x, const int local_y,
                                                               const int halo) noexcept
@@ -271,6 +336,14 @@ __device__ __forceinline__ uint16_t compute_neigh_bits_shared(const uchar* share
 	);
 }
 
+/**
+ * @brief Executes tarabek postprocessing kernel.
+ *
+ * @param src Input device image.
+ * @param dst Output device image.
+ * @param num_rows Number of rows.
+ * @param num_cols Number of columns.
+ */
 __global__ void tarabek_postprocessing_kernel(
 	const cv::cuda::PtrStep<uchar> src,
 	cv::cuda::PtrStep<uchar> dst,
@@ -371,6 +444,16 @@ __global__ void tarabek_postprocessing_kernel(
 	}
 }
 
+
+/**
+ * @brief Launches tarabek postprocessing kernel.
+ *
+ * @param src Input device image.
+ * @param dst Output device image.
+ * @param grid CUDA grid configuration.
+ * @param block CUDA block configuration.
+ * @param halo Border halo size.
+ */
 extern inline void tarabek_postprocessing(
 	const cv::cuda::GpuMat& src,
 	const cv::cuda::GpuMat& dst,

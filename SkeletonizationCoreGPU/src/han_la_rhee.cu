@@ -1,7 +1,30 @@
-﻿#include "SkeletonizationCoreGPU/han_la_rhee.cuh"
+/**
+*
+* @file han_la_rhee.cu
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements CUDA kernels for han-la-rhee thinning.
+*
+* This file computes neighborhood weights and applies han-la-rhee deletion
+* rules on GPU.
+*
+* Main responsibilities:
+* - compute weight map on GPU
+* - evaluate han-la-rhee deletion conditions in kernel
+* - iterate until convergence and return skeleton
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
+#include "SkeletonizationCoreGPU/han_la_rhee.cuh"
 
 namespace skeletonizer::gpu::algorithms
 {
+	/**
+	 * @brief Applies GPU han-la-rhee thinning to a binary image.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 */
 	void han_la_rhee::apply(cv::Mat& binary_image) const
 	{
 		cv::cuda::GpuMat gpu_binary_image(binary_image);
@@ -50,6 +73,13 @@ namespace skeletonizer::gpu::algorithms
 }
 
 template <typename... Args>
+/**
+ * @brief Returns whether any neighbor value is above or equal threshold.
+ *
+ * @param threshold Threshold to test.
+ * @param values Neighbor values.
+ * @return True when at least one value meets threshold.
+ */
 __device__ __forceinline__ bool any_greater_or_equal_than(const uchar threshold, Args... values)
 {
 	const uchar array[sizeof...(values)] = {static_cast<uchar>(values)...};
@@ -64,6 +94,12 @@ __device__ __forceinline__ bool any_greater_or_equal_than(const uchar threshold,
 }
 
 template <typename... Args>
+/**
+ * @brief Returns whether all provided neighbor values are non-zero.
+ *
+ * @param values Neighbor values.
+ * @return True when all values are non-zero.
+ */
 __device__ __forceinline__ bool all_non_zero(Args... values)
 {
 	const uchar array[sizeof...(values)] = {static_cast<uchar>(values)...};
@@ -78,6 +114,13 @@ __device__ __forceinline__ bool all_non_zero(Args... values)
 }
 
 template <typename... Args>
+/**
+ * @brief Returns whether any neighbor equals provided value.
+ *
+ * @param value Target value.
+ * @param values Neighbor values.
+ * @return True when at least one value equals target.
+ */
 __device__ __forceinline__ bool any_equal_to(const uchar value, Args... values)
 {
 	const uchar array[sizeof...(values)] = {static_cast<uchar>(values)...};
@@ -92,6 +135,12 @@ __device__ __forceinline__ bool any_equal_to(const uchar value, Args... values)
 }
 
 template <typename... Args>
+/**
+ * @brief Returns whether neighborhood has adjacent foreground pair.
+ *
+ * @param values Circularly ordered neighbor values.
+ * @return True when adjacent non-zero pair exists.
+ */
 __device__ __forceinline__ bool has_adjacent_non_zero(Args... values)
 {
 	const uchar arr[sizeof...(values)] = {static_cast<uchar>(values)...};
@@ -106,6 +155,19 @@ __device__ __forceinline__ bool has_adjacent_non_zero(Args... values)
 	return false;
 }
 
+/**
+ * @brief Checks critical neighbor pair constraints for deletion stage.
+ *
+ * @param x1 First neighbor weight.
+ * @param x2 Second neighbor weight.
+ * @param x3 Third neighbor weight.
+ * @param x4 Fourth neighbor weight.
+ * @param x5 Fifth neighbor weight.
+ * @param x6 Sixth neighbor weight.
+ * @param x7 Seventh neighbor weight.
+ * @param x8 Eighth neighbor weight.
+ * @return True when critical pair condition holds.
+ */
 __device__ __forceinline__ bool has_critical_pairs(
 	const uchar x1, const uchar x2, const uchar x3, const uchar x4,
 	const uchar x5, const uchar x6, const uchar x7, const uchar x8)
@@ -114,6 +176,17 @@ __device__ __forceinline__ bool has_critical_pairs(
 		(x2 && x4) || (x4 && x6) || (x6 && x8) || (x8 && x2);
 }
 
+/**
+ * @brief Executes one han-la-rhee CUDA iteration pass.
+ *
+ * @param src Input device image.
+ * @param weight Weight map image.
+ * @param dst Output device image.
+ * @param num_rows Number of image rows.
+ * @param num_cols Number of image columns.
+ * @param d_changed Device flag indicating changes.
+ * @param halo Shared-memory halo size.
+ */
 __global__ void han_la_rhee_iteration_kernel(
 	cv::cuda::PtrStep<uchar> binary_image,
 	const cv::cuda::PtrStep<uchar> weight,
@@ -185,6 +258,15 @@ __global__ void han_la_rhee_iteration_kernel(
 	}
 }
 
+/**
+ * @brief Computes per-pixel weight values on GPU.
+ *
+ * @param image Input device image.
+ * @param weight Output weight map.
+ * @param num_rows Number of rows.
+ * @param num_cols Number of columns.
+ * @param halo Shared-memory halo size.
+ */
 __global__ void calculate_weight_kernel(const cv::cuda::PtrStep<uchar> image, cv::cuda::PtrStep<uchar> weight,
                                         const int num_rows, const int num_cols, const int halo)
 {
@@ -219,6 +301,17 @@ __global__ void calculate_weight_kernel(const cv::cuda::PtrStep<uchar> image, cv
 	weight.ptr(row)[column] = x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8;
 }
 
+
+/**
+ * @brief Launches one han-la-rhee iteration kernel.
+ *
+ * @param binary_image Input/output device image.
+ * @param weight Precomputed neighborhood weight map.
+ * @param d_changed Device-side convergence flag.
+ * @param grid CUDA grid configuration.
+ * @param block CUDA block configuration.
+ * @param halo Border halo size.
+ */
 extern inline void han_la_rhee_iteration(
 	const cv::cuda::GpuMat& binary_image,
 	const cv::cuda::PtrStep<uchar> weight,
@@ -229,6 +322,16 @@ extern inline void han_la_rhee_iteration(
 	                                              d_changed, halo);
 }
 
+
+/**
+ * @brief Launches kernel that recomputes per-pixel neighborhood weights.
+ *
+ * @param image Input device image.
+ * @param weight Output weight map image.
+ * @param block CUDA block configuration.
+ * @param grid CUDA grid configuration.
+ * @param halo Border halo size.
+ */
 extern inline void calculate_weight(const cv::cuda::GpuMat& image, cv::cuda::GpuMat& weight, const dim3 block,
                                     const dim3 grid, const int halo)
 {

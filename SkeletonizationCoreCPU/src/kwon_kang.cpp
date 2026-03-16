@@ -1,7 +1,30 @@
+/**
+*
+* @file kwon_kang.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements the CPU kwon-gi-kang thinning algorithm.
+*
+* This file applies two iterative deletion passes with additional corner
+* cleanup to preserve shape continuity.
+*
+* Main responsibilities:
+* - run kwon-gi-kang iterative thinning loop
+* - execute first and second deletion passes
+* - remove oblique corner artifacts after each cycle
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include <SkeletonizationCoreCPU/kwon_kang.hpp>
 
 namespace skeletonizer::cpu::algorithms
 {
+	/**
+	 * @brief Applies kwon-gi-kang thinning until convergence.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 */
 	void kwon_kang::apply(cv::Mat& binary_image) const
 	{
 		cv::Mat previous(binary_image.size(), CV_8UC1, cv::Scalar(0));
@@ -23,6 +46,12 @@ namespace skeletonizer::cpu::algorithms
 		clear_border(binary_image);
 	}
 
+	/**
+	 * @brief Executes the first kwon-gi-kang deletion pass.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 * @param marker Temporary marker matrix.
+	 */
 	void kwon_kang::first_iteration(cv::Mat& binary_image, cv::Mat& marker)
 	{
 		marker.setTo(0);
@@ -79,6 +108,12 @@ namespace skeletonizer::cpu::algorithms
 		binary_image &= ~marker;
 	}
 
+	/**
+	 * @brief Executes the second kwon-gi-kang deletion pass.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 * @param marker Temporary marker matrix.
+	 */
 	void kwon_kang::second_iteration(cv::Mat& binary_image, cv::Mat& marker)
 	{
 		marker.setTo(0);
@@ -135,8 +170,14 @@ namespace skeletonizer::cpu::algorithms
 		binary_image &= ~marker;
 	}
 
+	/**
+	 * @brief Removes oblique corner artifacts after deletion passes.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 * @param marker Temporary marker matrix.
+	 */
 	void kwon_kang::cleanup_oblique_corners(cv::Mat& binary_image,
-	                                           cv::Mat& marker)
+	                                        cv::Mat& marker)
 	{
 		marker.setTo(0);
 

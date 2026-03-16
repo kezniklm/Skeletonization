@@ -1,3 +1,20 @@
+/**
+*
+* @file zhang_suen.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements the multithreaded zhang-suen thinning algorithm.
+*
+* This file executes threaded zhang-suen deletion passes until convergence.
+*
+* Main responsibilities:
+* - run threaded zhang-suen iterative loop
+* - execute first and second parallel passes
+* - clear output borders after convergence
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include <opencv2/core.hpp>
 #include <opencv2/core/utility.hpp>
 
@@ -5,6 +22,11 @@
 
 namespace skeletonizer::mt::algorithms
 {
+	/**
+	 * @brief Applies threaded zhang-suen thinning.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 */
 	void zhang_suen::apply(cv::Mat& binary_image) const
 	{
 		cv::Mat previous(binary_image.size(), CV_8UC1, cv::Scalar(0));
@@ -24,6 +46,12 @@ namespace skeletonizer::mt::algorithms
 		clear_border(binary_image);
 	}
 
+	/**
+	 * @brief Executes first parallel deletion pass.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 * @param marker Temporary marker matrix.
+	 */
 	void zhang_suen::first_iteration(cv::Mat& binary_image, cv::Mat& marker)
 	{
 		marker.setTo(0);
@@ -87,6 +115,12 @@ namespace skeletonizer::mt::algorithms
 		binary_image &= ~marker;
 	}
 
+	/**
+	 * @brief Executes second parallel deletion pass.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 * @param marker Temporary marker matrix.
+	 */
 	void zhang_suen::second_iteration(cv::Mat& binary_image, cv::Mat& marker)
 	{
 		marker.setTo(0);

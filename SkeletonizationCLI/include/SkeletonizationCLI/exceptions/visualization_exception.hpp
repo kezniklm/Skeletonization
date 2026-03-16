@@ -1,3 +1,21 @@
+/**
+*
+* @file visualization_exception.hpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Declares visualization-related exception type.
+*
+* This file defines visualization exception hierarchy for web root,
+* server startup, and browser launch failures.
+*
+* Main responsibilities:
+* - define base visualization exception type
+* - define web root and server startup exceptions
+* - define browser launch exception type
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #pragma once
 
 #include <cstdint>
@@ -9,6 +27,7 @@
 namespace cli::exceptions
 {
 	/**
+	 * @class visualization_exception
 	 * @brief Exception thrown when visualization operations fail.
 	 */
 	class visualization_exception : public cli_exception
@@ -26,6 +45,7 @@ namespace cli::exceptions
 	};
 
 	/**
+	 * @class web_root_not_found_exception
 	 * @brief Exception thrown when the web root directory does not exist.
 	 */
 	class web_root_not_found_exception final : public visualization_exception
@@ -37,16 +57,23 @@ namespace cli::exceptions
 		{
 		}
 
+		/**
+		 * @brief Returns missing web root path.
+		 *
+		 * @return Missing web root path.
+		 */
 		[[nodiscard]] const std::filesystem::path& root() const noexcept
 		{
 			return root_;
 		}
 
 	private:
+		/// Missing web root path.
 		std::filesystem::path root_;
 	};
 
 	/**
+	 * @class server_startup_exception
 	 * @brief Exception thrown when server startup fails.
 	 */
 	class server_startup_exception final : public visualization_exception
@@ -60,16 +87,23 @@ namespace cli::exceptions
 		{
 		}
 
+		/**
+		 * @brief Returns port that failed to start.
+		 *
+		 * @return Failed port value.
+		 */
 		[[nodiscard]] std::uint16_t port() const noexcept
 		{
 			return port_;
 		}
 
 	private:
+		/// Failed server port.
 		std::uint16_t port_;
 	};
 
 	/**
+	 * @class browser_launch_exception
 	 * @brief Exception thrown when browser launch fails.
 	 */
 	class browser_launch_exception final : public visualization_exception
@@ -81,12 +115,18 @@ namespace cli::exceptions
 		{
 		}
 
+		/**
+		 * @brief Returns URL that failed to open.
+		 *
+		 * @return URL string.
+		 */
 		[[nodiscard]] const std::string& url() const noexcept
 		{
 			return url_;
 		}
 
 	private:
+		/// URL that failed to open.
 		std::string url_;
 	};
 }

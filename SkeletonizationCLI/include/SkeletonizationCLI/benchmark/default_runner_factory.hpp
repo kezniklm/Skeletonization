@@ -1,3 +1,21 @@
+/**
+*
+* @file default_runner_factory.hpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Declares default runner factory implementation.
+*
+* This file defines the default runner factory used to create runner
+* instances with injected CLI services.
+*
+* Main responsibilities:
+* - create runner instances from metadata
+* - inject argument, loading, and preprocessing services
+* - provide default runner factory behavior
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #pragma once
 
 #include <memory>
@@ -12,6 +30,7 @@
 namespace skeletonization_benchmark
 {
 	/**
+	 * @class default_runner_factory
 	 * @brief Default implementation of i_runner_factory.
 	 *
 	 * Creates standard runner instances for benchmarking.
@@ -20,6 +39,13 @@ namespace skeletonization_benchmark
 	class default_runner_factory final : public cli::interfaces::i_runner_factory
 	{
 	public:
+		/**
+		 * @brief Constructs a default runner factory.
+		 *
+		 * @param args_provider Arguments provider service.
+		 * @param image_loader Image loader service.
+		 * @param image_preprocessor Image preprocessor service.
+		 */
 		default_runner_factory(
 			std::shared_ptr<cli::interfaces::i_arguments_provider> args_provider,
 			std::shared_ptr<cli::interfaces::i_image_loader> image_loader,
@@ -30,6 +56,12 @@ namespace skeletonization_benchmark
 		{
 		}
 
+		/**
+		 * @brief Creates a runner instance for image metadata.
+		 *
+		 * @param image_metadata Image benchmark metadata.
+		 * @return Created runner instance.
+		 */
 		[[nodiscard]] std::unique_ptr<runner>
 		create(const configuration::image_benchmark_metadata& image_metadata) const override
 		{
@@ -41,8 +73,11 @@ namespace skeletonization_benchmark
 		}
 
 	private:
+		/// Shared arguments provider dependency.
 		std::shared_ptr<cli::interfaces::i_arguments_provider> args_provider_;
+		/// Shared image loader dependency.
 		std::shared_ptr<cli::interfaces::i_image_loader> image_loader_;
+		/// Shared image preprocessor dependency.
 		std::shared_ptr<cli::interfaces::i_image_preprocessor> image_preprocessor_;
 	};
 }

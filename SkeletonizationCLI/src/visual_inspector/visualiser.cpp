@@ -1,3 +1,20 @@
+/**
+*
+* @file visualiser.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements benchmark visualization and inspection workflows.
+*
+* This file implements benchmark visualization rendering and browser launch.
+*
+* Main responsibilities:
+* - prepare visualization payloads from containers
+* - host or expose visualization content
+* - open visualization endpoint in browser
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include <chrono>
 #include <filesystem>
 #include <memory>
@@ -16,6 +33,10 @@
 
 namespace visual_inspector
 {
+	/**
+	 * @class visualizer_server
+	 * @brief Hosts static visualizer assets and benchmark JSON over HTTP.
+	 */
 	class visualizer_server final : public std::enable_shared_from_this<visualizer_server>
 	{
 	public:

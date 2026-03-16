@@ -1,3 +1,21 @@
+/**
+*
+* @file i_configuration_loader.hpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Declares configuration loader interface.
+*
+* This file defines the contract for loading benchmark configuration data
+* from files and in-memory structures.
+*
+* Main responsibilities:
+* - load configuration from file paths
+* - load configuration from parsed objects
+* - produce image benchmark metadata collections
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #pragma once
 
 #include <string>
@@ -8,6 +26,7 @@
 namespace cli::interfaces
 {
 	/**
+	 * @class i_configuration_loader
 	 * @brief Interface for loading skeletonizer configuration.
 	 *
 	 * Abstracts the configuration loading mechanism, enabling
@@ -16,6 +35,9 @@ namespace cli::interfaces
 	class i_configuration_loader
 	{
 	public:
+		/**
+		 * @brief Destroys the configuration loader interface.
+		 */
 		virtual ~i_configuration_loader() = default;
 
 		/**

@@ -1,7 +1,30 @@
-﻿#include "SkeletonizationCoreGPU/liu_zhang.cuh"
+/**
+*
+* @file liu_zhang.cu
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements CUDA kernels for liu-zhang thinning.
+*
+* This file runs constrained and unconstrained liu-zhang passes on GPU and
+* performs pattern cleanup.
+*
+* Main responsibilities:
+* - run GPU liu-zhang iteration loop
+* - launch constrained and unconstrained kernels
+* - apply GPU ghij pattern cleanup
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
+#include "SkeletonizationCoreGPU/liu_zhang.cuh"
 
 namespace skeletonizer::gpu::algorithms
 {
+	/**
+	 * @brief Applies GPU liu-zhang thinning to a binary image.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 */
 	void liu_zhang::apply(cv::Mat& binary_image) const
 	{
 		cv::cuda::GpuMat gpu_a(binary_image);
@@ -92,6 +115,18 @@ namespace skeletonizer::gpu::algorithms
 	}
 }
 
+/**
+ * @brief Executes one liu-zhang CUDA iteration pass.
+ *
+ * @param src Input device image.
+ * @param dst Output device image.
+ * @param num_rows Number of image rows.
+ * @param num_cols Number of image columns.
+ * @param first_pass True for first pass.
+ * @param use_constraint Enables cp constraint.
+ * @param d_changed Device flag indicating changes.
+ * @param halo Shared-memory halo size.
+ */
 __global__ void liu_zhang_iteration_kernel(
 	const cv::cuda::PtrStep<uchar> src,
 	cv::cuda::PtrStep<uchar> dst,
@@ -171,7 +206,7 @@ __global__ void liu_zhang_iteration_kernel(
 	const int step_condition_c = first_pass ? (p2 * p4 * p6) : (p2 * p4 * p8);
 	const int step_condition_d = first_pass ? (p4 * p6 * p8) : (p2 * p6 * p8);
 
-	// Cp constraint (Liu–Zhang)
+	// Cp constraint (Liu�Zhang)
 	bool is_cp_ok = true;
 	if (use_constraint)
 	{
@@ -190,6 +225,14 @@ __global__ void liu_zhang_iteration_kernel(
 	}
 }
 
+/**
+ * @brief Deletes ghij patterns on GPU image.
+ *
+ * @param src Input device image.
+ * @param dst Output device image.
+ * @param num_rows Number of image rows.
+ * @param num_cols Number of image columns.
+ */
 __global__ void delete_patterns_ghij_kernel(
 	const cv::cuda::PtrStep<uchar> src,
 	cv::cuda::PtrStep<uchar> dst,

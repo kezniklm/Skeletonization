@@ -1,3 +1,20 @@
+/**
+*
+* @file redis_adapter.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements adapter helpers around hiredis primitives.
+*
+* This file implements adapter between worker interfaces and Redis client.
+*
+* Main responsibilities:
+* - map queue operations to Redis commands
+* - map result transport to Redis queues
+* - map job status updates to Redis storage
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include <glog/logging.h>
 
 #include "SkeletonizationWorker/configuration.hpp"

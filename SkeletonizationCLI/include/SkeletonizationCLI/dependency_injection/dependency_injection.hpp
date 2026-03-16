@@ -1,3 +1,20 @@
+/**
+*
+* @file dependency_injection.hpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Declares CLI dependency injection composition.
+ *
+ * This file defines top-level dependency injection composition for CLI.
+ *
+ * Main responsibilities:
+ * - compose CLI dependency graph
+ * - install module-level service installers
+ * - expose configured injector entry points
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #pragma once
 
 #include <memory>
@@ -16,6 +33,7 @@ namespace cli::dependency_injection
 	/**
 	 * @brief Configure all dependency injection with parsed arguments.
 	 * @param parsed_args Parsed command-line arguments.
+	 * @return Configured Boost.DI injector instance.
 	 */
 	inline auto configure(const commandline::arguments& parsed_args)
 	{

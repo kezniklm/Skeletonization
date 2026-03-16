@@ -1,3 +1,20 @@
+/**
+*
+* @file console_ctrl_handler.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements console control handling for graceful worker shutdown.
+*
+* This file implements platform control signal handling.
+*
+* Main responsibilities:
+* - register console control callbacks
+* - propagate stop signals to cancellation token
+* - support graceful worker termination
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include "SkeletonizationWorker/infrastructure/platform/console_ctrl_handler.hpp"
 
 #ifdef _WIN32

@@ -1,3 +1,21 @@
+/**
+*
+* @file kwon_gi_kang.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements the multithreaded kwon-gi-kang thinning variant.
+*
+* This file provides an alternative source unit for threaded kwon-gi-kang
+* thinning operations.
+*
+* Main responsibilities:
+* - run threaded kwon-gi-kang iterative loop
+* - execute first and second parallel passes
+* - remove oblique corner artifacts
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include <opencv2/core.hpp>
 #include <opencv2/core/utility.hpp>
 
@@ -5,6 +23,11 @@
 
 namespace skeletonizer::mt::algorithms
 {
+	/**
+	 * @brief Applies threaded kwon-gi-kang thinning.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 */
 	void kwon_kang::apply(cv::Mat& binary_image) const
 	{
 		cv::Mat previous(binary_image.size(), CV_8UC1, cv::Scalar(0));
@@ -26,6 +49,12 @@ namespace skeletonizer::mt::algorithms
 		clear_border(binary_image);
 	}
 
+	/**
+	 * @brief Executes first parallel deletion pass.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 * @param marker Temporary marker matrix.
+	 */
 	void kwon_kang::first_iteration(cv::Mat& binary_image, cv::Mat& marker)
 	{
 		marker.setTo(0);
@@ -87,6 +116,12 @@ namespace skeletonizer::mt::algorithms
 		binary_image &= ~marker;
 	}
 
+	/**
+	 * @brief Executes second parallel deletion pass.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 * @param marker Temporary marker matrix.
+	 */
 	void kwon_kang::second_iteration(cv::Mat& binary_image, cv::Mat& marker)
 	{
 		marker.setTo(0);
@@ -148,6 +183,12 @@ namespace skeletonizer::mt::algorithms
 		binary_image &= ~marker;
 	}
 
+	/**
+	 * @brief Removes oblique corner artifacts.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 * @param marker Temporary marker matrix.
+	 */
 	void kwon_kang::cleanup_oblique_corners(cv::Mat& binary_image, cv::Mat& marker)
 	{
 		marker.setTo(0);

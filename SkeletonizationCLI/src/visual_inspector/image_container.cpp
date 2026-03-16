@@ -1,3 +1,20 @@
+/**
+*
+* @file image_container.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements visual inspector image container behavior.
+*
+* This file implements image container storage and retrieval operations.
+*
+* Main responsibilities:
+* - store labeled benchmark images
+* - provide indexed image and label access
+* - manage container naming and size reporting
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include "glog/logging.h"
 
 #include "SkeletonizationCLI/visual_inspector/image_container.hpp"

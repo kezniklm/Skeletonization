@@ -1,3 +1,20 @@
+/**
+*
+* @file benchmark_installer.hpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Declares benchmark dependency injection installer.
+ *
+ * This file defines dependency injection wiring for benchmark services.
+ *
+ * Main responsibilities:
+ * - register benchmark-layer service bindings
+ * - compose benchmark runner factory dependencies
+ * - install benchmark orchestration components
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #pragma once
 
 #include <boost/di.hpp>

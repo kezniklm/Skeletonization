@@ -1,3 +1,20 @@
+/**
+*
+* @file exporter.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements benchmark export routines.
+*
+* This file implements JSON export of benchmark outputs and configurations.
+*
+* Main responsibilities:
+* - write benchmark package data to JSON
+* - write configuration metadata to JSON
+* - create timestamped export output paths
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include "SkeletonizationCLI/benchmark/exporter.hpp"
 
 #include <algorithm>
@@ -27,6 +44,11 @@ namespace skeletonization_benchmark
 {
 	namespace
 	{
+		/**
+		 * @brief Creates timestamped output directory under outputs root.
+		 *
+		 * @return Filesystem path to created timestamped directory.
+		 */
 		std::filesystem::path create_timestamped_output_directory()
 		{
 			const auto now = std::chrono::system_clock::now();
@@ -48,6 +70,14 @@ namespace skeletonization_benchmark
 
 		using rapidjson_allocator = rapidjson::Document::AllocatorType;
 
+		/**
+		 * @brief Adds string member to RapidJSON object.
+		 *
+		 * @param obj Target JSON object.
+		 * @param key Member key.
+		 * @param s Member string value.
+		 * @param alloc RapidJSON allocator.
+		 */
 		void set_string_member(rapidjson::Value& obj,
 		                       const char* key,
 		                       const std::string& s,
@@ -58,6 +88,14 @@ namespace skeletonization_benchmark
 			obj.AddMember(rapidjson::Value(key, alloc), value, alloc);
 		}
 
+		/**
+		 * @brief Adds string member only when value is non-empty.
+		 *
+		 * @param obj Target JSON object.
+		 * @param key Member key.
+		 * @param s Candidate value.
+		 * @param alloc RapidJSON allocator.
+		 */
 		void add_if_nonempty_string(rapidjson::Value& obj,
 		                            const char* key,
 		                            const std::string& s,
@@ -69,6 +107,15 @@ namespace skeletonization_benchmark
 			}
 		}
 
+		/**
+		 * @brief Adds numeric member when value is strictly positive.
+		 *
+		 * @tparam T Numeric value type.
+		 * @param obj Target JSON object.
+		 * @param key Member key.
+		 * @param v Candidate value.
+		 * @param alloc RapidJSON allocator.
+		 */
 		template <class T>
 		void add_if_positive(rapidjson::Value& obj,
 		                     const char* key,
@@ -91,6 +138,11 @@ namespace skeletonization_benchmark
 			}
 		}
 
+		/**
+		 * @brief Builds local ISO-8601 timestamp without timezone suffix.
+		 *
+		 * @return Timestamp string in yyyy-mm-ddThh:mm:ss format.
+		 */
 		std::string make_timestamp_iso8601_local()
 		{
 			const auto now = std::chrono::system_clock::now();
@@ -106,6 +158,12 @@ namespace skeletonization_benchmark
 			return oss.str();
 		}
 
+		/**
+		 * @brief Appends timestamp member to export document root.
+		 *
+		 * @param document Target document.
+		 * @param allocator RapidJSON allocator.
+		 */
 		void add_timestamp_member(rapidjson::Document& document,
 		                          rapidjson_allocator& allocator)
 		{
@@ -121,6 +179,14 @@ namespace skeletonization_benchmark
 			document.AddMember(key, value, allocator);
 		}
 
+		/**
+		 * @brief Encodes matrix image buffer to base64 string.
+		 *
+		 * @param matrix Input matrix to encode.
+		 * @param opts Export options controlling codec parameters.
+		 * @param out_b64 Output base64 payload.
+		 * @return True when encoding succeeds.
+		 */
 		bool encode_mat_to_base64(const cv::Mat& matrix,
 		                          const exporter_options& opts,
 		                          std::string& out_b64)
@@ -148,6 +214,12 @@ namespace skeletonization_benchmark
 			return cli::utils::base64_encoder::encode(encoded, out_b64);
 		}
 
+		/**
+		 * @brief Sanitizes identifier fragment for stable JSON image IDs.
+		 *
+		 * @param s Raw identifier fragment.
+		 * @return Sanitized identifier with unsupported characters removed.
+		 */
 		std::string sanitize_id_component(std::string_view s)
 		{
 			std::string output;
@@ -173,6 +245,14 @@ namespace skeletonization_benchmark
 			return output;
 		}
 
+		/**
+		 * @brief Creates deterministic image identifier for export payload.
+		 *
+		 * @param container_name Source container name.
+		 * @param label Image label.
+		 * @param index Image index in container.
+		 * @return Stable image identifier.
+		 */
 		std::string make_image_id(std::string_view container_name,
 		                          std::string_view label,
 		                          std::size_t index)
@@ -287,6 +367,14 @@ namespace skeletonization_benchmark
 		}
 	}
 
+	/**
+	 * @brief Writes benchmark output package JSON.
+	 *
+	 * @param packages Aggregated benchmark packages.
+	 * @param out_json_path Destination JSON path.
+	 * @param opts Export behavior options.
+	 * @return True when JSON was written successfully.
+	 */
 	bool exporter::write_output_json(const std::vector<aggregator::package>& packages,
 	                                 const std::filesystem::path& out_json_path,
 	                                 const exporter_options& opts)
@@ -435,6 +523,14 @@ namespace skeletonization_benchmark
 		}
 	}
 
+	/**
+	 * @brief Writes configuration metadata JSON for visualizer consumption.
+	 *
+	 * @param configs Configuration metadata collection.
+	 * @param out_json_path Destination JSON path.
+	 * @param opts Export behavior options.
+	 * @return True when JSON was written successfully.
+	 */
 	bool exporter::write_configuration_json(
 		const std::vector<configuration::image_benchmark_metadata>& configs,
 		const std::filesystem::path& out_json_path,
@@ -497,6 +593,12 @@ namespace skeletonization_benchmark
 		}
 	}
 
+	/**
+	 * @brief Creates timestamped output file path inside generated output directory.
+	 *
+	 * @param filename Output filename.
+	 * @return Full output path with timestamped directory prefix.
+	 */
 	std::filesystem::path exporter::create_timestamped_output_path(const std::string& filename)
 	{
 		const auto output_dir = create_timestamped_output_directory();

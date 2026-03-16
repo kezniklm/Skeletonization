@@ -1,3 +1,20 @@
+/**
+*
+* @file base64_encoder.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements base64 encoding routines.
+*
+* This file implements base64 encoding helper routines.
+*
+* Main responsibilities:
+* - encode binary buffers to base64 text
+* - provide overloads for pointer and vector inputs
+* - support utility helpers for encoding workflows
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include "SkeletonizationCLI/utils/base64_encoder.hpp"
 
 #include <cctype>

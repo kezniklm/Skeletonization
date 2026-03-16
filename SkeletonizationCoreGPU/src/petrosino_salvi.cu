@@ -1,7 +1,29 @@
-﻿#include "SkeletonizationCoreGPU/petrosino_salvi.cuh"
+/**
+*
+* @file petrosino_salvi.cu
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements CUDA kernels for petrosino-salvi thinning.
+*
+* This file performs iterative two-pass petrosino-salvi thinning on GPU.
+*
+* Main responsibilities:
+* - run GPU petrosino-salvi iteration loop
+* - evaluate pass-specific deletion predicates
+* - launch CUDA kernel and collect convergence state
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
+#include "SkeletonizationCoreGPU/petrosino_salvi.cuh"
 
 namespace skeletonizer::gpu::algorithms
 {
+	/**
+	 * @brief Applies GPU petrosino-salvi thinning to a binary image.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 */
 	void petrosino_salvi::apply(cv::Mat& binary_image) const
 	{
 		cv::cuda::GpuMat gpu_src(binary_image);
@@ -57,6 +79,11 @@ namespace skeletonizer::gpu::algorithms
 	}
 }
 
+/**
+ * @brief Evaluates first-pass petrosino-salvi deletion condition.
+ *
+ * @return True when pixel satisfies first-pass deletion condition.
+ */
 __device__ __forceinline__ bool petrosino_salvi_first_pass(const uchar x1, const uchar x2, const uchar x3,
                                                            const uchar x4,
                                                            const uchar x5, const uchar x6, const uchar x7,
@@ -76,6 +103,11 @@ __device__ __forceinline__ bool petrosino_salvi_first_pass(const uchar x1, const
 	return a == 2 && b >= 2 && b <= 6 && r == 0;
 }
 
+/**
+ * @brief Evaluates second-pass petrosino-salvi deletion condition.
+ *
+ * @return True when pixel satisfies second-pass deletion condition.
+ */
 __device__ __forceinline__ bool petrosino_salvi_second_pass(const uchar x1, const uchar x2, const uchar x3,
                                                             const uchar x4,
                                                             const uchar x5, const uchar x6, const uchar x7,
@@ -96,6 +128,17 @@ __device__ __forceinline__ bool petrosino_salvi_second_pass(const uchar x1, cons
 }
 
 
+/**
+ * @brief Executes one petrosino-salvi CUDA iteration pass.
+ *
+ * @param src Input device image.
+ * @param dst Output device image.
+ * @param num_rows Number of image rows.
+ * @param num_cols Number of image columns.
+ * @param first_pass True for first pass.
+ * @param d_changed Device flag indicating changes.
+ * @param halo Shared-memory halo size.
+ */
 __global__ void petrosino_salvi_iteration_kernel(
 	const cv::cuda::PtrStep<uchar> src,
 	cv::cuda::PtrStep<uchar> dst,

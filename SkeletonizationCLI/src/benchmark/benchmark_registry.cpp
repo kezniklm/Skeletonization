@@ -1,3 +1,20 @@
+/**
+*
+* @file benchmark_registry.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements benchmark registration lookups.
+*
+* This file implements registration management for benchmark runners.
+*
+* Main responsibilities:
+* - add and remove benchmark runners
+* - maintain runner registry container
+* - validate benchmark registration operations
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include "SkeletonizationCLI/benchmark/benchmark_registry.hpp"
 
 #include <algorithm>

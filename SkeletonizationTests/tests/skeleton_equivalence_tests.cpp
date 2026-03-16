@@ -1,3 +1,21 @@
+/**
+*
+* @file skeleton_equivalence_tests.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Verifies skeletonization equivalence across backend implementations.
+*
+* This test file runs parametrized comparisons between CPU, multithreaded,
+* and optional GPU outputs for shared algorithm families.
+*
+* Main responsibilities:
+* - instantiate per-image per-algorithm parametrized tests
+* - assert binary output and subset invariants
+* - compare CPU outputs against MT and optional GPU outputs
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include "gtest/gtest.h"
 #include "opencv2/core/mat.hpp"
 #include "../include/common/image_factory.hpp"
@@ -8,10 +26,19 @@
 
 using namespace skeltest;
 
+/**
+ * @class per_image_per_triple
+ * @brief Parametrized fixture for algorithm-image combinations.
+ *
+ * This fixture binds a triple index and image index for equivalence checks.
+ */
 class per_image_per_triple : public testing::TestWithParam<param>
 {
 };
 
+/**
+ * @brief Compares CPU output with MT and optional GPU output.
+ */
 TEST_P(per_image_per_triple, CpuMtGpu_Identical)
 {
 	const auto& test_image = test_images();

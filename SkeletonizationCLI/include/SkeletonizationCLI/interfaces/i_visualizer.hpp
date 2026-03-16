@@ -1,3 +1,20 @@
+/**
+*
+* @file i_visualizer.hpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Declares visualization interface for benchmark results.
+*
+* This file defines the contract for presenting benchmark visualizations.
+*
+* Main responsibilities:
+* - display generated benchmark visualizations
+* - abstract visualization backend from callers
+* - support testable visualizer substitutions
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #pragma once
 
 #include <cstdint>
@@ -6,6 +23,7 @@
 namespace cli::interfaces
 {
 	/**
+	 * @class i_visualizer
 	 * @brief Interface for displaying visualization results.
 	 *
 	 * Abstracts the visualization mechanism to allow different
@@ -14,6 +32,9 @@ namespace cli::interfaces
 	class i_visualizer
 	{
 	public:
+		/**
+		 * @brief Destroys the visualizer interface.
+		 */
 		virtual ~i_visualizer() = default;
 
 		/**

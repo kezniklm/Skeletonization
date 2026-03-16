@@ -1,7 +1,30 @@
-﻿#include "SkeletonizationCoreGPU/choi_lam_siu.cuh"
+/**
+*
+* @file choi_lam_siu.cu
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements CUDA kernels for choi-lam-siu thinning.
+*
+* This file computes nearest-background lookup structures and applies
+* residual-distance constrained thinning on GPU.
+*
+* Main responsibilities:
+* - build GPU lookup from labels to nearest background points
+* - run choi-lam-siu skeletonization kernel
+* - download final skeleton output to host image
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
+#include "SkeletonizationCoreGPU/choi_lam_siu.cuh"
 
 namespace skeletonizer::gpu::algorithms
 {
+	/**
+	 * @brief Applies GPU choi-lam-siu thinning to a binary image.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 */
 	void choi_lam_siu::apply(cv::Mat& binary_image) const
 	{
 		cv::cuda::GpuMat gpu_binary_image(binary_image);
@@ -36,9 +59,24 @@ namespace skeletonizer::gpu::algorithms
 	}
 }
 
+/**
+ * @brief X offsets for 8-neighborhood traversal.
+ */
 __device__ __constant__ int8_t dx8[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
+/**
+ * @brief Y offsets for 8-neighborhood traversal.
+ */
 __device__ __constant__ int8_t dy8[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
 
+/**
+ * @brief Builds label-to-background-point lookup table on GPU.
+ *
+ * @param binary_image_pointer Binary image view.
+ * @param label_pointer Label matrix view.
+ * @param lut Output lookup table.
+ * @param lut_size Lookup table size.
+ * @param halo Border halo size.
+ */
 __global__ void build_label_to_background_point_lut_kernel(
 	cv::cuda::PtrStepSz<uchar> binary_image_pointer,
 	cv::cuda::PtrStepSz<int> label_pointer,
@@ -64,6 +102,18 @@ __global__ void build_label_to_background_point_lut_kernel(
 	lut[id] = make_int2(x, y);
 }
 
+/**
+ * @brief Applies choi-lam-siu residual constraints on GPU pixels.
+ *
+ * @param binary_image Binary image view.
+ * @param labels Label matrix view.
+ * @param lut Label lookup table.
+ * @param lut_size Lookup table size.
+ * @param out Output binary image view.
+ * @param min_d2 Minimum squared residual distance.
+ * @param max_d2 Maximum squared residual distance.
+ * @param halo Border halo size.
+ */
 __global__ void skeletonizer_kernel(
 	const cv::cuda::PtrStepSz<uchar> binary_image, // has to be copied
 	const cv::cuda::PtrStepSz<int> labels, // has to be copied
@@ -148,7 +198,7 @@ __global__ void skeletonizer_kernel(
 		const int nx = gx + dx8[k];
 		const int ny = gy + dy8[k];
 
-		// Qi = DM(Pi) + (Δx,Δy)
+		// Qi = DM(Pi) + (?x,?y)
 		const int qix = (qi.x - nx) + dx8[k];
 		const int qiy = (qi.y - ny) + dy8[k];
 
@@ -184,6 +234,18 @@ __global__ void skeletonizer_kernel(
 	out(gy, gx) = keep ? skeleton : background;
 }
 
+
+/**
+ * @brief Launches LUT builder kernel for nearest background points.
+ *
+ * @param binary_image Binary device image.
+ * @param label_matrix Label matrix generated from distance map.
+ * @param block CUDA block configuration.
+ * @param grid CUDA grid configuration.
+ * @param lut_size Lookup table size.
+ * @param halo Border halo size.
+ * @return Device matrix with label-to-point mapping.
+ */
 extern inline cv::cuda::GpuMat build_label_to_background_point_lut(
 	const cv::cuda::GpuMat& binary_image,
 	const cv::cuda::GpuMat& label_matrix,
@@ -198,6 +260,19 @@ extern inline cv::cuda::GpuMat build_label_to_background_point_lut(
 	return lut;
 }
 
+
+/**
+ * @brief Launches choi-lam-siu skeletonization kernel.
+ *
+ * @param binary_image Input/output binary device image.
+ * @param label_matrix Label matrix generated from distance map.
+ * @param lut Label-to-background lookup table.
+ * @param block CUDA block configuration.
+ * @param grid CUDA grid configuration.
+ * @param halo Border halo size.
+ * @param min_d2 Minimum squared residual distance threshold.
+ * @param max_d2 Maximum squared residual distance threshold.
+ */
 extern inline void skeletonize(
 	cv::cuda::GpuMat& binary_image,
 	const cv::cuda::GpuMat& label_matrix,

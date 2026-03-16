@@ -1,3 +1,20 @@
+/**
+*
+* @file loader.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements CLI configuration loading from external sources.
+*
+* This file implements configuration loading from file and in-memory models.
+*
+* Main responsibilities:
+* - load benchmark configurations from disk
+* - map parsed config data to metadata models
+* - validate loaded configuration entries
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include "SkeletonizationCLI/configuration/loader.hpp"
 
 #include <filesystem>
@@ -22,6 +39,12 @@ namespace configuration
 	using configuration::image_benchmark_metadata;
 	using configuration::skeletonizer_config;
 
+	/**
+	 * @brief Loads benchmark metadata entries from JSON file.
+	 *
+	 * @param filename Configuration file path.
+	 * @return Parsed benchmark metadata entries.
+	 */
 	std::vector<image_benchmark_metadata> configuration_loader::load(const std::string& filename) const
 	{
 		std::ifstream file(filename);
@@ -64,6 +87,12 @@ namespace configuration
 		return all_entries;
 	}
 
+	/**
+	 * @brief Loads benchmark metadata entries from in-memory CLI configuration.
+	 *
+	 * @param skeletonizer_configurations Parsed CLI configuration records.
+	 * @return Parsed benchmark metadata entries.
+	 */
 	std::vector<image_benchmark_metadata> configuration_loader::load(
 		const std::vector<skeletonizer_config>& skeletonizer_configurations) const
 	{

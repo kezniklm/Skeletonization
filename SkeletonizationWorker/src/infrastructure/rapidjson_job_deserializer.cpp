@@ -1,3 +1,20 @@
+/**
+*
+* @file rapidjson_job_deserializer.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements RapidJSON-based job payload deserialization.
+*
+* This file implements parsing of job payload JSON documents.
+*
+* Main responsibilities:
+* - parse serialized job JSON payloads
+* - map JSON fields to domain models
+* - return validation and parse errors
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include "SkeletonizationWorker/infrastructure/rapidjson_job_deserializer.hpp"
 
 #include <string>

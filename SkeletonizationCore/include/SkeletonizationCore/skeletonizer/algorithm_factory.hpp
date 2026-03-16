@@ -1,3 +1,22 @@
+/**
+*
+* @file algorithm_factory.hpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Creates skeletonizer algorithm instances from registered metadata.
+*
+* This header defines a static factory that resolves algorithm names to
+* runtime creators for selected backend types. It also exposes helpers for
+* querying support and listing available algorithm identifiers.
+*
+* Main responsibilities:
+* - resolve algorithm names to creator functions
+* - instantiate skeletonizer implementations by backend type
+* - provide runtime support and discovery helpers
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #pragma once
 
 #include <algorithm>
@@ -11,9 +30,23 @@
 
 namespace skeletonizer
 {
+	/**
+	 * @class algorithm_factory
+	 * @brief Provides static factory operations for skeletonizer algorithms.
+	 *
+	 * This class uses registered algorithm entries to create implementations and
+	 * query backend support at runtime.
+	 */
 	class algorithm_factory
 	{
 	public:
+		/**
+		 * @brief Creates a skeletonizer instance for an algorithm and backend type.
+		 *
+		 * @param algorithm_name Algorithm identifier to resolve.
+		 * @param type Requested backend type.
+		 * @return Created skeletonizer instance or null when unavailable.
+		 */
 		[[nodiscard]] static std::unique_ptr<skeletonizer<>> create(const std::string& algorithm_name,
 		                                                            const skeletonizer_type type =
 			                                                            skeletonizer_type::cpu)
@@ -47,6 +80,13 @@ namespace skeletonizer
 			return result;
 		}
 
+		/**
+		 * @brief Returns all creators for an algorithm and backend type.
+		 *
+		 * @param algorithm_name Algorithm identifier to resolve.
+		 * @param type Requested backend type.
+		 * @return List of creator callbacks.
+		 */
 		[[nodiscard]] static std::vector<configuration::skeletonizer_creator> creators_for(
 			const std::string& algorithm_name,
 			const skeletonizer_type type)
@@ -73,6 +113,11 @@ namespace skeletonizer
 			return creators;
 		}
 
+		/**
+		 * @brief Lists all registered algorithm names.
+		 *
+		 * @return Collection of available algorithm identifiers.
+		 */
 		[[nodiscard]] static std::vector<std::string_view> available_algorithms()
 		{
 			std::vector<std::string_view> names;
@@ -85,6 +130,13 @@ namespace skeletonizer
 			return names;
 		}
 
+		/**
+		 * @brief Checks whether an algorithm supports a backend type.
+		 *
+		 * @param algorithm_name Algorithm identifier.
+		 * @param type Backend type to test.
+		 * @return True when at least one creator exists for the type.
+		 */
 		[[nodiscard]] static bool supports(const std::string& algorithm_name, const skeletonizer_type type)
 		{
 			const auto normalized = normalize(algorithm_name);
@@ -114,6 +166,12 @@ namespace skeletonizer
 		}
 
 	private:
+		/**
+		 * @brief Normalizes algorithm names for lookup.
+		 *
+		 * @param name Raw algorithm name.
+		 * @return Lowercase algorithm key with unified separators.
+		 */
 		[[nodiscard]] static std::string normalize(const std::string& name)
 		{
 			std::string result = to_lower(name);

@@ -1,3 +1,20 @@
+/**
+*
+* @file i_browser_launcher.hpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Declares browser launcher interface.
+*
+* This file defines the contract for opening URLs in a system browser.
+*
+* Main responsibilities:
+* - open URLs in platform browser implementations
+* - abstract browser launching from caller logic
+* - enable testable launcher substitutions
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #pragma once
 
 #include <string>
@@ -5,6 +22,7 @@
 namespace cli::interfaces
 {
 	/**
+	 * @class i_browser_launcher
 	 * @brief Interface for launching web browsers.
 	 *
 	 * Abstracts platform-specific browser launching mechanisms,
@@ -13,6 +31,9 @@ namespace cli::interfaces
 	class i_browser_launcher
 	{
 	public:
+		/**
+		 * @brief Destroys the browser launcher interface.
+		 */
 		virtual ~i_browser_launcher() = default;
 
 		/**

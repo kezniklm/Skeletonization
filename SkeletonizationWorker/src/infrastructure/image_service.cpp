@@ -1,3 +1,20 @@
+/**
+*
+* @file image_service.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements image loading and preprocessing infrastructure service.
+*
+* This file implements image load and save behavior using OpenCV.
+*
+* Main responsibilities:
+* - load image files into matrices
+* - save image matrices to output paths
+* - report image IO failures
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include <expected>
 #include <glog/logging.h>
 

@@ -1,3 +1,20 @@
+/**
+*
+* @file result_publisher.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements result publishing workflows.
+*
+* This file implements serialization and publishing of task result payloads.
+*
+* Main responsibilities:
+* - compose task result payload documents
+* - publish serialized payloads via transport
+* - include worker metadata and timing values
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include <glog/logging.h>
 
 #include "SkeletonizationWorker/infrastructure/result_publisher.hpp"

@@ -1,3 +1,20 @@
+/**
+*
+* @file guo_hall.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements the multithreaded guo-hall thinning algorithm.
+*
+* This file executes threaded guo-hall deletion passes until convergence.
+*
+* Main responsibilities:
+* - run threaded guo-hall iterative loop
+* - execute first and second parallel passes
+* - clear output borders after convergence
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include <algorithm>
 
 #include <opencv2/core.hpp>
@@ -7,6 +24,11 @@
 
 namespace skeletonizer::mt::algorithms
 {
+	/**
+	 * @brief Applies threaded guo-hall thinning.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 */
 	void guo_hall::apply(cv::Mat& binary_image) const
 	{
 		cv::Mat previous(binary_image.size(), CV_8UC1, cv::Scalar(0));
@@ -26,6 +48,12 @@ namespace skeletonizer::mt::algorithms
 		clear_border(binary_image);
 	}
 
+	/**
+	 * @brief Executes first parallel deletion pass.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 * @param marker Temporary marker matrix.
+	 */
 	void guo_hall::first_iteration(cv::Mat& binary_image, cv::Mat& marker)
 	{
 		marker.setTo(0);
@@ -85,6 +113,12 @@ namespace skeletonizer::mt::algorithms
 		binary_image &= ~marker;
 	}
 
+	/**
+	 * @brief Executes second parallel deletion pass.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 * @param marker Temporary marker matrix.
+	 */
 	void guo_hall::second_iteration(cv::Mat& binary_image, cv::Mat& marker)
 	{
 		marker.setTo(0);

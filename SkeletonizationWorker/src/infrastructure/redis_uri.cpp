@@ -1,3 +1,20 @@
+/**
+*
+* @file redis_uri.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements Redis URI parsing utilities.
+*
+* This file implements parsing of Redis URLs and option extraction.
+*
+* Main responsibilities:
+* - parse Redis URI components
+* - decode URI-encoded credentials and segments
+* - build typed Redis configuration values
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include <charconv>
 #include <cctype>
 

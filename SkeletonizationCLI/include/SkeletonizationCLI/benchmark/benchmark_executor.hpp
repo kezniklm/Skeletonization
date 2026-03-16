@@ -1,3 +1,21 @@
+/**
+*
+* @file benchmark_executor.hpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Declares benchmark execution orchestration types.
+*
+* This file defines the benchmark execution service that runs registered
+* benchmarks and returns serialized result output.
+*
+* Main responsibilities:
+* - execute all registered benchmark runners
+* - configure output reporters for runs
+* - return serialized benchmark result data
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #pragma once
 
 #include <string>
@@ -7,6 +25,7 @@
 namespace skeletonization_benchmark
 {
 	/**
+	 * @class benchmark_executor
 	 * @brief Executes registered benchmarks.
 	 *
 	 * Separates benchmark execution from registration and result presentation,

@@ -1,7 +1,30 @@
-﻿#include "SkeletonizationCoreGPU/kwon_gi_kang.cuh"
+/**
+*
+* @file kwon_gi_kang.cu
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements CUDA kernels for kwon-gi-kang thinning.
+*
+* This file executes two-pass kwon-gi-kang deletion and oblique-corner
+* cleanup on GPU.
+*
+* Main responsibilities:
+* - run GPU kwon-gi-kang iteration loop
+* - execute two-pass deletion kernels
+* - run oblique-corner cleanup kernel
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
+#include "SkeletonizationCoreGPU/kwon_gi_kang.cuh"
 
 namespace skeletonizer::gpu::algorithms
 {
+	/**
+	 * @brief Applies GPU kwon-gi-kang thinning to a binary image.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 */
 	void kwon_kang::apply(cv::Mat& binary_image) const
 	{
 		cv::cuda::GpuMat gpu_src(binary_image);
@@ -63,6 +86,17 @@ namespace skeletonizer::gpu::algorithms
 	}
 }
 
+/**
+ * @brief Executes one kwon-gi-kang CUDA iteration pass.
+ *
+ * @param src Input device image.
+ * @param dst Output device image.
+ * @param num_rows Number of rows.
+ * @param num_cols Number of columns.
+ * @param first_pass True for first pass.
+ * @param d_changed Device change flag.
+ * @param halo Shared-memory halo size.
+ */
 __global__ void kwon_kang_iteration_kernel(
 	const cv::cuda::PtrStep<uchar> src,
 	cv::cuda::PtrStep<uchar> dst,
@@ -119,7 +153,7 @@ __global__ void kwon_kang_iteration_kernel(
 	const auto p7 = shared_tile[shared_index(local_x - 1, local_y + 1, shared_stride, halo)];
 	const auto p8 = shared_tile[shared_index(local_x - 1, local_y, shared_stride, halo)];
 
-	// A: Transition count (0→1 along neighbors)
+	// A: Transition count (0?1 along neighbors)
 	const auto a =
 		(p1 == 0 && p2 == 1) +
 		(p2 == 0 && p3 == 1) +
@@ -148,6 +182,14 @@ __global__ void kwon_kang_iteration_kernel(
 	}
 }
 
+/**
+ * @brief Removes oblique corners in GPU image.
+ *
+ * @param src Input device image.
+ * @param dst Output device image.
+ * @param num_rows Number of rows.
+ * @param num_cols Number of columns.
+ */
 __global__ void cleanup_oblique_corners_kernel_opt(
 	const cv::cuda::PtrStep<uchar> src,
 	cv::cuda::PtrStep<uchar> dst,
@@ -209,6 +251,18 @@ __global__ void cleanup_oblique_corners_kernel_opt(
 	dst(global_y, global_x) = condition_1 || condition_2 || condition_3 || condition_4 ? background : skeleton;
 }
 
+
+/**
+ * @brief Launches one kwon-gi-kang deletion iteration kernel pass.
+ *
+ * @param src Input device image.
+ * @param dst Output device image.
+ * @param first_pass True for first pass, false for second pass.
+ * @param d_changed Device-side convergence flag.
+ * @param grid CUDA grid configuration.
+ * @param block CUDA block configuration.
+ * @param halo Border halo size.
+ */
 extern inline void kwon_kang_iteration(
 	const cv::cuda::GpuMat& src,
 	const cv::cuda::GpuMat& dst,
@@ -224,6 +278,16 @@ extern inline void kwon_kang_iteration(
 	                                                               d_changed, halo);
 }
 
+
+/**
+ * @brief Launches oblique-corner cleanup kernel for final refinement.
+ *
+ * @param src Input device image.
+ * @param dst Output device image.
+ * @param grid CUDA grid configuration.
+ * @param block CUDA block configuration.
+ * @param halo Border halo size.
+ */
 extern inline void cleanup_oblique_corners(
 	const cv::cuda::GpuMat& src,
 	const cv::cuda::GpuMat& dst,

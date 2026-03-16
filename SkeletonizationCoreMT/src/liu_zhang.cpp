@@ -1,10 +1,33 @@
 #include <opencv2/core.hpp>
 #include <opencv2/core/utility.hpp>
 
+/**
+*
+* @file liu_zhang.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements the multithreaded liu-zhang thinning algorithm.
+*
+* This file applies constrained and unconstrained threaded passes followed by
+* pattern cleanup.
+*
+* Main responsibilities:
+* - run threaded constrained and unconstrained passes
+* - execute first and second deletion iterations
+* - apply ghij artifact cleanup phase
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include "SkeletonizationCoreMT/liu_zhang.hpp"
 
 namespace skeletonizer::mt::algorithms
 {
+	/**
+	 * @brief Applies threaded liu-zhang thinning.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 */
 	void liu_zhang::apply(cv::Mat& binary_image) const
 	{
 		cv::Mat marker(binary_image.size(), CV_8UC1);
@@ -30,6 +53,14 @@ namespace skeletonizer::mt::algorithms
 		clear_border(binary_image);
 	}
 
+	/**
+	 * @brief Executes first threaded deletion pass.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 * @param marker Temporary marker matrix.
+	 * @param use_constraint Enables cp constraint.
+	 * @return True when at least one pixel is deleted.
+	 */
 	bool liu_zhang::first_iteration(cv::Mat& binary_image,
 	                                cv::Mat& marker,
 	                                const bool use_constraint)
@@ -109,6 +140,14 @@ namespace skeletonizer::mt::algorithms
 		return deleted;
 	}
 
+	/**
+	 * @brief Executes second threaded deletion pass.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 * @param marker Temporary marker matrix.
+	 * @param use_constraint Enables cp constraint.
+	 * @return True when at least one pixel is deleted.
+	 */
 	bool liu_zhang::second_iteration(cv::Mat& binary_image,
 	                                 cv::Mat& marker,
 	                                 const bool use_constraint)
@@ -188,6 +227,12 @@ namespace skeletonizer::mt::algorithms
 		return deleted;
 	}
 
+	/**
+	 * @brief Deletes ghij pattern artifacts.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 * @param marker Temporary marker matrix.
+	 */
 	void liu_zhang::delete_patterns_ghij(cv::Mat& binary_image,
 	                                     cv::Mat& marker) const
 	{

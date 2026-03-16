@@ -1,3 +1,22 @@
+/**
+*
+* @file algorithm_registry.hpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Registers algorithm entries available across skeletonization backends.
+*
+* This header composes all algorithm entry metadata from CPU, threaded, and
+* optional GPU implementations. It exposes a constexpr iteration utility for
+* traversing all registered algorithm descriptors.
+*
+* Main responsibilities:
+* - define a centralized tuple of available algorithm entries
+* - map algorithm names to backend-specific implementations
+* - provide compile-time friendly traversal over registrations
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #pragma once
 
 #include <tuple>
@@ -38,6 +57,7 @@
 
 namespace configuration
 {
+	/// Registered algorithm entries across all enabled backends.
 	inline constexpr auto all_algorithms = std::tuple{
 		make_entry<
 			skeletonizer::cpu::algorithms::zhang_suen,
@@ -116,6 +136,11 @@ namespace configuration
 		>(),
 	};
 
+	/**
+	 * @brief Invokes a callable for each registered algorithm entry.
+	 *
+	 * @param fn Callable receiving a single algorithm entry.
+	 */
 	template <typename Callable>
 	constexpr void for_each_algorithm(Callable&& fn)
 	{

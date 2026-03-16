@@ -1,3 +1,21 @@
+/**
+*
+* @file guo_hall.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements the CPU guo-hall thinning algorithm.
+*
+* This file applies two guo-hall deletion passes iteratively until the binary
+* image stabilizes.
+*
+* Main responsibilities:
+* - run guo-hall iterative thinning loop
+* - execute first and second deletion sub-iterations
+* - clear borders after convergence
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include <algorithm>
 #include <opencv2/imgproc.hpp>
 
@@ -5,6 +23,11 @@
 
 namespace skeletonizer::cpu::algorithms
 {
+	/**
+	 * @brief Applies guo-hall thinning until convergence.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 */
 	void guo_hall::apply(cv::Mat& binary_image) const
 	{
 		cv::Mat previous(binary_image.size(), CV_8UC1, cv::Scalar(0));
@@ -24,6 +47,12 @@ namespace skeletonizer::cpu::algorithms
 		clear_border(binary_image);
 	}
 
+	/**
+	 * @brief Executes the first guo-hall deletion sub-iteration.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 * @param marker Temporary marker matrix.
+	 */
 	void guo_hall::first_iteration(cv::Mat& binary_image, cv::Mat& marker)
 	{
 		marker.setTo(0);
@@ -89,6 +118,12 @@ namespace skeletonizer::cpu::algorithms
 		binary_image &= ~marker;
 	}
 
+	/**
+	 * @brief Executes the second guo-hall deletion sub-iteration.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 * @param marker Temporary marker matrix.
+	 */
 	void guo_hall::second_iteration(cv::Mat& binary_image, cv::Mat& marker)
 	{
 		marker.setTo(0);

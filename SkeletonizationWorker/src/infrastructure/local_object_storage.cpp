@@ -1,3 +1,20 @@
+/**
+*
+* @file local_object_storage.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements local filesystem object storage operations.
+*
+* This file implements local filesystem storage operations.
+*
+* Main responsibilities:
+* - copy files from object keys to local paths
+* - copy local files to object key paths
+* - remove local files by object key
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include "SkeletonizationWorker/infrastructure/local_object_storage.hpp"
 
 #include <expected>

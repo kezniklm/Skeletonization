@@ -1,3 +1,20 @@
+/**
+*
+* @file parser.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements CLI configuration parsing logic.
+*
+* This file implements JSON parsing for benchmark configuration payloads.
+*
+* Main responsibilities:
+* - parse JSON configuration documents
+* - validate required configuration fields
+* - produce typed configuration records
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include "SkeletonizationCLI/configuration/parser.hpp"
 
 #include <algorithm>
@@ -16,6 +33,12 @@
 
 namespace configuration
 {
+	/**
+	 * @brief Parses one skeletonizer variant object from JSON.
+	 *
+	 * @param json_variant JSON object with type and algorithm fields.
+	 * @return Parsed skeletonizer variant.
+	 */
 	skeletonizer_variant parse_variant(const rapidjson::Value& json_variant)
 	{
 		if (!json_variant.HasMember("type") || !json_variant["type"].IsString() ||
@@ -31,6 +54,13 @@ namespace configuration
 		};
 	}
 
+	/**
+	 * @brief Resolves and appends creators for one type/algorithm pair.
+	 *
+	 * @param type Skeletonizer backend type token.
+	 * @param algorithm Algorithm name token.
+	 * @param metadata Target metadata receiving creator callbacks.
+	 */
 	void process_skeletonizer_variant(
 		const std::string& type,
 		const std::string& algorithm,
@@ -67,6 +97,12 @@ namespace configuration
 			std::make_move_iterator(creators.end()));
 	}
 
+	/**
+	 * @brief Parses one image benchmark entry from configuration JSON.
+	 *
+	 * @param entry JSON object describing one benchmark input image.
+	 * @return Parsed image benchmark metadata.
+	 */
 	image_benchmark_metadata parse_image_entry(const rapidjson::Value& entry)
 	{
 		if (!entry.HasMember("name") || !entry["name"].IsString() ||

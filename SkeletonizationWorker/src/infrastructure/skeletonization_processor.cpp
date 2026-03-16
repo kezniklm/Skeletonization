@@ -1,3 +1,20 @@
+/**
+*
+* @file skeletonization_processor.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements infrastructure-backed skeletonization processing.
+*
+* This file implements algorithm lookup and skeletonization execution.
+*
+* Main responsibilities:
+* - resolve algorithms through factory lookup
+* - run preprocessing when enabled
+* - execute skeletonization and return result image
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include "SkeletonizationWorker/infrastructure/skeletonization_processor.hpp"
 
 #include <glog/logging.h>

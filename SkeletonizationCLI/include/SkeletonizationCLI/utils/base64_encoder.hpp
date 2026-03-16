@@ -1,3 +1,20 @@
+/**
+*
+* @file base64_encoder.hpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Declares base64 encoding utilities.
+*
+* This file defines base64 encoding helpers for binary benchmark artifacts.
+*
+* Main responsibilities:
+* - encode binary buffers to base64 text
+* - provide output size estimation helper
+* - support case-insensitive helper comparison
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #pragma once
 
 #include <cstdint>
@@ -8,6 +25,7 @@
 namespace cli::utils
 {
 	/**
+	 * @class base64_encoder
 	 * @brief Utility class for Base64 encoding.
 	 *
 	 * Provides static methods for encoding binary data to Base64 strings.
@@ -52,6 +70,7 @@ namespace cli::utils
 		}
 
 	private:
+		/// Base64 alphabet table.
 		static constexpr char encoding_table[] =
 			"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 	};

@@ -1,3 +1,20 @@
+/**
+*
+* @file dependency_injection.hpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Declares worker dependency injection composition helpers.
+ *
+ * This file defines top-level dependency injection composition for worker.
+ *
+ * Main responsibilities:
+ * - compose worker service graph
+ * - install domain, application, and infrastructure modules
+ * - expose configured injector creation helpers
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #pragma once
 
 #include <boost/di.hpp>

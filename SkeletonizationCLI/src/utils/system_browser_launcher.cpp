@@ -1,3 +1,20 @@
+/**
+*
+* @file system_browser_launcher.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements system browser launch helpers.
+*
+* This file implements platform-specific system browser launch behavior.
+*
+* Main responsibilities:
+* - open URLs in default system browser
+* - handle platform-specific launch commands
+* - report launch failures to callers
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include "SkeletonizationCLI/utils/system_browser_launcher.hpp"
 
 #include <cstdlib>

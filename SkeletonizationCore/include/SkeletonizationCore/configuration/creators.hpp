@@ -1,3 +1,21 @@
+/**
+*
+* @file creators.hpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Defines creator helpers and algorithm entry metadata templates.
+*
+* This header provides utilities for creating skeletonizer factories and
+* describing per-algorithm backend availability in a strongly typed form.
+*
+* Main responsibilities:
+* - generate creator callbacks for concrete implementations
+* - model backend availability using algorithm entry templates
+* - append creators for requested backend types
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #pragma once
 
 #include <memory>
@@ -13,6 +31,11 @@
 
 namespace configuration
 {
+	/**
+	 * @brief Creates a callable that instantiates SkeletonizerImplementation.
+	 *
+	 * @return Creator callback returning a new skeletonizer instance.
+	 */
 	template <skeletonizer_implementation SkeletonizerImplementation>
 	skeletonizer_creator make_creator()
 	{
@@ -22,12 +45,20 @@ namespace configuration
 		};
 	}
 
+	/**
+	 * @class algorithm_entry
+	 * @brief Describes available backend implementations for one algorithm.
+	 *
+	 * This template stores algorithm metadata and exposes helper logic that
+	 * appends creator callbacks based on requested backend type.
+	 */
 	template <
 		class CpuImplementation = std::nullptr_t,
 		class ThreadedImplementation = std::nullptr_t,
 		class GpuImplementation = std::nullptr_t>
 	struct algorithm_entry
 	{
+		/// Normalized algorithm name.
 		const std::string_view name;
 
 		using cpu_type = CpuImplementation;
@@ -56,10 +87,16 @@ namespace configuration
 				ThreadedImplementation>),
 			"ThreadedImplementation must derive from skeletonizer<>");
 #if SKELETONIZATION_WITH_GPU
-		static_assert(!has_gpu || (skeletonizer_implementation<GpuImplementation> && gpu_backend<GpuImplementation>), 
+		static_assert(!has_gpu || (skeletonizer_implementation<GpuImplementation> && gpu_backend<GpuImplementation>),
 		              "GpuImplementation must derive from skeletonizer<>");
 #endif
 
+		/**
+		 * @brief Appends creators matching the selected backend type.
+		 *
+		 * @param type Requested backend type.
+		 * @param out Output creator collection.
+		 */
 		static void push_creators_for_type(skeletonizer::skeletonizer_type type,
 		                                   std::vector<skeletonizer_creator>& out)
 		{
@@ -91,6 +128,11 @@ namespace configuration
 		}
 	};
 
+	/**
+	 * @brief Creates an algorithm entry for provided implementation types.
+	 *
+	 * @return Algorithm entry with inferred algorithm name.
+	 */
 	template <class CpuT = std::nullptr_t,
 	          class ThreadT = std::nullptr_t,
 	          class GpuT = std::nullptr_t>

@@ -1,7 +1,29 @@
-﻿#include "SkeletonizationCoreGPU/guo_hall.cuh"
+/**
+*
+* @file guo_hall.cu
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements CUDA kernels for guo-hall thinning.
+*
+* This file executes guo-hall thinning passes on GPU memory until stable.
+*
+* Main responsibilities:
+* - run GPU guo-hall iteration loop
+* - launch CUDA kernel for each pass
+* - download finalized skeleton output
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
+#include "SkeletonizationCoreGPU/guo_hall.cuh"
 
 namespace skeletonizer::gpu::algorithms
 {
+	/**
+	 * @brief Applies GPU guo-hall thinning to a binary image.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 */
 	void guo_hall::apply(cv::Mat& binary_image) const
 	{
 		cv::cuda::GpuMat gpu_src(binary_image);
@@ -44,6 +66,17 @@ namespace skeletonizer::gpu::algorithms
 	}
 }
 
+/**
+ * @brief Executes one guo-hall CUDA iteration pass.
+ *
+ * @param src Input device image.
+ * @param dst Output device image.
+ * @param num_rows Number of image rows.
+ * @param num_cols Number of image columns.
+ * @param first_pass True for first pass, false for second pass.
+ * @param d_changed Device flag indicating changes.
+ * @param halo Shared-memory halo size.
+ */
 __global__ void guo_hall_iteration_kernel(
 	const cv::cuda::PtrStep<uchar> src,
 	cv::cuda::PtrStep<uchar> dst,
@@ -101,7 +134,7 @@ __global__ void guo_hall_iteration_kernel(
 	const auto p9 = shared_tile[shared_index(local_x - 1, local_y - 1, shared_stride, halo)];
 
 	// ---------------------------
-	// Count transitions from 0 → 1 in the 8-neighbor sequence
+	// Count transitions from 0 ? 1 in the 8-neighbor sequence
 	// This is used to determine if a pixel is an edge pixel
 	// c == 1 means exactly one foreground region is connected around p1
 	// ---------------------------

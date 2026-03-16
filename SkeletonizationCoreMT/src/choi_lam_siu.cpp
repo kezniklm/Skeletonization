@@ -1,4 +1,22 @@
-﻿#include <algorithm>
+#include <algorithm>
+/**
+*
+* @file choi_lam_siu.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements the multithreaded choi-lam-siu thinning algorithm.
+*
+* This file computes nearest-background maps and evaluates residual-distance
+* constraints in parallel processing ranges.
+*
+* Main responsibilities:
+* - compute offset maps for nearest background points
+* - evaluate local residual constraints in parallel
+* - write filtered skeleton output
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include <array>
 #include <atomic>
 #include <cmath>
@@ -10,6 +28,11 @@
 
 namespace skeletonizer::mt::algorithms
 {
+	/**
+	 * @brief Applies threaded choi-lam-siu thinning.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 */
 	void choi_lam_siu::apply(cv::Mat& binary_image) const
 	{
 		const xy_distance_maps distance_maps = get_distance_map(binary_image);
@@ -19,6 +42,14 @@ namespace skeletonizer::mt::algorithms
 		clear_border(binary_image);
 	}
 
+	/**
+	 * @brief Performs choi-lam-siu skeletonization with residual constraints.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 * @param distance_maps Precomputed nearest-background maps.
+	 * @param minimal_residual_distance Minimum residual distance.
+	 * @param maximal_residual_distance Maximum residual distance.
+	 */
 	void choi_lam_siu::skeletonize(const cv::Mat& binary_image,
 	                               const xy_distance_maps& distance_maps,
 	                               const int minimal_residual_distance,
@@ -165,8 +196,8 @@ namespace skeletonizer::mt::algorithms
 					                  }
 
 					                  const auto& q = label_to_background_point_lut[label_id];
-					                  dx_row[x] = q.x - x; // Δx
-					                  dy_row[x] = q.y - y; // Δy
+					                  dx_row[x] = q.x - x; // ?x
+					                  dy_row[x] = q.y - y; // ?y
 				                  }
 			                  }
 		                  });
@@ -174,6 +205,17 @@ namespace skeletonizer::mt::algorithms
 		return {dy, dx};
 	}
 
+	/**
+	 * @brief Checks whether neighborhood constraints are satisfied.
+	 *
+	 * @param dy_map Row offset map.
+	 * @param dx_map Column offset map.
+	 * @param y Row index.
+	 * @param x Column index.
+	 * @param min_d2 Minimum squared distance.
+	 * @param max_d2 Maximum squared distance.
+	 * @return True when neighborhood is valid.
+	 */
 	bool choi_lam_siu::check_neighbourhood(
 		const cv::Mat& dy_map,
 		const cv::Mat& dx_map,
@@ -182,7 +224,7 @@ namespace skeletonizer::mt::algorithms
 		const int min_d2,
 		const int max_d2)
 	{
-		// 8-neighborhood offsets (Δx, Δy) with center skipped
+		// 8-neighborhood offsets (?x, ?y) with center skipped
 		static constexpr std::array<int, 8> d_x{{-1, 0, 1, -1, 1, -1, 0, 1}};
 		static constexpr std::array<int, 8> d_y{{-1, -1, -1, 0, 0, 1, 1, 1}};
 

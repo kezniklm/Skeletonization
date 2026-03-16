@@ -1,3 +1,21 @@
+/**
+*
+* @file export_exception.hpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Declares export-related exception type.
+*
+* This file defines export exception hierarchy used for JSON export,
+* image loading, and image encoding failures.
+*
+* Main responsibilities:
+* - define base export exception type
+* - define JSON export and image loading exceptions
+* - define image encoding exception type
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #pragma once
 
 #include <filesystem>
@@ -8,6 +26,7 @@
 namespace cli::exceptions
 {
 	/**
+	 * @class export_exception
 	 * @brief Exception thrown when export operations fail.
 	 */
 	class export_exception : public cli_exception
@@ -25,6 +44,7 @@ namespace cli::exceptions
 	};
 
 	/**
+	 * @class json_export_exception
 	 * @brief Exception thrown when JSON export fails.
 	 */
 	class json_export_exception final : public export_exception
@@ -39,16 +59,23 @@ namespace cli::exceptions
 		{
 		}
 
+		/**
+		 * @brief Returns output path that failed export.
+		 *
+		 * @return Output path.
+		 */
 		[[nodiscard]] const std::filesystem::path& path() const noexcept
 		{
 			return path_;
 		}
 
 	private:
+		/// Output path for failed JSON export.
 		std::filesystem::path path_;
 	};
 
 	/**
+	 * @class image_loading_exception
 	 * @brief Exception thrown when image loading fails.
 	 */
 	class image_loading_exception final : public cli_exception
@@ -63,16 +90,23 @@ namespace cli::exceptions
 		{
 		}
 
+		/**
+		 * @brief Returns image path that failed loading.
+		 *
+		 * @return Image path.
+		 */
 		[[nodiscard]] const std::filesystem::path& path() const noexcept
 		{
 			return path_;
 		}
 
 	private:
+		/// Image path that failed loading.
 		std::filesystem::path path_;
 	};
 
 	/**
+	 * @class image_encoding_exception
 	 * @brief Exception thrown when image encoding fails.
 	 */
 	class image_encoding_exception final : public export_exception
@@ -84,12 +118,18 @@ namespace cli::exceptions
 		{
 		}
 
+		/**
+		 * @brief Returns failed encoding format.
+		 *
+		 * @return Encoding format token.
+		 */
 		[[nodiscard]] const std::string& format() const noexcept
 		{
 			return format_;
 		}
 
 	private:
+		/// Failed encoding format token.
 		std::string format_;
 	};
 }

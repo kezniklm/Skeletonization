@@ -1,3 +1,20 @@
+/**
+*
+* @file manager.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements benchmark management orchestration.
+*
+* This file implements high-level benchmark manager orchestration.
+*
+* Main responsibilities:
+* - register benchmark runners from configuration
+* - execute benchmark workflows end-to-end
+* - delegate output presentation and export
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include <filesystem>
 #include <memory>
 #include <string>

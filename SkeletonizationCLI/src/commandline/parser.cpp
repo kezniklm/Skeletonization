@@ -1,3 +1,20 @@
+/**
+*
+* @file parser.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements command-line parsing behavior.
+*
+* This file implements command-line parsing and validation logic.
+*
+* Main responsibilities:
+* - parse raw process arguments
+* - validate CLI option values
+* - build typed argument structures
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include "SkeletonizationCLI/commandline/parser.hpp"
 
 #include <algorithm>
@@ -17,6 +34,12 @@
 
 namespace
 {
+	/**
+	 * @brief Validates JSON file extension for output path argument.
+	 *
+	 * @param s Candidate output path.
+	 * @return Empty string when valid, otherwise validation error text.
+	 */
 	std::string json_path_check(const std::string& s)
 	{
 		if (s.empty())
@@ -41,6 +64,11 @@ namespace
 		}
 	}
 
+	/**
+	 * @brief Ensures parent directory of a path exists.
+	 *
+	 * @param p Target file path.
+	 */
 	void ensure_parent_exists(const std::string& p)
 	{
 		std::filesystem::path path{p};
@@ -54,10 +82,21 @@ namespace
 
 namespace commandline
 {
+	/**
+	 * @brief Constructs parser with raw argc/argv arguments.
+	 *
+	 * @param argc Argument count.
+	 * @param argv Argument vector.
+	 */
 	parser::parser(const int argc, const char* const* argv) : argc_(argc), argv_(argv)
 	{
 	}
 
+	/**
+	 * @brief Parses command line and returns typed benchmark arguments.
+	 *
+	 * @return Parsed command line arguments.
+	 */
 	arguments parser::parse() const
 	{
 		arguments args;

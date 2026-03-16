@@ -1,7 +1,30 @@
+/**
+*
+* @file kmm.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements the CPU kmm thinning algorithm.
+*
+* This file performs staged kmm labeling and deletion inside an active
+* region-of-interest to accelerate iterative convergence.
+*
+* Main responsibilities:
+* - run staged kmm thinning loop with active region updates
+* - label, mark, and delete candidate pixels by lookup masks
+* - collapse workspace labels back to binary representation
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include "SkeletonizationCoreCPU/kmm.hpp"
 
 namespace skeletonizer::cpu::algorithms
 {
+	/**
+	 * @brief Applies kmm thinning until no more deletions occur.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 */
 	void kmm::apply(cv::Mat& binary_image) const
 	{
 		auto workspace = create_workspace_matrix(binary_image);
@@ -39,6 +62,12 @@ namespace skeletonizer::cpu::algorithms
 		workspace(cv::Rect(1, 1, binary_image.cols, binary_image.rows)).copyTo(binary_image);
 	}
 
+	/**
+	 * @brief Creates a bordered workspace matrix for staged operations.
+	 *
+	 * @param binary_image Source binary image.
+	 * @return Workspace with one-pixel border.
+	 */
 	cv::Mat kmm::create_workspace_matrix(const cv::Mat& binary_image)
 	{
 		cv::Mat workspace;
@@ -48,6 +77,12 @@ namespace skeletonizer::cpu::algorithms
 		return workspace;
 	}
 
+	/**
+	 * @brief Collapses workspace labels to binary values in a region.
+	 *
+	 * @param matrix Workspace matrix.
+	 * @param roi Active region.
+	 */
 	void kmm::collapse_to_binary(const cv::Mat& matrix, const region_of_interest& roi)
 	{
 		if (roi.y0 >= roi.y1 || roi.x0 >= roi.x1)
@@ -64,6 +99,15 @@ namespace skeletonizer::cpu::algorithms
 		cv::threshold(sub, sub, background, foreground, cv::THRESH_BINARY);
 	}
 
+	/**
+	 * @brief Computes neighborhood bit mask around pixel x.
+	 *
+	 * @param previous Pointer to previous row.
+	 * @param current Pointer to current row.
+	 * @param next Pointer to next row.
+	 * @param x Column index.
+	 * @return Encoded neighborhood mask.
+	 */
 	uint8_t kmm::neighbour_mask(const uint8_t* previous,
 	                            const uint8_t* current,
 	                            const uint8_t* next,
@@ -79,6 +123,12 @@ namespace skeletonizer::cpu::algorithms
 			(next[x + 1] != 0) << 3;
 	}
 
+	/**
+	 * @brief Labels edge and corner candidates in active region.
+	 *
+	 * @param matrix Workspace matrix.
+	 * @param roi Active region.
+	 */
 	void kmm::stage2_label(cv::Mat& matrix, const region_of_interest& roi)
 	{
 		for (auto y = roi.y0; y < roi.y1; ++y)
@@ -110,6 +160,12 @@ namespace skeletonizer::cpu::algorithms
 		}
 	}
 
+	/**
+	 * @brief Marks stick pixels that must be preserved.
+	 *
+	 * @param matrix Workspace matrix.
+	 * @param roi Active region.
+	 */
 	void kmm::stage3_mark_stick(cv::Mat& matrix, const region_of_interest& roi)
 	{
 		for (auto y = roi.y0; y < roi.y1; ++y)
@@ -137,6 +193,14 @@ namespace skeletonizer::cpu::algorithms
 		}
 	}
 
+	/**
+	 * @brief Deletes marked pixels and reports touched region.
+	 *
+	 * @param matrix Workspace matrix.
+	 * @param roi Active region.
+	 * @param touched_out Output touched region.
+	 * @return True when at least one pixel is deleted.
+	 */
 	bool kmm::stage4_delete_marked(cv::Mat& matrix, const region_of_interest& roi,
 	                               region_of_interest& touched_out)
 	{
@@ -172,6 +236,15 @@ namespace skeletonizer::cpu::algorithms
 		return any;
 	}
 
+	/**
+	 * @brief Deletes pixels matching target class and delete lookup table.
+	 *
+	 * @param m Workspace matrix.
+	 * @param target Target label.
+	 * @param roi Active region.
+	 * @param touched_out Output touched region.
+	 * @return True when at least one pixel is deleted.
+	 */
 	bool kmm::stage5_delete_array(cv::Mat& m, uint8_t target,
 	                              const region_of_interest& roi,
 	                              region_of_interest& touched_out)

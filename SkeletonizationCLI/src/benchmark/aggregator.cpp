@@ -1,3 +1,21 @@
+/**
+*
+* @file aggregator.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements benchmark aggregation workflows.
+*
+* This file implements aggregation of benchmark runner outputs into
+* presentation packages.
+*
+* Main responsibilities:
+* - aggregate runner outputs with parsed metrics
+* - compute summary statistics for reports
+* - build visualization-ready benchmark packages
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include "SkeletonizationCLI/benchmark/aggregator.hpp"
 
 #include <algorithm>
@@ -20,10 +38,17 @@ namespace skeletonization_benchmark
 	{
 		constexpr auto original_label = "Original";
 
+		/**
+		 * @class algorithm_record
+		 * @brief Stores one algorithm output image with associated metrics.
+		 */
 		struct algorithm_record
 		{
+			/// Display label for rendered output image.
 			std::string label;
+			/// Output image produced by the algorithm.
 			cv::Mat image;
+			/// Parsed benchmark metrics for this output.
 			visual_inspector::image_metrics metrics{};
 		};
 
@@ -31,14 +56,25 @@ namespace skeletonization_benchmark
 		using image_algorithm_record_map = std::map<image_name, std::vector<algorithm_record>>;
 		using original_images_map = std::map<image_name, cv::Mat>;
 
+		/**
+		 * @class summary
+		 * @brief Aggregated timing and throughput statistics for one container.
+		 */
 		struct summary
 		{
+			/// Average execution time in milliseconds.
 			double avg_ms = 0.0;
+			/// Minimum execution time in milliseconds.
 			double min_ms = 0.0;
+			/// Maximum execution time in milliseconds.
 			double max_ms = 0.0;
+			/// Total iteration count across entries.
 			int64_t total_iters = 0;
+			/// Average iteration count across entries.
 			int64_t avg_iters = 0;
+			/// Standard deviation of execution time.
 			double stddev_ms = 0.0;
+			/// Throughput in algorithms per second.
 			double throughput_per_s = 0.0;
 		};
 

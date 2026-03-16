@@ -1,3 +1,21 @@
+/**
+*
+* @file han_la_rhee.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements the multithreaded han-la-rhee thinning algorithm.
+*
+* This file computes neighborhood weights and performs threaded deletion
+* passes until convergence.
+*
+* Main responsibilities:
+* - run threaded han-la-rhee iterative loop
+* - compute neighborhood weight matrix
+* - execute weighted deletion in parallel ranges
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include <opencv2/core.hpp>
 #include <opencv2/core/utility.hpp>
 
@@ -5,6 +23,11 @@
 
 namespace skeletonizer::mt::algorithms
 {
+	/**
+	 * @brief Applies threaded han-la-rhee thinning.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 */
 	void han_la_rhee::apply(cv::Mat& binary_image) const
 	{
 		cv::Mat previous(binary_image.size(), CV_8UC1, cv::Scalar(0));
@@ -26,6 +49,13 @@ namespace skeletonizer::mt::algorithms
 		clear_border(binary_image);
 	}
 
+	/**
+	 * @brief Executes one weighted deletion iteration in parallel.
+	 *
+	 * @param binary_image Source binary image.
+	 * @param marker Temporary marker matrix.
+	 * @param weight Weight matrix.
+	 */
 	void han_la_rhee::iteration(const cv::Mat& binary_image,
 	                            cv::Mat& marker,
 	                            const cv::Mat& weight)
@@ -139,6 +169,12 @@ namespace skeletonizer::mt::algorithms
 		binary_image &= ~marker;
 	}
 
+	/**
+	 * @brief Calculates neighborhood weights for all pixels.
+	 *
+	 * @param image Binary image input.
+	 * @param weight Output weight matrix.
+	 */
 	void han_la_rhee::calculate_weight(cv::Mat& image, cv::Mat& weight)
 	{
 		weight.setTo(0);

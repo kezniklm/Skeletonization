@@ -1,3 +1,20 @@
+/**
+*
+* @file worker_loop.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements the worker main processing loop use case.
+*
+* This file implements queue polling and job lifecycle processing loop.
+*
+* Main responsibilities:
+* - poll job payloads from queue backend
+* - deserialize and dispatch jobs for processing
+* - update and track job processing status
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include "SkeletonizationWorker/application/use_cases/worker_loop.hpp"
 
 #include <glog/logging.h>

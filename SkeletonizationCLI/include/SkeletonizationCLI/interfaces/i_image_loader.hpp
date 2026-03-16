@@ -1,3 +1,21 @@
+/**
+*
+* @file i_image_loader.hpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Declares image loader interface.
+*
+* This file defines the contract for loading image matrices used in
+* benchmark execution.
+*
+* Main responsibilities:
+* - load image files into matrices
+* - abstract loading strategy from callers
+* - support testability through interface substitution
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #pragma once
 
 #include <filesystem>
@@ -6,6 +24,7 @@
 namespace cli::interfaces
 {
 	/**
+	 * @class i_image_loader
 	 * @brief Interface for loading images from disk.
 	 *
 	 * Abstracts image loading operations to enable dependency
@@ -14,6 +33,9 @@ namespace cli::interfaces
 	class i_image_loader
 	{
 	public:
+		/**
+		 * @brief Destroys the image loader interface.
+		 */
 		virtual ~i_image_loader() = default;
 
 		/**

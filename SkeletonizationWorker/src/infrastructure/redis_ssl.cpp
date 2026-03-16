@@ -1,3 +1,20 @@
+/**
+*
+* @file redis_ssl.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements Redis TLS helper configuration and setup.
+*
+* This file implements TLS context initialization for Redis connectivity.
+*
+* Main responsibilities:
+* - initialize SSL library once
+* - create and manage Redis SSL context
+* - apply SSL context to Redis connections
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include <openssl/ssl.h>
 
 #include <glog/logging.h>

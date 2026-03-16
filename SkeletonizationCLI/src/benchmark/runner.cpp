@@ -1,3 +1,20 @@
+/**
+*
+* @file runner.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements benchmark run execution pipelines.
+*
+* This file implements benchmark runner logic for one input image.
+*
+* Main responsibilities:
+* - load and preprocess input image data
+* - register and execute algorithm benchmarks
+* - collect and package output artifacts
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include "SkeletonizationCLI/benchmark/runner.hpp"
 
 #include <functional>

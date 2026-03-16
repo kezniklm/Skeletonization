@@ -1,3 +1,21 @@
+/**
+*
+* @file output_format.hpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Declares output format types used by the worker.
+*
+* This file defines output format enum values and helper conversion
+* functions for extensions, MIME types, and parsing.
+*
+* Main responsibilities:
+* - define supported output formats
+* - map formats to extension and MIME strings
+* - parse string values into format enum
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #pragma once
 
 #include <optional>
@@ -7,6 +25,9 @@
 
 namespace job
 {
+	/**
+	 * @brief Enumerates supported output image formats.
+	 */
 	enum class output_format
 	{
 		png,
@@ -15,6 +36,12 @@ namespace job
 		tiff
 	};
 
+	/**
+	 * @brief Returns file extension for output format.
+	 *
+	 * @param format Output format value.
+	 * @return File extension without leading dot.
+	 */
 	constexpr std::string_view to_extension(const output_format format) noexcept
 	{
 		switch (format)
@@ -27,6 +54,12 @@ namespace job
 		}
 	}
 
+	/**
+	 * @brief Returns MIME type for output format.
+	 *
+	 * @param format Output format value.
+	 * @return MIME type string.
+	 */
 	constexpr std::string_view to_mime_type(const output_format format) noexcept
 	{
 		switch (format)
@@ -39,6 +72,12 @@ namespace job
 		}
 	}
 
+	/**
+	 * @brief Parses output format token.
+	 *
+	 * @param format Format token string.
+	 * @return Parsed format value when token is valid.
+	 */
 	constexpr std::optional<output_format> parse_output_format(const std::string_view format) noexcept
 	{
 		if (equals_ascii(format, "PNG"))

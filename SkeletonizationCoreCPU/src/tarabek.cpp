@@ -1,7 +1,30 @@
+/**
+*
+* @file tarabek.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements the CPU tarabek thinning algorithm.
+*
+* This file performs iterative tarabek deletion passes, template-based
+* processing, and final postprocessing cleanup.
+*
+* Main responsibilities:
+* - run iterative tarabek thinning loop
+* - process neighborhood templates for conditional deletion
+* - apply postprocessing refinements and border clearing
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include "SkeletonizationCoreCPU/tarabek.hpp"
 
 namespace skeletonizer::cpu::algorithms
 {
+	/**
+	 * @brief Applies tarabek thinning until convergence.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 */
 	void tarabek::apply(cv::Mat& binary_image) const
 	{
 		cv::Mat prev(binary_image.size(), CV_8UC1, cv::Scalar(0));
@@ -22,6 +45,12 @@ namespace skeletonizer::cpu::algorithms
 		clear_border(binary_image);
 	}
 
+	/**
+	 * @brief Executes the first tarabek deletion iteration.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 * @param marker Temporary marker matrix.
+	 */
 	void tarabek::first_iteration(cv::Mat& binary_image, cv::Mat& marker)
 	{
 		marker.setTo(0);
@@ -110,6 +139,12 @@ namespace skeletonizer::cpu::algorithms
 		binary_image &= ~marker;
 	}
 
+	/**
+	 * @brief Executes the second tarabek deletion iteration.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 * @param marker Temporary marker matrix.
+	 */
 	void tarabek::second_iteration(cv::Mat& binary_image, cv::Mat& marker)
 	{
 		marker.setTo(0);
@@ -199,6 +234,13 @@ namespace skeletonizer::cpu::algorithms
 	}
 
 	template <std::size_t N>
+	/**
+	 * @brief Processes a set of tarabek bit templates.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 * @param templates_bits Template bit definitions.
+	 * @param background_value Background marker value.
+	 */
 	void tarabek::process_template_set(cv::Mat& binary_image,
 	                                   const std::array<mask_bits, N>& templates_bits,
 	                                   const std::uint8_t background_value)
@@ -251,6 +293,11 @@ namespace skeletonizer::cpu::algorithms
 		while (changed);
 	}
 
+	/**
+	 * @brief Applies tarabek postprocessing refinement rules.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 */
 	void tarabek::postprocessing(cv::Mat& binary_image)
 	{
 		process_template_set(binary_image, templates_a_bits, background);

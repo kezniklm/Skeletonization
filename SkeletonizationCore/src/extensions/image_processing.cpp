@@ -1,3 +1,22 @@
+/**
+*
+* @file image_processing.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements preprocessing steps for skeletonization input images.
+*
+* This file provides concrete OpenCV-based transformations used to prepare
+* input images for thinning algorithms. It includes loading, cleanup, contour
+* extraction, and binary normalization operations.
+*
+* Main responsibilities:
+* - load images and validate input availability
+* - apply preprocessing transformations for noise and structure cleanup
+* - produce binary matrices ready for skeletonization execution
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include <expected>
 #include <string>
 
@@ -8,6 +27,12 @@
 #include "SkeletonizationCore/extensions/image_processing.hpp"
 #include "SkeletonizationCore/extensions/pipeline.hpp"
 
+/**
+ * @brief Reads an image from disk.
+ *
+ * @param path Image file path.
+ * @return Loaded image or failure message.
+ */
 std::expected<cv::Mat, std::string> read_image(const std::string& path)
 {
 	auto input_image = cv::imread(path);
@@ -20,6 +45,12 @@ std::expected<cv::Mat, std::string> read_image(const std::string& path)
 	return input_image;
 }
 
+/**
+ * @brief Converts input image to grayscale format.
+ *
+ * @param image Source image.
+ * @return Grayscale image.
+ */
 cv::Mat convert_greyscale(const cv::Mat& image)
 {
 	cv::Mat gray_image = image.clone();
@@ -36,6 +67,12 @@ cv::Mat convert_greyscale(const cv::Mat& image)
 	return gray_image;
 }
 
+/**
+ * @brief Applies gaussian blur for noise reduction.
+ *
+ * @param image Source image.
+ * @return Blurred image.
+ */
 cv::Mat blur(const cv::Mat& image)
 {
 	cv::Mat blurred_image = image.clone();
@@ -45,6 +82,12 @@ cv::Mat blur(const cv::Mat& image)
 	return blurred_image;
 }
 
+/**
+ * @brief Applies adaptive thresholding with inversion.
+ *
+ * @param image Source grayscale image.
+ * @return Thresholded binary image.
+ */
 cv::Mat threshold(const cv::Mat& image)
 {
 	constexpr auto maximal_value = 255.0;
@@ -62,6 +105,12 @@ cv::Mat threshold(const cv::Mat& image)
 	return thresholded_image;
 }
 
+/**
+ * @brief Removes small noise using morphological closing.
+ *
+ * @param image Source binary image.
+ * @return Morphologically cleaned image.
+ */
 cv::Mat clean_noise(const cv::Mat& image)
 {
 	cv::Mat cleaned;
@@ -77,6 +126,12 @@ cv::Mat clean_noise(const cv::Mat& image)
 	return cleaned;
 }
 
+/**
+ * @brief Connects nearby binary components using dilation.
+ *
+ * @param image Source binary image.
+ * @return Dilated image.
+ */
 cv::Mat connect_components(const cv::Mat& image)
 {
 	cv::Mat connected;
@@ -89,6 +144,12 @@ cv::Mat connect_components(const cv::Mat& image)
 	return connected;
 }
 
+/**
+ * @brief Extracts and fills external contours larger than a minimum area.
+ *
+ * @param image Source binary image.
+ * @return Filled contour mask.
+ */
 cv::Mat extract_filled_contours(const cv::Mat& image)
 {
 	std::vector<std::vector<cv::Point>> contours;
@@ -117,16 +178,34 @@ cv::Mat extract_filled_contours(const cv::Mat& image)
 	return filled;
 }
 
+/**
+ * @brief Normalizes binary values from 0/255 to 0/1.
+ *
+ * @param image Source binary image.
+ * @return Normalized binary image.
+ */
 cv::Mat binarize(const cv::Mat& image)
 {
 	return image / default_ratio;
 }
 
+/**
+ * @brief Scales binary values from 0/1 to 0/255.
+ *
+ * @param image Source normalized image.
+ * @return Scaled binary image.
+ */
 cv::Mat scale(const cv::Mat& image)
 {
 	return image * default_ratio;
 }
 
+/**
+ * @brief Runs the full preprocessing pipeline.
+ *
+ * @param image Source image.
+ * @return Preprocessed binary image.
+ */
 cv::Mat preprocess_image(const cv::Mat& image)
 {
 	return pipeline(image)

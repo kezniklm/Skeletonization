@@ -1,3 +1,21 @@
+/**
+*
+* @file skeletonization_processor.hpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Declares infrastructure skeletonization processor implementation.
+*
+* This file defines skeletonization processor implementation that selects
+* algorithms through the algorithm factory.
+*
+* Main responsibilities:
+* - resolve algorithms by name and backend
+* - execute skeletonization processing
+* - optionally run preprocessing before processing
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #pragma once
 
 #include <expected>
@@ -9,6 +27,10 @@
 
 namespace worker::infrastructure
 {
+	/**
+	 * @class skeletonization_processor
+	 * @brief Implements algorithm selection and skeletonization execution.
+	 */
 	class skeletonization_processor final : public application::interfaces::i_skeletonization_processor
 	{
 	public:
@@ -24,6 +46,7 @@ namespace worker::infrastructure
 			bool should_preprocess) override;
 
 	private:
+		/// Configured processor backend type.
 		skeletonizer::skeletonizer_type processor_type_;
 	};
 }

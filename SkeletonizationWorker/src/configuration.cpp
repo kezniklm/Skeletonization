@@ -1,3 +1,20 @@
+/**
+*
+* @file configuration.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements worker configuration parsing and normalization.
+*
+* This file implements loading and normalization of worker configuration.
+*
+* Main responsibilities:
+* - load environment values into configuration model
+* - normalize and validate runtime settings
+* - construct typed dependency injection values
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include <algorithm>
 #include <fstream>
 #include <ranges>

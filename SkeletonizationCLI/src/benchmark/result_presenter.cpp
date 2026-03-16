@@ -1,3 +1,20 @@
+/**
+*
+* @file result_presenter.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements benchmark result presentation helpers.
+*
+* This file implements result presentation, export, and visualization calls.
+*
+* Main responsibilities:
+* - transform benchmark output for presentation
+* - export result and configuration artifacts
+* - trigger visualization rendering workflows
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include "SkeletonizationCLI/benchmark/result_presenter.hpp"
 
 #include <filesystem>

@@ -1,7 +1,30 @@
+/**
+*
+* @file han_la_rhee.cpp
+* @author Matej Keznikl (matej.keznikl@gmail.com)
+* @brief Implements the CPU han-la-rhee thinning algorithm.
+*
+* This file computes neighborhood weights and performs iterative han-la-rhee
+* deletions until the binary image converges.
+*
+* Main responsibilities:
+* - run han-la-rhee iterative thinning loop
+* - compute neighborhood-based weight matrix
+* - execute weighted deletion iterations
+*
+* @version 1.0
+* @date 2026-03-16
+*/
+
 #include "SkeletonizationCoreCPU/han_la_rhee.hpp"
 
 namespace skeletonizer::cpu::algorithms
 {
+	/**
+	 * @brief Applies han-la-rhee thinning until convergence.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 */
 	void han_la_rhee::apply(cv::Mat& binary_image) const
 	{
 		cv::Mat previous(binary_image.size(), CV_8UC1, cv::Scalar(0));
@@ -22,6 +45,13 @@ namespace skeletonizer::cpu::algorithms
 		clear_border(binary_image);
 	}
 
+	/**
+	 * @brief Executes one weighted han-la-rhee deletion iteration.
+	 *
+	 * @param binary_image Binary image modified in place.
+	 * @param marker Temporary marker matrix.
+	 * @param weight Per-pixel weight matrix.
+	 */
 	void han_la_rhee::iteration(cv::Mat& binary_image, cv::Mat& marker, const cv::Mat& weight)
 	{
 		marker.setTo(0);
@@ -126,6 +156,12 @@ namespace skeletonizer::cpu::algorithms
 		binary_image &= ~marker;
 	}
 
+	/**
+	 * @brief Calculates local neighborhood weights for han-la-rhee rules.
+	 *
+	 * @param image Binary image input.
+	 * @param weight Output weight matrix.
+	 */
 	void han_la_rhee::calculate_weight(cv::Mat& image, cv::Mat& weight)
 	{
 		weight.setTo(0);
