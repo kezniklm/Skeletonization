@@ -1,3 +1,12 @@
+/**
+ * @file client.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Manages Redis client lifecycle and reconnection behavior.
+ * @description Provides shared Redis client manager with heartbeat and subscriber client creation utilities.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { createClient } from "redis";
 
 const redisUrl = process.env.REDIS_URL ?? "redis://localhost:6379";
@@ -19,6 +28,7 @@ const createRedisClient = () =>
     }
   });
 
+/** @brief Type alias for configured Redis client instance. */
 export type RedisClient = ReturnType<typeof createRedisClient>;
 
 const startHeartbeat = (client: RedisClient, label: string): ReturnType<typeof setInterval> =>
@@ -111,4 +121,5 @@ class RedisClientManager {
   }
 }
 
+/** @brief Singleton manager for Redis connections. */
 export const redisClientManager = new RedisClientManager();

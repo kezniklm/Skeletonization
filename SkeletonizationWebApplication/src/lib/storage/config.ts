@@ -1,5 +1,16 @@
+/**
+ * @file config.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Resolves object storage configuration from environment.
+ * @description Defines local and S3 storage config shapes and helper to load validated storage backend settings.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
+/** @brief Supported object storage backend values. */
 export type StorageBackend = "local" | "s3";
 
+/** @brief Discriminated union for supported storage backend configuration. */
 export type StorageConfig =
   | {
       backend: "local";
@@ -32,6 +43,7 @@ const parseBool = (value: string | undefined, defaultValue: boolean) => {
   return defaultValue;
 };
 
+/** @brief Loads and validates storage configuration from environment variables. */
 export const getStorageConfig = (): StorageConfig => {
   const backend = (process.env.STORAGE_BACKEND ?? "local").toLowerCase() as StorageBackend;
 

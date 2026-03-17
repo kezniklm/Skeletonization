@@ -1,8 +1,20 @@
+/**
+ * @file social-sign-in-buttons.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders predefined set of social sign-in buttons.
+ * @description Declares provider configurations and maps them to reusable sign-in button component instances.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import type { ReactNode } from "react";
 
 import { SocialSignInButton, type SocialProviderId } from "./social-sign-in-button";
 import { DiscordIcon, GitHubIcon, GoogleIcon } from "./social-sign-in-icons";
 
+/**
+ * @brief Represents one social sign-in button configuration object.
+ */
 type SocialButtonConfig = Readonly<{
   provider: SocialProviderId;
   label: string;
@@ -10,8 +22,16 @@ type SocialButtonConfig = Readonly<{
   icon: ReactNode;
 }>;
 
+/**
+ * @brief Stores shared class names for provider icon sizing.
+ * @description Maintains consistent icon dimensions across all social providers.
+ */
 const ICON_CLASS_NAME = "h-6 w-6 transition-transform group-hover:scale-110 xl:h-5 xl:w-5 2xl:h-6 2xl:w-6";
 
+/**
+ * @brief Declares all social sign-in provider button configurations.
+ * @description Defines provider identity, styling variant, display label, and icon element.
+ */
 const SOCIAL_SIGN_IN_BUTTONS: readonly SocialButtonConfig[] = [
   {
     provider: "google",
@@ -33,6 +53,10 @@ const SOCIAL_SIGN_IN_BUTTONS: readonly SocialButtonConfig[] = [
   }
 ];
 
+/**
+ * @brief Renders social sign-in button group.
+ * @returns Fragment containing all provider buttons.
+ */
 export const SocialSignInButtons = () => (
   <>
     {SOCIAL_SIGN_IN_BUTTONS.map(({ provider, label, icon, variant }) => (

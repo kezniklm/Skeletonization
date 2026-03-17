@@ -1,18 +1,40 @@
+/**
+ * @file social-sign-in-button.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Implements reusable social sign-in action button.
+ * @description Triggers OAuth login flow for configured provider with visual variant styling.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import type { ReactNode } from "react";
 
 import { authClient } from "@/auth-client";
 
+/**
+ * @brief Enumerates supported social authentication providers.
+ */
 export type SocialProviderId = "google" | "github" | "discord";
 
+/**
+ * @brief Defines styling variants for social sign-in buttons.
+ */
 type SocialSignInButtonVariant = "blue" | "gray";
 
+/**
+ * @brief Maps button variant to Tailwind interaction classes.
+ * @description Ensures provider buttons share structure while using variant-specific accents.
+ */
 const VARIANT_CLASSES: Record<SocialSignInButtonVariant, string> = {
   blue: "hover:border-blue-500 focus:ring-blue-500/50 dark:hover:border-blue-400",
   gray: "hover:border-gray-500 focus:ring-gray-500/50 dark:hover:border-gray-400"
 };
 
+/**
+ * @brief Represents social sign-in button properties.
+ */
 type SocialSignInButtonProps = Readonly<{
   provider: SocialProviderId;
   label: string;
@@ -20,7 +42,19 @@ type SocialSignInButtonProps = Readonly<{
   variant: SocialSignInButtonVariant;
 }>;
 
+/**
+ * @brief Renders social sign-in button for a specific provider.
+ * @param provider Authentication provider identifier.
+ * @param label Provider display label.
+ * @param icon Provider icon element.
+ * @param variant Visual style variant.
+ * @returns Provider sign-in button JSX.
+ */
 export const SocialSignInButton = ({ provider, label, icon, variant }: SocialSignInButtonProps) => {
+  /**
+   * @brief Starts OAuth social sign-in flow.
+   * @returns Promise resolved after auth client call is dispatched.
+   */
   const handleSignIn = async () => {
     await authClient.signIn.social({
       provider,

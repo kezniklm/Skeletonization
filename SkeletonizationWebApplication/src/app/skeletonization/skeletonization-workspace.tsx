@@ -1,3 +1,10 @@
+/**
+ * @file skeletonization-workspace.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Orchestrates multi-step skeletonization run configuration UI.
+ * @description Handles run setup validation, image filtering and selection, preprocessing preferences, and run submission workflow.
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -33,12 +40,18 @@ type SkeletonizationWorkspaceProps = {
   defaultOutputFormat: FileOutputFormat;
 };
 
+/**
+ * @brief Represents one step in the skeletonization configuration wizard.
+ */
 type Step = {
   id: number;
   title: string;
   description: string;
 };
 
+/**
+ * @brief Defines step metadata for the run creation wizard.
+ */
 const STEPS: Step[] = [
   { id: 1, title: "Configure Run", description: "Name and algorithms" },
   { id: 2, title: "Select Images", description: "Choose images to process" },
@@ -60,6 +73,13 @@ type RunFormErrors = {
   imageIds?: string;
 };
 
+/**
+ * @brief Renders the skeletonization run configuration workspace.
+ * @description Guides users through naming runs, choosing algorithms and images, reviewing configuration, and submitting run creation.
+ * @param images Images available for run selection.
+ * @param defaultOutputFormat Default output format applied to run parameters.
+ * @returns A multi-step skeletonization configuration interface.
+ */
 export const SkeletonizationWorkspace = ({ images, defaultOutputFormat }: SkeletonizationWorkspaceProps) => {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);

@@ -30,7 +30,8 @@ export default defineConfig([
     "**/next.config.mjs",
     "**/*.md",
     "**/*.html",
-    ".next"
+    ".next",
+    ".trigger"
   ]),
   reactCompiler.configs.recommended,
   {

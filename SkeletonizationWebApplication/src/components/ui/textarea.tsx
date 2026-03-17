@@ -1,7 +1,19 @@
+/**
+ * @file textarea.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Multi-line text input component.
+ * @description Provides a consistent textarea primitive for longer user text entry.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { type ComponentProps } from "react";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * @brief Renders a styled multiline textarea.
+ */
 const Textarea = ({ className, ...props }: ComponentProps<"textarea">) => (
   <textarea
     className={cn(

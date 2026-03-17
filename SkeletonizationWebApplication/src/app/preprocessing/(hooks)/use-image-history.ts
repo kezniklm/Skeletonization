@@ -1,3 +1,10 @@
+/**
+ * @file use-image-history.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Tracks preprocessing undo/redo history and snapshot restoration.
+ * @description Maintains state snapshots for filters, transforms, and canvases, and provides keyboard-aware navigation controls.
+ */
+
 "use client";
 
 import { type Dispatch, type RefObject, type SetStateAction, useEffect, useState } from "react";
@@ -53,6 +60,18 @@ const applyHistoryEntry = ({
   setHistoryIndex(index);
 };
 
+/**
+ * @brief Manages preprocessing state history for undo/redo operations.
+ * @description Captures canvas snapshots with filter and transform states, supports keyboard shortcuts, and restores prior entries.
+ * @param setFilters Setter for filter state restoration.
+ * @param setTransforms Setter for transform state restoration.
+ * @param canvasRef Reference to processed output canvas.
+ * @param baseCanvasRef Reference to base processing canvas.
+ * @param originalImageRef Reference to original image element.
+ * @param skipNextProcessingRef Optional flag to suppress one pipeline run during history restore.
+ * @returns History state metadata and mutation handlers.
+ */
+/** @brief Manages preprocessing undo/redo history snapshots. */
 export const useProcessingHistory = (
   setFilters: Dispatch<SetStateAction<FilterState>>,
   setTransforms: Dispatch<SetStateAction<TransformState>>,

@@ -1,3 +1,12 @@
+/**
+ * @file dialog.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Dialog primitive wrappers for modal interfaces.
+ * @description Provides reusable Radix dialog components with consistent styling and optional close affordance.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import * as DialogPrimitive from "@radix-ui/react-dialog";
@@ -5,22 +14,37 @@ import { XIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * @brief Root dialog container.
+ */
 const Dialog = ({ ...props }: React.ComponentProps<typeof DialogPrimitive.Root>) => (
   <DialogPrimitive.Root data-slot="dialog" {...props} />
 );
 
+/**
+ * @brief Trigger element for opening dialog content.
+ */
 const DialogTrigger = ({ ...props }: React.ComponentProps<typeof DialogPrimitive.Trigger>) => (
   <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />
 );
 
+/**
+ * @brief Portal wrapper for dialog rendering.
+ */
 const DialogPortal = ({ ...props }: React.ComponentProps<typeof DialogPrimitive.Portal>) => (
   <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />
 );
 
+/**
+ * @brief Close action element for dialogs.
+ */
 const DialogClose = ({ ...props }: React.ComponentProps<typeof DialogPrimitive.Close>) => (
   <DialogPrimitive.Close data-slot="dialog-close" {...props} />
 );
 
+/**
+ * @brief Backdrop overlay behind dialog content.
+ */
 const DialogOverlay = ({ className, ...props }: React.ComponentProps<typeof DialogPrimitive.Overlay>) => (
   <DialogPrimitive.Overlay
     data-slot="dialog-overlay"
@@ -32,6 +56,9 @@ const DialogOverlay = ({ className, ...props }: React.ComponentProps<typeof Dial
   />
 );
 
+/**
+ * @brief Main dialog content container.
+ */
 const DialogContent = ({
   className,
   children,
@@ -64,10 +91,16 @@ const DialogContent = ({
   </DialogPortal>
 );
 
+/**
+ * @brief Header layout section for dialog content.
+ */
 const DialogHeader = ({ className, ...props }: React.ComponentProps<"div">) => (
   <div data-slot="dialog-header" className={cn("flex flex-col gap-2 text-center sm:text-left", className)} {...props} />
 );
 
+/**
+ * @brief Footer layout section for dialog actions.
+ */
 const DialogFooter = ({ className, ...props }: React.ComponentProps<"div">) => (
   <div
     data-slot="dialog-footer"
@@ -76,6 +109,9 @@ const DialogFooter = ({ className, ...props }: React.ComponentProps<"div">) => (
   />
 );
 
+/**
+ * @brief Styled title element for dialogs.
+ */
 const DialogTitle = ({ className, ...props }: React.ComponentProps<typeof DialogPrimitive.Title>) => (
   <DialogPrimitive.Title
     data-slot="dialog-title"
@@ -84,6 +120,9 @@ const DialogTitle = ({ className, ...props }: React.ComponentProps<typeof Dialog
   />
 );
 
+/**
+ * @brief Styled description element for dialogs.
+ */
 const DialogDescription = ({ className, ...props }: React.ComponentProps<typeof DialogPrimitive.Description>) => (
   <DialogPrimitive.Description
     data-slot="dialog-description"

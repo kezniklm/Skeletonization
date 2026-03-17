@@ -1,3 +1,12 @@
+/**
+ * @file images.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Server actions for image upload and lifecycle operations.
+ * @description Implements authenticated image upload, metadata updates, archive operations, deletion, and preprocessing output persistence.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use server";
 
 import { createHash } from "crypto";
@@ -72,6 +81,7 @@ const buildStorageKey = (userId: string, originalName: string) => {
   return `uploads/${userId}/${filename}`;
 };
 
+/** @brief Uploads a validated image file and creates image metadata record. */
 export const uploadImageAction = async (file: File) => {
   const user = await requireUser("upload images");
 
@@ -110,6 +120,7 @@ export const uploadImageAction = async (file: File) => {
   return imageRecord;
 };
 
+/** @brief Updates mutable image metadata fields for an image id. */
 export const updateImageAction = async (imageId: string, imageData: { originalFilename?: string; status?: string }) => {
   await requireUser("update images");
 
@@ -118,6 +129,7 @@ export const updateImageAction = async (imageId: string, imageData: { originalFi
   return updateImage(imageId, parsedData);
 };
 
+/** @brief Archives a user-owned image. */
 export const archiveImageAction = async (imageId: string) => {
   const user = await requireUser("archive images");
 
@@ -134,6 +146,7 @@ export const archiveImageAction = async (imageId: string) => {
   return updateImage(imageId, { status: "archived" });
 };
 
+/** @brief Unarchives a user-owned image back to uploaded status. */
 export const unarchiveImageAction = async (imageId: string) => {
   const user = await requireUser("unarchive images");
 
@@ -150,6 +163,7 @@ export const unarchiveImageAction = async (imageId: string) => {
   return updateImage(imageId, { status: "uploaded" });
 };
 
+/** @brief Deletes a user-owned image from storage and database. */
 export const deleteImageAction = async (imageId: string) => {
   const user = await requireUser("delete images");
 
@@ -173,6 +187,7 @@ export const deleteImageAction = async (imageId: string) => {
   await deleteImage(imageId);
 };
 
+/** @brief Saves preprocessing output as derived image for a source image. */
 export const savePreprocessedImageAction = async (
   imageId: string,
   imageDataUrl: string,

@@ -1,3 +1,10 @@
+/**
+ * @file preprocessing-workspace.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders the main preprocessing workspace layout.
+ * @description Connects workspace state hooks with preview and controls panels, including feedback and save confirmation dialogs.
+ */
+
 import { type CV } from "mirada/dist/src/types/opencv";
 import {
   AlertDialog,
@@ -23,6 +30,15 @@ type PreprocessingWorkspaceProps = {
   defaultOutputFormat: FileOutputFormat;
 };
 
+/**
+ * @brief Displays interactive preprocessing controls and preview for a selected image.
+ * @description Binds preprocessing state management to UI panels and modal dialogs for user feedback and save decisions.
+ * @param selectedImage Metadata for the source image being edited.
+ * @param originalImage Loaded image element used for rendering and comparisons.
+ * @param cv OpenCV runtime instance used for processing operations.
+ * @param defaultOutputFormat Preferred file format used when exporting output.
+ * @returns A workspace view containing preview and controls regions.
+ */
 export const PreprocessingWorkspace = ({
   selectedImage,
   originalImage,

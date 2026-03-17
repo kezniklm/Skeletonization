@@ -1,3 +1,12 @@
+/**
+ * @file image-card.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders interactive card for one stored image.
+ * @description Displays metadata and actions for processing, renaming, archiving, unarchiving, and deleting an image.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import { Archive, ArchiveRestore, Calendar, Check, Eye, ImageIcon, Pencil, Trash2, X } from "lucide-react";
@@ -16,6 +25,9 @@ import { useTimezone } from "@/contexts/timezone-context";
 
 import { formatDate, formatFileSize, getStatusBadgeClass, getStatusLabel } from "./utils";
 
+/**
+ * @brief Represents image card action handlers and payload.
+ */
 type ImageCardProps = {
   image: SelectImage;
   onDelete: (imageId: string) => void;
@@ -24,6 +36,16 @@ type ImageCardProps = {
   onUnarchive: (imageId: string) => void;
 };
 
+/**
+ * @brief Renders image card with preview, metadata, and actions.
+ * @param image Image entity to present.
+ * @param onDelete Callback for delete request.
+ * @param onRename Callback for filename update.
+ * @param onArchive Callback for archive action.
+ * @param onUnarchive Callback for unarchive action.
+ * @returns Image card JSX.
+ */
+/** @brief Displays one image card with processing and management actions. */
 export const ImageCard = ({ image, onDelete, onRename, onArchive, onUnarchive }: ImageCardProps) => {
   const { resolvedTimezone } = useTimezone();
   const [isEditing, setIsEditing] = useState(false);
@@ -34,26 +56,48 @@ export const ImageCard = ({ image, onDelete, onRename, onArchive, onUnarchive }:
   const statusClass = getStatusBadgeClass(image.status);
   const mimeLabel = image.mime.split("/")[1]?.toUpperCase() ?? "N/A";
 
+  /**
+   * @brief Removes extension from filename.
+   * @param filename Input filename.
+   * @returns Filename without extension segment.
+   */
   const getFilenameWithoutExt = (filename: string) => {
     const lastDot = filename.lastIndexOf(".");
     return lastDot > 0 ? filename.substring(0, lastDot) : filename;
   };
 
+  /**
+   * @brief Extracts extension from filename.
+   * @param filename Input filename.
+   * @returns Extension including leading dot or empty string.
+   */
   const getFileExtension = (filename: string) => {
     const lastDot = filename.lastIndexOf(".");
     return lastDot > 0 ? filename.substring(lastDot) : "";
   };
 
+  /**
+   * @brief Opens inline filename editor.
+   * @returns No return value.
+   */
   const startEditing = () => {
     setEditedName(getFilenameWithoutExt(image.originalFilename));
     setIsEditing(true);
   };
 
+  /**
+   * @brief Cancels inline edit state.
+   * @returns No return value.
+   */
   const cancelEditing = () => {
     setIsEditing(false);
     setEditedName("");
   };
 
+  /**
+   * @brief Persists updated filename.
+   * @returns Promise resolved when save flow completes.
+   */
   const saveFilename = async () => {
     const trimmedName = editedName.trim();
     if (!trimmedName) {
@@ -83,6 +127,11 @@ export const ImageCard = ({ image, onDelete, onRename, onArchive, onUnarchive }:
     }
   };
 
+  /**
+   * @brief Handles keyboard shortcuts in rename input.
+   * @param e Keyboard event from input field.
+   * @returns No return value.
+   */
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       saveFilename();

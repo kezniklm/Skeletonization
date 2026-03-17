@@ -1,3 +1,12 @@
+/**
+ * @file output-file-handler.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Resolves and copies worker output files into application storage.
+ * @description Supports local and S3-backed output retrieval, computes metadata, and returns normalized output file descriptors.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { createHash } from "crypto";
 import { access, copyFile, mkdir, readFile, stat } from "fs/promises";
 import { join } from "path";
@@ -6,6 +15,9 @@ import { basename, getImageDimensions, getMimeTypeFromFilename } from "./image-u
 import { getStorage } from "./storage";
 import { getStorageConfig } from "./storage/config";
 
+/**
+ * @brief Metadata produced for a persisted output file.
+ */
 export type OutputFileInfo = {
   storagePath: string;
   url: string;
@@ -113,6 +125,7 @@ const copyOutputFileS3 = async (outputKey: string): Promise<OutputFileInfo> => {
   };
 };
 
+/** @brief Copies worker output path into configured storage backend and returns metadata. */
 export const copyOutputFile = async (workerOutputPath: string): Promise<OutputFileInfo> => {
   const config = getStorageConfig();
 

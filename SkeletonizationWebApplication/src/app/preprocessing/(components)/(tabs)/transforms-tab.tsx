@@ -1,3 +1,10 @@
+/**
+ * @file transforms-tab.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders geometric transform controls.
+ * @description Provides rotation, scaling, flipping, and quick action controls for modifying image geometry.
+ */
+
 "use client";
 
 import { FlipHorizontal, FlipVertical, RotateCcw, RotateCw } from "lucide-react";
@@ -19,6 +26,15 @@ type TransformTabProps = {
 
 const normalizeRotation = (value: number) => ((value % 360) + 360) % 360;
 
+/**
+ * @brief Displays transform controls for rotation, scaling, and flips.
+ * @description Allows precise transform adjustments and records history descriptions for each transformation action.
+ * @param transforms Current transform state values.
+ * @param setTransforms Setter for updating transform state.
+ * @param onResetTransforms Callback to restore default transform values.
+ * @param onAddHistory Callback to append history descriptions for changes.
+ * @returns A tab panel for geometric transformations.
+ */
 export const TransformTab = ({ transforms, setTransforms, onResetTransforms, onAddHistory }: TransformTabProps) => {
   const rotateBy = (delta: number) => {
     const nextRotation = normalizeRotation(transforms.rotation + delta);

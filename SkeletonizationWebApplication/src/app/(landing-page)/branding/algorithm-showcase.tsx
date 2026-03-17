@@ -1,7 +1,20 @@
+/**
+ * @file algorithm-showcase.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Displays supported algorithm badge list.
+ * @description Presents available skeletonization algorithms as compact visual tags on landing page.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { Workflow } from "lucide-react";
 
 import { ALGORITHMS } from "@/algorithms";
 
+/**
+ * @brief Renders supported algorithm showcase section.
+ * @returns Algorithm badge section JSX.
+ */
 export const AlgorithmShowcase = () => (
   <section
     className="mt-8 rounded-2xl bg-white/60 p-6 backdrop-blur-sm xl:mt-6 xl:p-5 2xl:mt-8 2xl:p-6 dark:bg-gray-800/60"

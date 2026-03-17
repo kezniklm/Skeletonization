@@ -1,3 +1,12 @@
+/**
+ * @file theme-context.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Manages application theme selection and resolution.
+ * @description Provides theme context with system-theme subscription and document class synchronization.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import { createContext, useContext, useEffect, useState, useSyncExternalStore, type PropsWithChildren } from "react";
@@ -39,6 +48,13 @@ type ThemeProviderProps = PropsWithChildren<{
   initialTheme?: Theme;
 }>;
 
+/**
+ * @brief Provides theme context and resolved theme value.
+ * @description Maintains explicit or system-derived theme and updates root `dark` class accordingly.
+ * @param children Descendant nodes requiring theme context.
+ * @param initialTheme Initial theme preference.
+ * @returns Theme context provider wrapper.
+ */
 export const ThemeProvider = ({ children, initialTheme = "system" }: ThemeProviderProps) => {
   const [theme, setThemeState] = useState<Theme>(initialTheme);
 
@@ -63,6 +79,11 @@ export const ThemeProvider = ({ children, initialTheme = "system" }: ThemeProvid
   return <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme }}>{children}</ThemeContext.Provider>;
 };
 
+/**
+ * @brief Returns current theme context values.
+ * @description Throws when called outside `ThemeProvider`.
+ * @returns Theme context including selected and resolved values.
+ */
 export const useTheme = () => {
   const context = useContext(ThemeContext);
 

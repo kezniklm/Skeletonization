@@ -1,7 +1,21 @@
+/**
+ * @file utils.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Provides helper formatting utilities for image gallery UI.
+ * @description Includes size labeling, date formatting, status text conversion, and status badge style mapping.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { type SizeFilter } from "@/components/filters";
 import type { SelectImage } from "@/database/zod/image";
 import { formatDateInTimezone } from "@/lib/date-time";
 
+/**
+ * @brief Converts size filter key into readable megapixel label.
+ * @param size Size filter key.
+ * @returns Human-readable size range label.
+ */
 export const getSizeLabel = (size: SizeFilter): string => {
   switch (size) {
     case "small":
@@ -17,12 +31,23 @@ export const getSizeLabel = (size: SizeFilter): string => {
   }
 };
 
+/**
+ * @brief Formats byte count into compact readable units.
+ * @param bytes Raw byte count.
+ * @returns Formatted file size string.
+ */
 export const formatFileSize = (bytes: number): string => {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
 
+/**
+ * @brief Formats image date with optional timezone.
+ * @param date Input date value.
+ * @param timezone Optional timezone identifier.
+ * @returns Localized date string.
+ */
 export const formatDate = (date: Date | string | null | undefined, timezone?: string | null): string =>
   formatDateInTimezone(
     date,
@@ -35,9 +60,19 @@ export const formatDate = (date: Date | string | null | undefined, timezone?: st
     "en-US"
   );
 
+/**
+ * @brief Converts image status to capitalized label.
+ * @param status Image status value.
+ * @returns Human-readable status label.
+ */
 export const getStatusLabel = (status: SelectImage["status"]): string =>
   status.charAt(0).toUpperCase() + status.slice(1);
 
+/**
+ * @brief Returns badge class set for image status.
+ * @param status Image status value.
+ * @returns Tailwind class string for status badge.
+ */
 export const getStatusBadgeClass = (status: SelectImage["status"]): string => {
   switch (status) {
     case "skeletonized":

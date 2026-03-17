@@ -1,3 +1,12 @@
+/**
+ * @file ComparisonModal.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders multi-mode image comparison dialog.
+ * @description Supports side-by-side, slider, and overlay comparison for selected processed images against original input.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { useEffect, useRef, useState } from "react";
 
 import { useTheme } from "../../../contexts/ThemeContext";
@@ -14,6 +23,19 @@ type ComparisonModalProps = {
   onSliderPositionChange: (position: number) => void;
 };
 
+/**
+ * @brief Displays interactive comparison between original and processed images.
+ * @param original Original source image.
+ * @param processedImages Selected processed images.
+ * @param isOpen Modal visibility state.
+ * @param onClose Callback to close modal.
+ * @param comparisonMode Active comparison mode.
+ * @param onComparisonModeChange Callback to switch comparison mode.
+ * @param sliderPosition Slider reveal position for slider mode.
+ * @param onSliderPositionChange Callback to update slider position.
+ * @returns Comparison modal JSX or null when closed.
+ */
+/** @brief Renders original versus processed image comparison modal. */
 export const ComparisonModal = ({
   original,
   processedImages,

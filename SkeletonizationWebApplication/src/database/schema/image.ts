@@ -1,9 +1,19 @@
+/**
+ * @file image.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Defines image table schema.
+ * @description Declares persisted image metadata including ownership, storage references, dimensions, status, and lineage.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { type AnyPgColumn, bigint, integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 import { user } from "./auth";
 
 const IMAGE_STATUS_ENUM = ["uploaded", "skeletonized", "archived", "derived"] as const;
 
+/** @brief Database table schema for image metadata and lifecycle state. */
 export const image = pgTable("image", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: text("user_id")

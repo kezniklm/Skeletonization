@@ -1,3 +1,10 @@
+/**
+ * @file skeletonization-image-gallery-empty-state.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Displays filter-aware empty state for image gallery.
+ * @description Generates contextual title and description text when no images match current skeletonization filters.
+ */
+
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
@@ -33,6 +40,12 @@ const getDescription = (selectedFilter: FilterType) => {
   }
 };
 
+/**
+ * @brief Renders a compact empty-state card for filtered image results.
+ * @description Uses current filter selection to display specific messaging when the gallery has no matching images.
+ * @param selectedFilter Active gallery filter type.
+ * @returns An empty-state card component.
+ */
 export const SkeletonizationImageGalleryEmptyState = ({
   selectedFilter
 }: SkeletonizationImageGalleryEmptyStateProps) => {

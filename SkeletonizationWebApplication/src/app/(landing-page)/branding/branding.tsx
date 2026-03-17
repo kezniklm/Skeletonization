@@ -1,5 +1,18 @@
+/**
+ * @file branding.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders landing-page hero branding block.
+ * @description Displays project title, marketing headline, and short product description.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { GitBranch } from "lucide-react";
 
+/**
+ * @brief Renders brand hero section for landing page.
+ * @returns Branding header JSX.
+ */
 export const Branding = () => (
   <header className="mb-8 text-center lg:text-left xl:mb-6 2xl:mb-8">
     <div className="mb-6 inline-flex items-center space-x-3 xl:space-x-2.5 2xl:space-x-3">

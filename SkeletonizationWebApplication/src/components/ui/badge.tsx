@@ -1,8 +1,20 @@
+/**
+ * @file badge.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Compact badge component with style variants.
+ * @description Provides semantic visual labels for statuses and metadata with shared variant styling.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * @brief Variant styles for badge appearances.
+ */
 const badgeVariants = cva(
   "inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden",
   {
@@ -21,6 +33,9 @@ const badgeVariants = cva(
   }
 );
 
+/**
+ * @brief Renders a styled badge, optionally as a slot child.
+ */
 const Badge = ({
   className,
   variant,

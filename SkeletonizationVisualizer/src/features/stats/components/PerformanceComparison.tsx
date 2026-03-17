@@ -1,3 +1,12 @@
+/**
+ * @file PerformanceComparison.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Shows fastest versus slowest algorithm summary.
+ * @description Compares top and bottom performers with timing highlights and relative slowdown metric.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import type { AlgorithmAvgTime } from "../utils";
 import { useTheme } from "../../../contexts/ThemeContext";
 
@@ -6,6 +15,12 @@ type PerformanceComparisonProps = {
   slowest: AlgorithmAvgTime;
 };
 
+/**
+ * @brief Renders comparative cards for fastest and slowest algorithms.
+ * @param fastest Fastest algorithm summary.
+ * @param slowest Slowest algorithm summary.
+ * @returns Performance comparison JSX.
+ */
 export const PerformanceComparison = ({ fastest, slowest }: PerformanceComparisonProps) => {
   const { theme, getThemeClasses } = useTheme();
   const themeClasses = getThemeClasses();

@@ -1,9 +1,21 @@
+/**
+ * @file checkbox.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Styled checkbox primitive component.
+ * @description Wraps Radix checkbox behavior with application-specific styling and icon indicator.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 import { Check } from "lucide-react";
 import { type ComponentPropsWithoutRef, type ComponentRef, forwardRef } from "react";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * @brief Checkbox input with consistent visual states.
+ */
 export const Checkbox = forwardRef<
   ComponentRef<typeof CheckboxPrimitive.Root>,
   ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>

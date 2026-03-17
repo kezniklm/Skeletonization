@@ -1,3 +1,12 @@
+/**
+ * @file run-details.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders expandable details for one lab run.
+ * @description Displays run metadata, grouped image outputs, algorithm statuses, timing information, and viewer actions.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -14,6 +23,11 @@ import { formatDateTimeInTimezone } from "@/lib/date-time";
 import { JobViewerDialog } from "./job-viewer-dialog";
 import { useJobViewer } from "./use-job-viewer";
 
+/**
+ * @brief Resolves normalized image URL path.
+ * @param url Source URL from job payload.
+ * @returns Browser-usable image source URL.
+ */
 const getImageSrc = (url: string) => {
   if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/api/")) {
     return url;
@@ -22,6 +36,11 @@ const getImageSrc = (url: string) => {
   return normalized.startsWith("/") ? normalized : `/${normalized}`;
 };
 
+/**
+ * @brief Maps run/job status to badge style classes.
+ * @param status Run or job status string.
+ * @returns Tailwind class string for status pill.
+ */
 const getStatusPillClass = (status: string) => {
   switch (status) {
     case "completed":
@@ -38,9 +57,20 @@ const getStatusPillClass = (status: string) => {
   }
 };
 
+/**
+ * @brief Builds display name for run.
+ * @param run Run name/id payload.
+ * @returns Run display name.
+ */
 const getRunDisplayName = (run: Pick<LabRun, "name" | "id">) =>
   run.name?.trim() ? run.name.trim() : `Run ${run.id.slice(0, 8)}`;
 
+/**
+ * @brief Formats date-time in selected timezone.
+ * @param iso ISO date string.
+ * @param timezone Timezone identifier.
+ * @returns Formatted date-time or null.
+ */
 const formatDateTime = (iso: string | null, timezone: string) =>
   formatDateTimeInTimezone(iso, timezone, {
     year: "numeric",
@@ -50,6 +80,12 @@ const formatDateTime = (iso: string | null, timezone: string) =>
     minute: "2-digit"
   });
 
+/**
+ * @brief Computes run duration label.
+ * @param startIso Run start timestamp.
+ * @param endIso Run completion timestamp.
+ * @returns Duration label or null.
+ */
 const formatDuration = (startIso: string | null, endIso: string | null) => {
   if (!startIso || !endIso) return null;
   const start = new Date(startIso).getTime();
@@ -64,6 +100,11 @@ const formatDuration = (startIso: string | null, endIso: string | null) => {
   return `${minutes}m ${seconds}s`;
 };
 
+/**
+ * @brief Formats processing time in milliseconds/seconds.
+ * @param ms Processing duration in milliseconds.
+ * @returns Formatted processing time or null.
+ */
 const formatProcessingTime = (ms: number | null) => {
   if (ms === null) return null;
   if (ms < 1000) return `${ms}ms`;
@@ -71,6 +112,11 @@ const formatProcessingTime = (ms: number | null) => {
   return `${seconds}s`;
 };
 
+/**
+ * @brief Extracts sorted unique algorithms from jobs.
+ * @param jobs Run job list.
+ * @returns Sorted algorithm list.
+ */
 const getUniqueAlgorithms = (jobs: readonly Pick<LabJob, "algorithm">[]) => {
   const seen = new Set<Algorithm>();
   for (const j of jobs) {
@@ -86,6 +132,11 @@ type GroupedImageJobs = {
   items: LabJob[];
 };
 
+/**
+ * @brief Groups run jobs by source image.
+ * @param jobs Run jobs to group.
+ * @returns Grouped image job structures.
+ */
 const groupJobsByImage = (jobs: readonly LabJob[]): GroupedImageJobs[] => {
   const imageGroups = new Map<string, GroupedImageJobs>();
 
@@ -109,6 +160,12 @@ const groupJobsByImage = (jobs: readonly LabJob[]): GroupedImageJobs[] => {
   return Array.from(imageGroups.values()).sort((a, b) => a.minOrdinal - b.minOrdinal);
 };
 
+/**
+ * @brief Renders expandable run details panel.
+ * @param run Run data payload.
+ * @param className Optional wrapper class names.
+ * @returns Run details JSX.
+ */
 export const RunDetails = ({ run, className }: { run: LabRun; className?: string }) => {
   const [expanded, setExpanded] = useState(false);
   const { resolvedTimezone } = useTimezone();

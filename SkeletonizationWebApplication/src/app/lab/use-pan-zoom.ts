@@ -1,11 +1,35 @@
+/**
+ * @file use-pan-zoom.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Implements pan and discrete zoom state for image viewer.
+ * @description Handles pointer drag panning, wheel zoom adjustments, and transform generation for viewer stage.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import { useRef, useState } from "react";
 
+/**
+ * @brief Clamps numeric value to inclusive range.
+ * @param value Input numeric value.
+ * @param min Minimum allowed value.
+ * @param max Maximum allowed value.
+ * @returns Clamped numeric value.
+ */
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
+/**
+ * @brief Defines supported discrete zoom levels.
+ */
 const zoomLevels = [0.5, 0.75, 1, 1.25, 1.5, 2, 2.5, 3] as const;
 
+/**
+ * @brief Resolves nearest zoom-level index to provided value.
+ * @param value Current zoom value.
+ * @returns Closest index in zoom-level array.
+ */
 const getClosestZoomIndex = (value: number) => {
   let closestIndex = 0;
   let closestDistance = Number.POSITIVE_INFINITY;
@@ -21,6 +45,10 @@ const getClosestZoomIndex = (value: number) => {
   return closestIndex;
 };
 
+/**
+ * @brief Provides pan-and-zoom state and interaction handlers.
+ * @returns Zoom state, transform, and pointer/wheel handlers.
+ */
 export const usePanZoom = () => {
   const [zoom, setZoom] = useState(1);
   const [panX, setPanX] = useState(0);

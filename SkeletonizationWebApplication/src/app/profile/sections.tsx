@@ -1,3 +1,10 @@
+/**
+ * @file sections.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Builds profile section data models.
+ * @description Produces presentational profile section metadata and formatted values derived from user account timestamps.
+ */
+
 import { type ReactElement } from "react";
 import { Calendar } from "lucide-react";
 
@@ -20,6 +27,13 @@ type User = {
   updatedAt?: string | Date | null;
 };
 
+/**
+ * @brief Generates profile section definitions for rendering.
+ * @description Formats relevant user account dates and returns section data consumed by profile section components.
+ * @param user User object containing profile date fields.
+ * @param timezone Optional timezone for date formatting.
+ * @returns Array of profile section configuration objects.
+ */
 export const getProfileSections = (user: User, timezone?: string | null): ProfileSection[] => [
   {
     title: "Account Information",

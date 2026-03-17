@@ -1,3 +1,10 @@
+/**
+ * @file profile-header.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Displays profile identity information.
+ * @description Renders avatar, user identity fields, and account verification badge in the profile header card.
+ */
+
 import Image from "next/image";
 import { Shield, User as UserIcon } from "lucide-react";
 
@@ -8,6 +15,15 @@ type ProfileHeaderProps = {
   emailVerified: boolean;
 };
 
+/**
+ * @brief Renders the profile header section.
+ * @description Shows the user avatar with fallback icon, name, email, and verification state.
+ * @param name User display name.
+ * @param email User email address.
+ * @param image Optional profile image URL.
+ * @param emailVerified Whether the account email is verified.
+ * @returns A styled profile header card.
+ */
 export const ProfileHeader = ({ name, email, image, emailVerified }: ProfileHeaderProps) => (
   <div className="mb-6 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm backdrop-blur-sm xl:rounded-lg xl:shadow-sm 2xl:rounded-xl 2xl:shadow-sm dark:border-gray-800 dark:bg-gray-900/95">
     <div className="bg-linear-to-r from-cyan-500 to-blue-500 px-6 py-8 xl:px-5 xl:py-6 2xl:px-6 2xl:py-8">

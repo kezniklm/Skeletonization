@@ -1,3 +1,12 @@
+/**
+ * @file form-toggle.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Provides react-hook-form bound boolean toggle control.
+ * @description Renders a styled switch input connected to form state with optional label and description.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { type InputHTMLAttributes } from "react";
 import { useFormContext, useController } from "react-hook-form";
 
@@ -7,6 +16,14 @@ type FormToggleProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "nam
   description?: string;
 };
 
+/**
+ * @brief Renders a form-context-connected toggle switch.
+ * @description Uses react-hook-form controller binding to manage checkbox-like boolean state.
+ * @param name Registered form field name.
+ * @param label Optional label text.
+ * @param description Optional helper text.
+ * @returns A toggle control with optional error feedback.
+ */
 export const FormToggle = ({ name, label, description, ...props }: FormToggleProps) => {
   const {
     control,

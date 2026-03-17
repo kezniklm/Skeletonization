@@ -1,7 +1,19 @@
+/**
+ * @file pubsub.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Creates typed Redis pub/sub channels with recent-event backup.
+ * @description Implements publish/subscribe helpers with local callback management and short-lived event replay list.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { redisClientManager } from "./client";
 
 type Callback<T> = (event: T) => void;
 
+/**
+ * @brief Interface for typed pub/sub channel operations.
+ */
 export type PubSubChannel<T> = {
   publish(event: T): Promise<void>;
   subscribe(callback: Callback<T>): () => void;
@@ -13,6 +25,7 @@ const MAX_RECENT_EVENTS = 50;
 
 const getBackupListKey = (channelName: string): string => `${channelName}:recent`;
 
+/** @brief Creates a typed Redis pub/sub channel helper. */
 export const createPubSubChannel = <T>(channelName: string): PubSubChannel<T> => {
   const callbacks = new Set<Callback<T>>();
   let isSubscribed = false;

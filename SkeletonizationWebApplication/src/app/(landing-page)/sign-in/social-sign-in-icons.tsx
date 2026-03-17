@@ -1,7 +1,24 @@
+/**
+ * @file social-sign-in-icons.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Defines SVG icon components for social auth providers.
+ * @description Provides reusable icon primitives for Google, GitHub, and Discord sign-in buttons.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import type { ComponentPropsWithoutRef } from "react";
 
+/**
+ * @brief Defines shared SVG prop type for social icon components.
+ */
 type SvgProps = ComponentPropsWithoutRef<"svg">;
 
+/**
+ * @brief Renders Google brand icon.
+ * @param props Standard SVG element props.
+ * @returns Google logo SVG element.
+ */
 export const GoogleIcon = (props: SvgProps) => (
   <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>
     <path
@@ -23,12 +40,22 @@ export const GoogleIcon = (props: SvgProps) => (
   </svg>
 );
 
+/**
+ * @brief Renders GitHub brand icon.
+ * @param props Standard SVG element props.
+ * @returns GitHub logo SVG element.
+ */
 export const GitHubIcon = (props: SvgProps) => (
   <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" {...props}>
     <path d="M12 .5C5.73.5.75 5.66.75 12.07c0 5.13 3.16 9.48 7.55 11.02.55.1.75-.24.75-.54 0-.27-.01-.98-.02-1.93-3.07.69-3.72-1.51-3.72-1.51-.5-1.3-1.22-1.65-1.22-1.65-1-.7.08-.69.08-.69 1.1.08 1.68 1.16 1.68 1.16.98 1.72 2.57 1.22 3.2.93.1-.73.38-1.22.69-1.5-2.45-.29-5.02-1.25-5.02-5.56 0-1.23.42-2.23 1.12-3.02-.11-.28-.49-1.43.11-2.98 0 0 .92-.3 3.01 1.15.87-.25 1.8-.37 2.73-.38.93.01 1.86.13 2.73.38 2.1-1.45 3.01-1.15 3.01-1.15.6 1.55.22 2.7.11 2.98.7.79 1.12 1.79 1.12 3.02 0 4.32-2.58 5.26-5.04 5.55.39.35.74 1.04.74 2.1 0 1.51-.01 2.73-.01 3.1 0 .3.2.65.76.54 4.39-1.54 7.55-5.89 7.55-11.02C23.25 5.66 18.27.5 12 .5z" />
   </svg>
 );
 
+/**
+ * @brief Renders Discord brand icon.
+ * @param props Standard SVG element props.
+ * @returns Discord logo SVG element.
+ */
 export const DiscordIcon = (props: SvgProps) => (
   <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" {...props}>
     <path d="M20.317 4.369a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.078.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.078-.037 19.74 19.74 0 0 0-4.885 1.515.07.07 0 0 0-.032.027C.533 9.045-.32 13.58.099 18.057a.08.08 0 0 0 .03.056 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.027c.462-.63.873-1.295 1.226-1.994a.076.076 0 0 0-.041-.105 13.17 13.17 0 0 1-1.872-.892.077.077 0 0 1-.008-.127c.126-.094.252-.192.372-.291a.074.074 0 0 1 .078-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .079.009c.12.1.246.199.373.292a.077.077 0 0 1-.006.127c-.6.356-1.23.656-1.873.891a.077.077 0 0 0-.04.106c.36.699.772 1.364 1.225 1.994a.076.076 0 0 0 .084.028 19.86 19.86 0 0 0 6.003-3.03.077.077 0 0 0 .03-.055c.5-5.177-.838-9.673-3.548-13.66a.06.06 0 0 0-.031-.028ZM8.02 15.331c-1.184 0-2.156-1.088-2.156-2.419 0-1.332.955-2.42 2.156-2.42 1.21 0 2.175 1.096 2.156 2.42 0 1.331-.956 2.419-2.156 2.419Zm7.975 0c-1.184 0-2.156-1.088-2.156-2.419 0-1.332.955-2.42 2.156-2.42 1.21 0 2.175 1.096 2.156 2.42 0 1.331-.946 2.419-2.156 2.419Z" />

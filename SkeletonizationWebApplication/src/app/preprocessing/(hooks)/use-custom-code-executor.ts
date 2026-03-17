@@ -1,3 +1,10 @@
+/**
+ * @file use-custom-code-executor.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Provides custom OpenCV code execution for preprocessing canvas state.
+ * @description Exposes a helper hook that evaluates user-provided scripts against source and destination Mats and commits results to history.
+ */
+
 "use client";
 
 import { type CV, type Mat } from "mirada/dist/src/types/opencv";
@@ -14,6 +21,18 @@ type Args = {
   addToHistory: (description: string) => void;
 };
 
+/**
+ * @brief Creates a custom code execution handler for preprocessing.
+ * @description Wraps canvas extraction, script execution, error handling, and resource cleanup for user-authored OpenCV code.
+ * @param cv OpenCV runtime instance.
+ * @param canvasRef Reference to the target preprocessing canvas.
+ * @param setProcessing Setter controlling processing busy state.
+ * @param setCodeError Setter for user-code error messages.
+ * @param commitAsProcessingBase Callback to persist current output as pipeline base.
+ * @param addToHistory Callback to append history entries.
+ * @returns An object containing `executeCustomCode` to run user scripts.
+ */
+/** @brief Provides execution of user-defined OpenCV code on the canvas. */
 export const useCustomCodeExecutor = ({
   cv,
   canvasRef,

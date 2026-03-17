@@ -1,3 +1,12 @@
+/**
+ * @file image.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Provides image repository query and mutation helpers.
+ * @description Encapsulates Drizzle ORM operations for image lookup, listing, aggregation, creation, updates, and deletion.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { and, asc, desc, eq, inArray, lt, or } from "drizzle-orm";
 
 import { db } from "@/database";
@@ -5,12 +14,14 @@ import { image } from "@/database/schema/image";
 import { job } from "@/database/schema/job";
 import { type ImageStatus, type InsertImage, type UpdateImage } from "@/database/zod/image";
 
+/** @brief Returns an image by primary id. */
 export const getImageById = async (imageId: string) => {
   const [result] = await db.select().from(image).where(eq(image.id, imageId));
 
   return result ?? null;
 };
 
+/** @brief Returns an image by id scoped to owner user id. */
 export const getImageByIdAndUserId = async (imageId: string | undefined, userId: string) => {
   if (!imageId) {
     return null;
@@ -24,6 +35,7 @@ export const getImageByIdAndUserId = async (imageId: string | undefined, userId:
   return result ?? null;
 };
 
+/** @brief Returns an image by storage path scoped to owner user id. */
 export const getImageByStoragePathAndUserId = async (storagePath: string, userId: string) => {
   const [result] = await db
     .select()
@@ -33,16 +45,21 @@ export const getImageByStoragePathAndUserId = async (storagePath: string, userId
   return result ?? null;
 };
 
+/** @brief Lists images owned by user ordered by creation date descending. */
 export const getImagesByUserId = async (userId: string) =>
   db.select().from(image).where(eq(image.userId, userId)).orderBy(desc(image.createdAt));
 
+/** @brief Lists images by a set of ids. */
 export const getImagesByIds = async (ids: string[]) => db.select().from(image).where(inArray(image.id, ids));
 
+/** @brief Counts all images owned by a user. */
 export const getImagesCountByUserId = async (userId: string) => db.$count(image, eq(image.userId, userId));
 
+/** @brief Counts user images with a specific status. */
 export const getImagesCountByUserIdAndStatus = async (userId: string, status: ImageStatus) =>
   db.$count(image, and(eq(image.userId, userId), eq(image.status, status)));
 
+/** @brief Returns cursor-paginated user images with configurable sort ordering. */
 export const getImagesByUserIdPaginated = async (
   userId: string,
   options: {
@@ -95,6 +112,7 @@ export const getImagesByUserIdPaginated = async (
     .limit(limit + 1);
 };
 
+/** @brief Returns images associated with jobs belonging to a run. */
 export const getImagesByRunId = async (runId: string) =>
   db
     .select({
@@ -118,9 +136,11 @@ export const getImagesByRunId = async (runId: string) =>
     .where(eq(job.runId, runId))
     .orderBy(desc(image.createdAt));
 
+/** @brief Returns derived images created from a parent image id. */
 export const getImagesByParentId = async (parentImageId: string) =>
   db.select().from(image).where(eq(image.parentImageId, parentImageId)).orderBy(desc(image.createdAt));
 
+/** @brief Returns user images for a single status value. */
 export const getUserImagesByStatus = async (userId: string, status: ImageStatus) =>
   db
     .select()
@@ -128,6 +148,7 @@ export const getUserImagesByStatus = async (userId: string, status: ImageStatus)
     .where(and(eq(image.userId, userId), eq(image.status, status)))
     .orderBy(desc(image.createdAt));
 
+/** @brief Returns user images matching any of provided statuses. */
 export const getUserImagesByStatuses = async (userId: string, statuses: ImageStatus[]) =>
   db
     .select()
@@ -135,22 +156,26 @@ export const getUserImagesByStatuses = async (userId: string, statuses: ImageSta
     .where(and(eq(image.userId, userId), inArray(image.status, statuses)))
     .orderBy(desc(image.createdAt));
 
+/** @brief Inserts a new image record. */
 export const createImage = async (imageData: InsertImage) => {
   const [newImage] = await db.insert(image).values(imageData).returning();
 
   return newImage;
 };
 
+/** @brief Updates an existing image record by id. */
 export const updateImage = async (imageId: string, imageData: Partial<UpdateImage>) => {
   const [updated] = await db.update(image).set(imageData).where(eq(image.id, imageId)).returning();
 
   return updated;
 };
 
+/** @brief Deletes an image record by id. */
 export const deleteImage = async (imageId: string) => {
   await db.delete(image).where(eq(image.id, imageId));
 };
 
+/** @brief Returns user-scoped image by checksum for deduplication. */
 export const getImageByChecksum = async (checksum: string, userId: string) => {
   const [result] = await db
     .select()

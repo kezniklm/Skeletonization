@@ -1,3 +1,12 @@
+/**
+ * @file empty-state.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Empty state card component with a primary action.
+ * @description Renders a reusable empty-state surface with icon, text, and CTA for workflow entry points.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import { type LucideIcon } from "lucide-react";
@@ -16,6 +25,9 @@ type EmptyStateProps = {
   className?: string;
 };
 
+/**
+ * @brief Displays an actionable empty-state card.
+ */
 export const EmptyState = ({
   icon: Icon,
   title,

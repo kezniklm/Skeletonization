@@ -1,3 +1,12 @@
+/**
+ * @file local.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Local filesystem storage backend implementation.
+ * @description Implements object storage interface using project `public` directory for local development and deployment.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { mkdir, readFile, unlink, writeFile } from "fs/promises";
 import { dirname } from "path";
 
@@ -6,6 +15,7 @@ import type { StorageConfig } from "./config";
 import type { ObjectStorage, PutOptions, StorageObject } from "./index";
 import { buildLocalFullPath, buildLocalPublicUrl } from "./index";
 
+/** @brief Creates local filesystem-backed object storage implementation. */
 export const createLocalStorage = (config: Extract<StorageConfig, { backend: "local" }>): ObjectStorage => ({
   config,
 

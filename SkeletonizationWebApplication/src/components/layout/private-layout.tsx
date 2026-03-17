@@ -1,7 +1,22 @@
+/**
+ * @file private-layout.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Defines layout shell for authenticated pages.
+ * @description Renders private navigation and page container for routes requiring signed-in access.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { navigationBadges } from "../navigation/constants/navigation-badges";
 import { navigationItems } from "../navigation/constants/navigation-items";
 import { Navigation } from "../navigation/navigation";
 
+/**
+ * @brief Renders authenticated application layout.
+ * @description Filters visible navigation badges for private routes and renders main page content.
+ * @param children Nested page content.
+ * @returns Private layout wrapper with navigation.
+ */
 export const PrivateLayout = ({
   children
 }: Readonly<{

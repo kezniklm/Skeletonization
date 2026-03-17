@@ -1,3 +1,16 @@
+/**
+ * @file example-codes.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Provides built-in OpenCV code snippets for the preprocessing code editor.
+ * @description Defines example scripts keyed by operation name so users can quickly insert and run common preprocessing patterns.
+ */
+
+/**
+ * @brief Maps example identifiers to executable OpenCV.js code snippets.
+ * @description Supplies curated code templates used by the custom code tab to demonstrate typical preprocessing operations.
+ * @example
+ * const code = EXAMPLE_CODES.edge;
+ */
 export const EXAMPLE_CODES: Record<string, string> = {
   edge: `// Canny Edge Detection
 const gray = new cv.Mat();

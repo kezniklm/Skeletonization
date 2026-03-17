@@ -1,3 +1,12 @@
+/**
+ * @file run-notifications-context.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Provides SSE-backed run completion notifications.
+ * @description Listens to run event stream, deduplicates completed runs, refreshes lab route, and emits toast/browser notifications.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import { type PropsWithChildren, useEffect, useRef } from "react";
@@ -47,6 +56,13 @@ const writeSeenRunKeys = (keys: Set<string>) => {
   }
 };
 
+/**
+ * @brief Subscribes to run completion events and notifies users.
+ * @description Opens an SSE connection when enabled, handles run-completed events, and renders children unchanged.
+ * @param children Descendant UI content.
+ * @param enabled Whether event listening is active.
+ * @returns The provider children.
+ */
 export const RunNotificationsProvider = ({ children, enabled }: PropsWithChildren<{ enabled: boolean }>) => {
   const eventSourceRef = useRef<EventSource | null>(null);
   const processedRunIdsRef = useRef<Set<string>>(readSeenRunKeys());

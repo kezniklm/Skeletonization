@@ -1,3 +1,12 @@
+/**
+ * @file image-grid.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders grid layout of upload card and image cards.
+ * @description Handles empty states and filtered-image presentation for current gallery tab selection.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import { ImageIcon, Upload } from "lucide-react";
@@ -10,6 +19,9 @@ import { capitalizeFirst } from "@/lib/format";
 import { ImageUpload } from "./image-upload";
 import { ImageCard } from "./image-card";
 
+/**
+ * @brief Represents image grid input properties.
+ */
 type ImageGridProps = {
   images: SelectImage[];
   filteredImages: SelectImage[];
@@ -23,6 +35,21 @@ type ImageGridProps = {
   onUnarchive: (imageId: string) => void;
 };
 
+/**
+ * @brief Renders filtered image grid with upload and empty-state handling.
+ * @param images Full image collection.
+ * @param filteredImages Image subset after filters and pagination.
+ * @param searchQuery Active search query.
+ * @param hasAdvancedFilters Whether non-search filters are active.
+ * @param selectedFilter Active tab filter.
+ * @param onUploadComplete Callback for successful upload.
+ * @param onDelete Callback for image delete request.
+ * @param onRename Callback for image rename request.
+ * @param onArchive Callback for archive action.
+ * @param onUnarchive Callback for unarchive action.
+ * @returns Image grid JSX.
+ */
+/** @brief Renders image tiles, upload card, and filtered empty states. */
 export const ImageGrid = ({
   images,
   filteredImages,

@@ -1,3 +1,12 @@
+/**
+ * @file step-indicator.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Multi-step progress indicator component.
+ * @description Renders workflow steps with completion states and a visual progress line.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { Check } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -15,6 +24,9 @@ type StepIndicatorProps = {
 
 type StepStatus = "completed" | "current" | "upcoming";
 
+/**
+ * @brief Resolves display status for a workflow step.
+ */
 const getStepStatus = (stepId: number, currentStep: number): StepStatus => {
   if (stepId < currentStep) {
     return "completed";
@@ -27,6 +39,9 @@ const getStepStatus = (stepId: number, currentStep: number): StepStatus => {
   return "upcoming";
 };
 
+/**
+ * @brief Calculates progress bar width from current step position.
+ */
 const getProgressWidth = (stepsLength: number, currentStep: number) => {
   if (stepsLength <= 1) {
     return 0;
@@ -37,6 +52,9 @@ const getProgressWidth = (stepsLength: number, currentStep: number) => {
   return (clampedIndex / (stepsLength - 1)) * 100;
 };
 
+/**
+ * @brief Displays a single step marker and metadata.
+ */
 const StepItem = ({ step, status }: { step: Step; status: StepStatus }) => {
   const isCompleted = status === "completed";
   const isCurrent = status === "current";
@@ -91,6 +109,9 @@ const StepItem = ({ step, status }: { step: Step; status: StepStatus }) => {
   );
 };
 
+/**
+ * @brief Displays a horizontal progress indicator for sequential steps.
+ */
 export const StepIndicator = ({ steps, currentStep }: StepIndicatorProps) => {
   const progressWidth = getProgressWidth(steps.length, currentStep);
 

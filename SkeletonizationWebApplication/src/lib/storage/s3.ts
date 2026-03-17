@@ -1,3 +1,12 @@
+/**
+ * @file s3.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief S3-compatible object storage backend implementation.
+ * @description Implements object storage interface with S3 uploads/downloads/deletes and signed URL helper.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
@@ -36,6 +45,7 @@ const joinUrl = (base: string, key: string) => {
   return `${trimmedBase}/${trimmedKey}`;
 };
 
+/** @brief Creates an S3-backed object storage implementation. */
 export const createS3Storage = (config: Extract<StorageConfig, { backend: "s3" }>): ObjectStorage => {
   const client = new S3Client({
     region: config.region,
@@ -96,6 +106,7 @@ export const createS3Storage = (config: Extract<StorageConfig, { backend: "s3" }
   };
 };
 
+/** @brief Creates short-lived signed GET URL for private S3 object key. */
 export const createSignedGetUrl = async (
   config: Extract<StorageConfig, { backend: "s3" }>,
   key: string,

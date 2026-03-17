@@ -1,3 +1,12 @@
+/**
+ * @file tooltip.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Tooltip primitives for contextual hover information.
+ * @description Defines provider, trigger, and content wrappers around Radix tooltip with app-level styling.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
@@ -5,20 +14,32 @@ import { type ComponentProps } from "react";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * @brief Tooltip provider with configurable delay.
+ */
 const TooltipProvider = ({ delayDuration = 0, ...props }: ComponentProps<typeof TooltipPrimitive.Provider>) => (
   <TooltipPrimitive.Provider data-slot="tooltip-provider" delayDuration={delayDuration} {...props} />
 );
 
+/**
+ * @brief Tooltip root wrapper for trigger/content pairing.
+ */
 const Tooltip = ({ ...props }: ComponentProps<typeof TooltipPrimitive.Root>) => (
   <TooltipProvider>
     <TooltipPrimitive.Root data-slot="tooltip" {...props} />
   </TooltipProvider>
 );
 
+/**
+ * @brief Interactive trigger element for tooltip display.
+ */
 const TooltipTrigger = ({ ...props }: ComponentProps<typeof TooltipPrimitive.Trigger>) => (
   <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />
 );
 
+/**
+ * @brief Styled tooltip content container.
+ */
 const TooltipContent = ({
   className,
   sideOffset = 0,

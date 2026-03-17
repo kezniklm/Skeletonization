@@ -1,13 +1,21 @@
+/**
+ * @file utils.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Implements image download and archive export helpers.
+ * @description Converts in-memory benchmark image payloads into downloadable PNG files and ZIP archives.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import JSZip from "jszip";
 
 import type { BenchmarkData, ImageData } from "./types";
 
 /**
- * Utility functions for downloading and exporting images
- */
-
-/**
- * Create a download link element and trigger download
+ * @brief Triggers a browser download for the given resource URL.
+ * @param href Downloadable resource URL.
+ * @param filename Suggested output filename.
+ * @returns No return value.
  */
 const createDownloadLink = (href: string, filename: string): void => {
   const link = document.createElement("a");
@@ -19,7 +27,9 @@ const createDownloadLink = (href: string, filename: string): void => {
 };
 
 /**
- * Convert base64 image data to Uint8Array for ZIP processing
+ * @brief Converts base64-encoded image content into binary bytes.
+ * @param base64Data Base64 image content without data URL prefix.
+ * @returns Binary array suitable for ZIP file insertion.
  */
 const base64ToUint8Array = (base64Data: string): Uint8Array => {
   const binaryData = atob(base64Data);
@@ -31,7 +41,11 @@ const base64ToUint8Array = (base64Data: string): Uint8Array => {
 };
 
 /**
- * Create a safe filename from a label or ID
+ * @brief Builds a sanitized PNG filename from image metadata.
+ * @param label Optional image label.
+ * @param id Image identifier fallback.
+ * @param index Optional index prefix for ordering.
+ * @returns Sanitized filename ending with .png.
  */
 const createSafeFilename = (label: string | undefined, id: string, index?: number): string => {
   let filename = label ?? `Image_${index ?? id}`;
@@ -43,7 +57,11 @@ const createSafeFilename = (label: string | undefined, id: string, index?: numbe
 };
 
 /**
- * Download a single image
+ * @brief Downloads one benchmark image as a PNG file.
+ * @param image Image payload to export.
+ * @returns No return value.
+ * @example
+ * downloadImage(selectedImage);
  */
 export const downloadImage = (image: ImageData): void => {
   const filename = createSafeFilename(image.label, image.id);
@@ -52,7 +70,11 @@ export const downloadImage = (image: ImageData): void => {
 };
 
 /**
- * Export all images from benchmark data as a ZIP file
+ * @brief Exports all benchmark images into a structured ZIP archive.
+ * @param data Benchmark dataset containing containers and images.
+ * @returns Promise resolved after archive generation and download trigger.
+ * @example
+ * await exportAllImages(data);
  */
 export const exportAllImages = async (data: BenchmarkData): Promise<void> => {
   if (!data) {

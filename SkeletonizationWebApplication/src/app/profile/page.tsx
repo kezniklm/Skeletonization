@@ -1,3 +1,10 @@
+/**
+ * @file page.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders the authenticated profile page.
+ * @description Loads user account and usage statistics, then composes profile summary and detail sections.
+ */
+
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -10,6 +17,11 @@ import { ProfileSection } from "./profile-section";
 import { ProfileStatistics } from "./profile-statistics";
 import { getProfileSections } from "./sections";
 
+/**
+ * @brief Loads profile data and renders profile overview content.
+ * @description Verifies session state, fetches profile counters and preferences, and returns the profile page layout.
+ * @returns Server-rendered profile page content.
+ */
 const ProfilePage = async () => {
   const session = await auth.api.getSession({ headers: await headers() });
 
@@ -59,4 +71,7 @@ const ProfilePage = async () => {
   );
 };
 
+/**
+ * @brief Exposes the profile route page component.
+ */
 export default ProfilePage;

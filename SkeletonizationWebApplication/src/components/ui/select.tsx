@@ -1,15 +1,36 @@
+/**
+ * @file select.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Select/dropdown primitives for option picking.
+ * @description Wraps Radix select components with application styling, indicators, and grouped option support.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { Check, ChevronDown, ChevronUp } from "lucide-react";
 import { type ComponentPropsWithoutRef, type ComponentRef, forwardRef } from "react";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * @brief Root select container.
+ */
 const Select = SelectPrimitive.Root;
 
+/**
+ * @brief Group wrapper for related select items.
+ */
 const SelectGroup = SelectPrimitive.Group;
 
+/**
+ * @brief Displays the selected option value.
+ */
 const SelectValue = SelectPrimitive.Value;
 
+/**
+ * @brief Trigger button that opens the select list.
+ */
 const SelectTrigger = forwardRef<
   ComponentRef<typeof SelectPrimitive.Trigger>,
   ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
@@ -30,6 +51,9 @@ const SelectTrigger = forwardRef<
 ));
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
 
+/**
+ * @brief Scroll-up control for long select lists.
+ */
 const SelectScrollUpButton = forwardRef<
   ComponentRef<typeof SelectPrimitive.ScrollUpButton>,
   ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollUpButton>
@@ -44,6 +68,9 @@ const SelectScrollUpButton = forwardRef<
 ));
 SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName;
 
+/**
+ * @brief Scroll-down control for long select lists.
+ */
 const SelectScrollDownButton = forwardRef<
   ComponentRef<typeof SelectPrimitive.ScrollDownButton>,
   ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollDownButton>
@@ -58,6 +85,9 @@ const SelectScrollDownButton = forwardRef<
 ));
 SelectScrollDownButton.displayName = SelectPrimitive.ScrollDownButton.displayName;
 
+/**
+ * @brief Dropdown content container for select options.
+ */
 const SelectContent = forwardRef<
   ComponentRef<typeof SelectPrimitive.Content>,
   ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
@@ -89,6 +119,9 @@ const SelectContent = forwardRef<
 ));
 SelectContent.displayName = SelectPrimitive.Content.displayName;
 
+/**
+ * @brief Label for grouped select items.
+ */
 const SelectLabel = forwardRef<
   ComponentRef<typeof SelectPrimitive.Label>,
   ComponentPropsWithoutRef<typeof SelectPrimitive.Label>
@@ -97,6 +130,9 @@ const SelectLabel = forwardRef<
 ));
 SelectLabel.displayName = SelectPrimitive.Label.displayName;
 
+/**
+ * @brief Individual selectable option item.
+ */
 const SelectItem = forwardRef<
   ComponentRef<typeof SelectPrimitive.Item>,
   ComponentPropsWithoutRef<typeof SelectPrimitive.Item>
@@ -120,6 +156,9 @@ const SelectItem = forwardRef<
 ));
 SelectItem.displayName = SelectPrimitive.Item.displayName;
 
+/**
+ * @brief Separator line between select groups.
+ */
 const SelectSeparator = forwardRef<
   ComponentRef<typeof SelectPrimitive.Separator>,
   ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>

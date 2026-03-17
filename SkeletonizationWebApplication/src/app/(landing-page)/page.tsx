@@ -1,3 +1,12 @@
+/**
+ * @file page.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders landing page entry route.
+ * @description Displays product branding and feature overview, then conditionally renders welcome panel or sign-in card.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { headers } from "next/headers";
 
 import { auth } from "@/auth";
@@ -9,6 +18,10 @@ import { Feature } from "./branding/feature";
 import { WelcomeBack } from "./branding/welcome-back";
 import { SignInCard } from "./sign-in/sign-in-card";
 
+/**
+ * @brief Renders landing page with authentication-aware right panel.
+ * @returns Landing page layout JSX.
+ */
 const LandingPage = async () => {
   const session = await auth.api.getSession({ headers: await headers() });
 

@@ -1,3 +1,12 @@
+/**
+ * @file skeletonization.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Server action for creating and dispatching skeletonization runs.
+ * @description Validates run configuration, creates run/jobs, publishes worker jobs, and transitions run status.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use server";
 
 import type { SelectImage } from "@/database/zod/image";
@@ -10,6 +19,7 @@ import { createRun, updateRunStatus } from "@/repositories/run";
 
 import { requireUser } from "./common";
 
+/** @brief Creates a run, persists jobs, and enqueues processing tasks. */
 export const createSkeletonizationRunsAction = async (input: CreateSkeletonizationRun) => {
   const user = await requireUser("create skeletonization run");
 

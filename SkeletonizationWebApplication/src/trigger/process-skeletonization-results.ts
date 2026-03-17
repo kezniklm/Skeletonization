@@ -1,7 +1,19 @@
+/**
+ * @file process-skeletonization-results.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Trigger.dev scheduled task for draining result queue.
+ * @description Periodically processes skeletonization worker results in bounded batches within time budget.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { logger, schedules, wait } from "@trigger.dev/sdk/v3";
 
 import { processBatch } from "@/lib/job-result-processor";
 
+/**
+ * @brief Summary of one scheduled processing run.
+ */
 type ProcessingSummary = {
   processed: number;
   errors: number;
@@ -54,6 +66,7 @@ const processSkeletonizationResultsWithinBudget = async (
   return counters;
 };
 
+/** @brief Scheduled Trigger.dev task that processes skeletonization result batches. */
 export const processSkeletonizationResults = schedules.task({
   id: "process-skeletonization-results",
   cron: CRON_EVERY_MINUTE,

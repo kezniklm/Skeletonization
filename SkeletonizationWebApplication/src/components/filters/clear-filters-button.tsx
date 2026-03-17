@@ -1,3 +1,12 @@
+/**
+ * @file clear-filters-button.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders a conditional button for clearing active filters.
+ * @description Displays a compact clear action only when at least one filter is active.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import { X } from "lucide-react";
@@ -9,6 +18,13 @@ type ClearFiltersButtonProps = {
   show: boolean;
 };
 
+/**
+ * @brief Displays a clear-filters action button.
+ * @description Returns `null` when hidden; otherwise renders a button that resets active filters.
+ * @param onClick Callback executed when the button is pressed.
+ * @param show Whether the button should be visible.
+ * @returns Clear button element or `null`.
+ */
 export const ClearFiltersButton = ({ onClick, show }: ClearFiltersButtonProps) => {
   if (!show) {
     return null;

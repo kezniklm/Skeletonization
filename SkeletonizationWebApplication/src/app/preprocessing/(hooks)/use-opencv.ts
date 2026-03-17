@@ -1,3 +1,10 @@
+/**
+ * @file use-opencv.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Loads and exposes OpenCV.js runtime readiness state.
+ * @description Monitors window OpenCV availability, runtime initialization callbacks, and optional timeout behavior.
+ */
+
 "use client";
 
 import { type CV } from "mirada/dist/src/types/opencv";
@@ -38,6 +45,10 @@ type UseOpenCvResultReady = {
   cv: CV;
 };
 
+/**
+ * @brief Represents all possible OpenCV loading states.
+ * @description Discriminated union for loading, ready, and error outcomes returned by `useOpenCV`.
+ */
 export type UseOpenCvResult = UseOpenCvResultLoading | UseOpenCvResultError | UseOpenCvResultReady;
 
 const getWindowWithCv = (): WindowWithCv | null => {
@@ -50,6 +61,12 @@ const getCv = (): CV | null => {
   return win?.cv ?? null;
 };
 
+/**
+ * @brief Provides OpenCV runtime status and instance access.
+ * @description Waits for OpenCV.js initialization and returns discriminated loading, ready, or error state objects.
+ * @param options Optional hook configuration such as load timeout.
+ * @returns A `UseOpenCvResult` union describing OpenCV availability.
+ */
 export const useOpenCV = (options?: UseOpenCvOptions): UseOpenCvResult => {
   const timeoutMs = options?.timeoutMs ?? 0;
 

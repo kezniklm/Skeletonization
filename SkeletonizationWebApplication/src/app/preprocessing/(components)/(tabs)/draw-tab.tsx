@@ -1,3 +1,10 @@
+/**
+ * @file draw-tab.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders drawing tool controls for preprocessing canvas editing.
+ * @description Provides tool selection, color controls, brush sizing, and contextual guidance for interactive annotations.
+ */
+
 "use client";
 
 import { Circle, Crop, Eraser, Minus, Move, PaintBucket, Pencil, Square } from "lucide-react";
@@ -33,8 +40,21 @@ const QUICK_COLORS = [
   "#800080",
   "#008000",
   "#808080"
+  /** @brief Renders drawing tool, color, and brush controls. */
 ] as const;
 
+/**
+ * @brief Displays drawing and annotation controls.
+ * @description Lets users choose drawing modes, configure brush settings, pick colors, and view tool-specific usage hints.
+ * @param activeTool Currently selected drawing tool.
+ * @param setActiveTool Callback to update active drawing tool.
+ * @param drawColor Current drawing color.
+ * @param setDrawColor Callback to update drawing color.
+ * @param brushSize Current brush size in pixels.
+ * @param setBrushSize Callback to update brush size.
+ * @returns A tab panel for interactive drawing settings.
+ */
+/** @brief Renders drawing and annotation controls. */
 export const DrawTab = ({
   activeTool,
   setActiveTool,

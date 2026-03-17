@@ -1,3 +1,10 @@
+/**
+ * @file preview-panel.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders processed and comparison canvas previews.
+ * @description Provides responsive canvas sizing and pointer interaction forwarding for drawing and crop workflows.
+ */
+
 "use client";
 
 import { Eye, Image as ImageIcon } from "lucide-react";
@@ -47,6 +54,21 @@ const calculateScale = (
     : { width: `${containerHeight * canvasAspect}px`, height: `${containerHeight}px` };
 };
 
+/**
+ * @brief Displays the preprocessing preview canvas area.
+ * @description Renders either single-canvas output or side-by-side original/processed comparison while routing pointer events to drawing handlers.
+ * @param canvasRef Reference to the processed output canvas.
+ * @param comparisonCanvasRef Reference to the original comparison canvas.
+ * @param showComparison Whether dual-panel comparison view is enabled.
+ * @param activeTool Currently selected drawing tool.
+ * @param onChangeImage Callback to navigate back to image selection.
+ * @param onMouseDown Canvas pointer-down handler.
+ * @param onMouseMove Canvas pointer-move handler.
+ * @param onMouseUp Canvas pointer-up handler.
+ * @param onMouseLeave Canvas pointer-leave handler.
+ * @returns A preview panel card with responsive canvas rendering.
+ */
+/** @brief Displays preprocessing preview canvases. */
 export const PreviewPanel = ({
   canvasRef,
   comparisonCanvasRef,

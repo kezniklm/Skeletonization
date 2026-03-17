@@ -1,3 +1,10 @@
+/**
+ * @file use-drawing.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Manages interactive drawing and crop behavior on preprocessing canvas.
+ * @description Handles pointer events for freehand tools, shapes, flood fill, and crop operations while committing changes to history.
+ */
+
 "use client";
 
 import { type CV, type Point } from "mirada/dist/src/types/opencv";
@@ -38,6 +45,20 @@ const initialCropState: CropState = {
   endY: 0
 };
 
+/**
+ * @brief Provides canvas mouse handlers for drawing workflows.
+ * @description Orchestrates drawing tool logic, temporary snapshots, crop execution, and post-operation history updates.
+ * @param canvasRef Reference to the active output canvas.
+ * @param cv OpenCV runtime instance used for crop operations.
+ * @param activeTool Selected drawing tool mode.
+ * @param drawColor Current drawing color value.
+ * @param brushSize Current brush size in pixels.
+ * @param commitAsProcessingBase Callback to sync edited output into processing base canvas.
+ * @param addToHistory Callback to append user action history.
+ * @param onFinishCrop Callback invoked when crop flow ends.
+ * @returns Mouse event handlers for canvas drawing interactions.
+ */
+/** @brief Provides mouse handlers for preprocessing drawing tools. */
 export const useDrawing = ({
   canvasRef,
   cv,

@@ -1,9 +1,21 @@
+/**
+ * @file separator.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Visual separator component for layout grouping.
+ * @description Provides horizontal or vertical divider lines based on Radix separator primitives.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import * as SeparatorPrimitive from "@radix-ui/react-separator";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * @brief Renders a horizontal or vertical separator.
+ */
 const Separator = ({
   className,
   orientation = "horizontal",

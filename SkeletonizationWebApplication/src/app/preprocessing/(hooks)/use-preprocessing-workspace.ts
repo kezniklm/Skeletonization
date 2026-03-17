@@ -1,3 +1,10 @@
+/**
+ * @file use-preprocessing-workspace.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Orchestrates preprocessing workspace state and actions.
+ * @description Composes preprocessing hooks for pipeline execution, drawing, history, save/download, and panel props generation.
+ */
+
 "use client";
 
 import { type CV } from "mirada/dist/src/types/opencv";
@@ -26,6 +33,15 @@ type UsePreprocessingWorkspaceArgs = {
   defaultOutputFormat: FileOutputFormat;
 };
 
+/**
+ * @brief Builds state and handlers for the preprocessing workspace UI.
+ * @description Coordinates image processing lifecycle, control panel actions, drawing behavior, and dialogs into consumable component props.
+ * @param selectedImage Selected image metadata.
+ * @param cv OpenCV runtime instance.
+ * @param originalImage Loaded original image element.
+ * @param defaultOutputFormat Preferred output format for save and download.
+ * @returns Structured props for preview panel, controls panel, and dialogs.
+ */
 export const usePreprocessingWorkspace = ({
   selectedImage,
   cv,

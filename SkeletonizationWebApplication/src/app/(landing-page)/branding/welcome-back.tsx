@@ -1,12 +1,30 @@
+/**
+ * @file welcome-back.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders authenticated landing-page welcome panel.
+ * @description Shows greeting and quick navigation actions for returning users.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { ArrowRight, Sparkles } from "lucide-react";
 
 import { NavigationLink } from "@/components/navigation/navigation-link";
 
+/**
+ * @brief Represents welcome panel input properties.
+ */
 type WelcomeBackProps = {
   className?: string;
   userName?: string;
 };
 
+/**
+ * @brief Renders personalized welcome card for authenticated users.
+ * @param className Optional wrapper class names.
+ * @param userName Optional authenticated user name.
+ * @returns Welcome-back section JSX.
+ */
 export const WelcomeBack = ({ className, userName }: WelcomeBackProps) => (
   <section className={className} aria-labelledby="welcome-heading">
     <div className="relative overflow-hidden rounded-3xl bg-white/90 shadow-2xl backdrop-blur-xl xl:rounded-2xl xl:shadow-xl 2xl:rounded-3xl 2xl:shadow-2xl dark:bg-gray-800/90">

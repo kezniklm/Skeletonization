@@ -1,3 +1,12 @@
+/**
+ * @file StatsDashboard.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders benchmark statistics dashboard section.
+ * @description Displays aggregate KPI cards, fastest/slowest comparison, and per-algorithm rankings.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import type { BenchmarkData } from "../../../types";
 import { useTheme } from "../../../contexts/ThemeContext";
 import { useBenchmarkStats } from "../hooks";
@@ -10,6 +19,11 @@ type StatsDashboardProps = {
   data: BenchmarkData;
 };
 
+/**
+ * @brief Displays aggregate benchmark statistics and rankings.
+ * @param data Benchmark data source used for statistical aggregation.
+ * @returns Dashboard JSX.
+ */
 export const StatsDashboard = ({ data }: StatsDashboardProps) => {
   const { getThemeClasses } = useTheme();
   const themeClasses = getThemeClasses();

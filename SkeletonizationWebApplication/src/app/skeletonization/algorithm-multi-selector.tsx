@@ -1,3 +1,10 @@
+/**
+ * @file algorithm-multi-selector.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders multi-select controls for skeletonization algorithms.
+ * @description Provides algorithm checkbox selection with select-all and deselect-all shortcuts.
+ */
+
 "use client";
 
 import { ALGORITHMS, type Algorithm } from "@/algorithms";
@@ -11,6 +18,13 @@ type AlgorithmMultiSelectorProps = {
   onSelectionChange: (algorithms: Algorithm[]) => void;
 };
 
+/**
+ * @brief Displays algorithm multi-selection controls.
+ * @description Lets users choose one or more algorithms and quickly toggle complete selection sets.
+ * @param selectedAlgorithms Currently selected algorithm identifiers.
+ * @param onSelectionChange Callback receiving updated algorithm selections.
+ * @returns Algorithm selection UI with checkboxes.
+ */
 export const AlgorithmMultiSelector = ({ selectedAlgorithms, onSelectionChange }: AlgorithmMultiSelectorProps) => {
   const toggleAlgorithm = (algorithm: Algorithm) => {
     if (selectedAlgorithms.includes(algorithm)) {

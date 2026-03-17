@@ -1,6 +1,18 @@
+/**
+ * @file navigation-items.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Defines primary authenticated navigation links.
+ * @description Exports navigation item type and static route metadata used across desktop and mobile navigation.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { Binary, Network, Scan, Image as ImageIcon } from "lucide-react";
 import type { ReactElement } from "react";
 
+/**
+ * @brief Describes one navigation link entry.
+ */
 export type NavigationItem = {
   name: string;
   href: string;
@@ -8,6 +20,10 @@ export type NavigationItem = {
   description?: string;
 };
 
+/**
+ * @brief Static navigation link definitions.
+ * @description Contains route, icon, and helper text for main application sections.
+ */
 export const navigationItems: NavigationItem[] = [
   {
     name: "Images",

@@ -1,3 +1,10 @@
+/**
+ * @file settings-card.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders reusable grouped settings cards.
+ * @description Defines typed settings item structures and card layout used by the settings form sections.
+ */
+
 import type { ReactNode } from "react";
 
 type SettingsItem = {
@@ -13,6 +20,15 @@ type SettingsCardProps = {
   items: SettingsItem[];
 };
 
+/**
+ * @brief Displays a section card for related settings controls.
+ * @description Renders section metadata and per-item labels with attached control components.
+ * @param title Settings section title.
+ * @param icon Icon element representing the section.
+ * @param description Optional section description text.
+ * @param items Settings items rendered within the section.
+ * @returns A styled settings card component.
+ */
 export const SettingsCard = ({ title, icon, description, items }: SettingsCardProps) => (
   <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm backdrop-blur-sm transition-shadow hover:shadow-md xl:rounded-lg xl:shadow-sm 2xl:rounded-xl 2xl:shadow-md dark:border-gray-800 dark:bg-gray-900/95">
     <div className="border-b border-gray-200 bg-linear-to-r from-cyan-50/50 to-blue-50/50 px-6 py-4 xl:px-5 xl:py-3 2xl:px-6 2xl:py-4 dark:border-gray-800 dark:from-cyan-950/20 dark:to-blue-950/20">

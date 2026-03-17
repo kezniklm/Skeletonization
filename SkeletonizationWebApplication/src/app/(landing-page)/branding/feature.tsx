@@ -1,11 +1,30 @@
+/**
+ * @file feature.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Defines reusable landing-page feature card.
+ * @description Renders icon, title, and description pair used in landing feature list.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import type { LucideIcon } from "lucide-react";
 
+/**
+ * @brief Represents properties for one landing feature card.
+ */
 type FeatureProps = {
   icon: LucideIcon;
   title: string;
   description: string;
 };
 
+/**
+ * @brief Renders one landing feature item.
+ * @param icon Feature icon component.
+ * @param title Feature title.
+ * @param description Feature short description.
+ * @returns Feature card JSX.
+ */
 export const Feature = ({ icon: Icon, title, description }: FeatureProps) => (
   <article className="group flex items-start space-x-4 rounded-2xl bg-white/60 p-4 backdrop-blur-sm transition-all hover:bg-white/80 hover:shadow-lg xl:space-x-3 xl:rounded-xl xl:p-3 2xl:space-x-4 2xl:rounded-2xl 2xl:p-4 dark:bg-gray-800/60 dark:hover:bg-gray-800/80">
     <div

@@ -1,3 +1,12 @@
+/**
+ * @file mobile-navigation.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders mobile navigation toggle and menu.
+ * @description Provides mobile-only controls for opening navigation drawer and rendering route links.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import { Menu, X } from "lucide-react";
@@ -8,6 +17,10 @@ import { type NavigationItem } from "./constants/navigation-items";
 import { useNavigation } from "./navigation-provider";
 import { NavigationLink } from "./navigation-link";
 
+/**
+ * @brief Renders button to toggle mobile navigation menu.
+ * @returns A mobile menu toggle button.
+ */
 export const MobileNavigationButton = () => {
   const { isMobileMenuOpen, toggleMobileMenu } = useNavigation();
 
@@ -25,6 +38,12 @@ type MobileNavigationMenuProps = {
   navigationItems: NavigationItem[];
 };
 
+/**
+ * @brief Renders mobile navigation menu content.
+ * @description Displays route links for authenticated users while mobile menu is open.
+ * @param navigationItems Navigation item definitions.
+ * @returns Mobile menu panel or `null` when hidden.
+ */
 export const MobileNavigationMenu = ({ navigationItems }: MobileNavigationMenuProps) => {
   const { data: session } = authClient.useSession();
   const { isMobileMenuOpen, setIsMobileMenuOpen } = useNavigation();
@@ -32,7 +51,7 @@ export const MobileNavigationMenu = ({ navigationItems }: MobileNavigationMenuPr
   if (!isMobileMenuOpen || !session) return null;
 
   return (
-    <div className="border-t border-gray-200/50 bg-gradient-to-b from-cyan-50/30 to-transparent py-4 md:hidden dark:border-gray-800/50 dark:from-cyan-950/10">
+    <div className="border-t border-gray-200/50 bg-linear-to-b from-cyan-50/30 to-transparent py-4 md:hidden dark:border-gray-800/50 dark:from-cyan-950/10">
       <div className="space-y-1">
         {navigationItems.map((link) => (
           <NavigationLink

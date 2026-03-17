@@ -1,3 +1,12 @@
+/**
+ * @file dropdown-menu.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Dropdown menu primitives for contextual actions.
+ * @description Exposes styled Radix dropdown menu wrappers, including groups, items, submenus, and selection controls.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
@@ -5,18 +14,30 @@ import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * @brief Root dropdown menu container.
+ */
 const DropdownMenu = ({ ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) => (
   <DropdownMenuPrimitive.Root data-slot="dropdown-menu" {...props} />
 );
 
+/**
+ * @brief Portal wrapper for dropdown menu content.
+ */
 const DropdownMenuPortal = ({ ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.Portal>) => (
   <DropdownMenuPrimitive.Portal data-slot="dropdown-menu-portal" {...props} />
 );
 
+/**
+ * @brief Trigger element that opens the dropdown menu.
+ */
 const DropdownMenuTrigger = ({ ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.Trigger>) => (
   <DropdownMenuPrimitive.Trigger data-slot="dropdown-menu-trigger" {...props} />
 );
 
+/**
+ * @brief Main dropdown menu content surface.
+ */
 const DropdownMenuContent = ({
   className,
   sideOffset = 4,
@@ -35,10 +56,16 @@ const DropdownMenuContent = ({
   </DropdownMenuPrimitive.Portal>
 );
 
+/**
+ * @brief Group container for related menu items.
+ */
 const DropdownMenuGroup = ({ ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.Group>) => (
   <DropdownMenuPrimitive.Group data-slot="dropdown-menu-group" {...props} />
 );
 
+/**
+ * @brief Standard dropdown menu item.
+ */
 const DropdownMenuItem = ({
   className,
   inset,
@@ -60,6 +87,9 @@ const DropdownMenuItem = ({
   />
 );
 
+/**
+ * @brief Checkbox-style dropdown menu item.
+ */
 const DropdownMenuCheckboxItem = ({
   className,
   children,
@@ -84,10 +114,16 @@ const DropdownMenuCheckboxItem = ({
   </DropdownMenuPrimitive.CheckboxItem>
 );
 
+/**
+ * @brief Radio group container for mutually exclusive items.
+ */
 const DropdownMenuRadioGroup = ({ ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.RadioGroup>) => (
   <DropdownMenuPrimitive.RadioGroup data-slot="dropdown-menu-radio-group" {...props} />
 );
 
+/**
+ * @brief Radio-selectable dropdown menu item.
+ */
 const DropdownMenuRadioItem = ({
   className,
   children,
@@ -110,6 +146,9 @@ const DropdownMenuRadioItem = ({
   </DropdownMenuPrimitive.RadioItem>
 );
 
+/**
+ * @brief Label element for menu sections.
+ */
 const DropdownMenuLabel = ({
   className,
   inset,
@@ -125,6 +164,9 @@ const DropdownMenuLabel = ({
   />
 );
 
+/**
+ * @brief Separator line between menu sections.
+ */
 const DropdownMenuSeparator = ({
   className,
   ...props
@@ -136,6 +178,9 @@ const DropdownMenuSeparator = ({
   />
 );
 
+/**
+ * @brief Shortcut text label for menu items.
+ */
 const DropdownMenuShortcut = ({ className, ...props }: React.ComponentProps<"span">) => (
   <span
     data-slot="dropdown-menu-shortcut"
@@ -144,10 +189,16 @@ const DropdownMenuShortcut = ({ className, ...props }: React.ComponentProps<"spa
   />
 );
 
+/**
+ * @brief Root wrapper for nested submenu content.
+ */
 const DropdownMenuSub = ({ ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.Sub>) => (
   <DropdownMenuPrimitive.Sub data-slot="dropdown-menu-sub" {...props} />
 );
 
+/**
+ * @brief Trigger element for nested submenus.
+ */
 const DropdownMenuSubTrigger = ({
   className,
   inset,
@@ -170,6 +221,9 @@ const DropdownMenuSubTrigger = ({
   </DropdownMenuPrimitive.SubTrigger>
 );
 
+/**
+ * @brief Content surface for nested submenus.
+ */
 const DropdownMenuSubContent = ({
   className,
   ...props

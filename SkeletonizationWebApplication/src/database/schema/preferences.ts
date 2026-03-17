@@ -1,7 +1,17 @@
+/**
+ * @file preferences.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Defines user preferences table and defaults.
+ * @description Declares preference enums, default values, and persisted preference schema for appearance, notifications, timezone, and output format.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { boolean, pgTable, text } from "drizzle-orm/pg-core";
 
 import { user } from "./auth";
 
+/** @brief Supported output format enum values. */
 export const DEFAULT_OUTPUT_FORMAT_ENUM = ["BMP", "JPEG", "PNG", "TIFF"] as const;
 
 const THEME_ENUM = ["system", "light", "dark"] as const;
@@ -9,6 +19,7 @@ const THEME_ENUM = ["system", "light", "dark"] as const;
 type DefaultOutputFormat = (typeof DEFAULT_OUTPUT_FORMAT_ENUM)[number];
 type Theme = (typeof THEME_ENUM)[number];
 
+/** @brief Application default user preference values. */
 export const defaultPreferences = {
   theme: "system" satisfies Theme,
   animatedBackgroundDisabled: false,
@@ -17,6 +28,7 @@ export const defaultPreferences = {
   defaultOutputFormat: "PNG" satisfies DefaultOutputFormat
 } as const;
 
+/** @brief Database table schema for user preferences. */
 export const userPreferences = pgTable("user_preferences", {
   userId: text("user_id")
     .primaryKey()

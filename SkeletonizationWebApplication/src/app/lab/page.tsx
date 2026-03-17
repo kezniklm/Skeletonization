@@ -1,3 +1,12 @@
+/**
+ * @file page.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Implements Processing Lab route page.
+ * @description Loads user run history and preferences, then renders empty state or run history workspace.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -10,6 +19,10 @@ import { NotificationPermissionDialog } from "@/components/notification-permissi
 import { LabEmptyState } from "./lab-empty-state";
 import { LabHistory } from "./lab-history";
 
+/**
+ * @brief Renders authenticated processing lab page.
+ * @returns Processing lab page JSX.
+ */
 const LabPage = async () => {
   const session = await auth.api.getSession({ headers: await headers() });
 

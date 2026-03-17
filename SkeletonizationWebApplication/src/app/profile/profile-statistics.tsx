@@ -1,3 +1,10 @@
+/**
+ * @file profile-statistics.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders profile statistics summary cards.
+ * @description Composes aggregate counters into display-ready statistic cards for images, runs, and skeletonized outputs.
+ */
+
 import { StatisticCard, type StatisticCardItem } from "./profile-static-card";
 
 type ProfileStatisticsProps = {
@@ -6,6 +13,14 @@ type ProfileStatisticsProps = {
   skeletonizedImagesCount: number;
 };
 
+/**
+ * @brief Displays key profile usage statistics.
+ * @description Maps numeric counters into visual cards for quick account activity overview.
+ * @param imagesCount Total image count for the user.
+ * @param runsCount Total skeletonization run count.
+ * @param skeletonizedImagesCount Total skeletonized image count.
+ * @returns A responsive grid of statistic cards.
+ */
 export const ProfileStatistics = ({ imagesCount, runsCount, skeletonizedImagesCount }: ProfileStatisticsProps) => {
   const statisticCardItems: StatisticCardItem[] = [
     {

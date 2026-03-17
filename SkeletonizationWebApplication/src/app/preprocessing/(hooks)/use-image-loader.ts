@@ -1,3 +1,10 @@
+/**
+ * @file use-image-loader.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Loads image resources for preprocessing.
+ * @description Tracks asynchronous image loading lifecycle and returns normalized status and error information.
+ */
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -10,6 +17,12 @@ type LoaderState = {
   error: boolean;
 };
 
+/**
+ * @brief Loads an image URL and exposes loading state.
+ * @description Creates an `Image` object for the provided URL and reports `loading`, `ready`, or `error` status with payload data.
+ * @param url Source URL of the image to load.
+ * @returns Object containing image loading status, loaded image element, and optional error message.
+ */
 export const useImageLoader = (url: string | null) => {
   const [state, setState] = useState<LoaderState>({
     url: null,

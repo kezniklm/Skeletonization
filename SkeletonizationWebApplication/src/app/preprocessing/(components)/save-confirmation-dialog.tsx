@@ -1,3 +1,10 @@
+/**
+ * @file save-confirmation-dialog.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Presents post-save workflow choices for preprocessing.
+ * @description Displays action options after successful save, allowing users to continue editing or navigate to related sections.
+ */
+
 import { useRouter } from "next/navigation";
 
 import {
@@ -19,6 +26,14 @@ type SaveConfirmationDialogProps = {
   onSelectAction: (action: SaveAction) => void;
 };
 
+/**
+ * @brief Displays a dialog with next-step options after saving an image.
+ * @description Offers navigation and workflow continuation actions and notifies workspace state through selection callbacks.
+ * @param isOpen Whether the dialog is currently visible.
+ * @param onClose Callback invoked when the dialog should close.
+ * @param onSelectAction Callback receiving the user's selected save action.
+ * @returns An alert dialog for selecting post-save behavior.
+ */
 export const SaveConfirmationDialog = ({ isOpen, onClose, onSelectAction }: SaveConfirmationDialogProps) => {
   const router = useRouter();
 

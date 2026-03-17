@@ -1,3 +1,12 @@
+/**
+ * @file lab-history.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders processing history list with controls.
+ * @description Provides filtered and sorted run history view for lab page with expandable run detail entries.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import { type LabRun } from "@/repositories/run";
@@ -10,10 +19,18 @@ import { LabFilters } from "./lab-filters";
 import { LabAlgorithmFilter } from "./lab-algorithm-filter";
 import { LabSort } from "./lab-sort";
 
+/**
+ * @brief Represents lab history component input properties.
+ */
 type LabHistoryProps = {
   runs: LabRun[];
 };
 
+/**
+ * @brief Renders lab history panel for run dataset.
+ * @param runs Run list to display.
+ * @returns Lab history JSX.
+ */
 export const LabHistory = ({ runs }: LabHistoryProps) => {
   const {
     searchQuery,

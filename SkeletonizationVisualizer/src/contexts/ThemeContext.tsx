@@ -1,3 +1,12 @@
+/**
+ * @file ThemeContext.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Implements theme state and palette access context.
+ * @description Manages persistent light/dark theme selection, DOM class synchronization, and palette retrieval.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react";
 import type { ReactNode } from "react";
 
@@ -23,6 +32,11 @@ const STORAGE_KEY = "skeletonization-theme";
 
 const isBrowser = typeof window !== "undefined";
 
+/**
+ * @brief Applies the selected theme class and attributes to the DOM.
+ * @param theme Active theme value.
+ * @returns No return value.
+ */
 const applyDomTheme = (theme: Theme) => {
   if (!isBrowser) {
     return;
@@ -38,6 +52,10 @@ const applyDomTheme = (theme: Theme) => {
   body.classList.add(theme);
 };
 
+/**
+ * @brief Resolves initial theme from storage or media preference.
+ * @returns Initial theme value used during provider setup.
+ */
 const getInitialTheme = (): Theme => {
   if (!isBrowser) {
     return "dark";
@@ -56,6 +74,11 @@ const getInitialTheme = (): Theme => {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+/**
+ * @brief Provides theme state and palette helpers to descendants.
+ * @param children React subtree consuming theme context.
+ * @returns Theme context provider element.
+ */
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
 
@@ -105,6 +128,10 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 };
 
+/**
+ * @brief Returns the active theme context value.
+ * @returns Theme context object.
+ */
 export const useTheme = () => {
   const context = useContext(ThemeContext);
 

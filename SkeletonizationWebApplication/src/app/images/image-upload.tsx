@@ -1,3 +1,12 @@
+/**
+ * @file image-upload.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Implements drag-and-drop and file-picker image upload UI.
+ * @description Supports single or batch uploads, progress tracking, and compact/full presentation modes.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import { Upload, X } from "lucide-react";
@@ -9,12 +18,22 @@ import { uploadImageAction } from "@/server-actions/images";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
+/**
+ * @brief Represents image upload component properties.
+ */
 type ImageUploadProps = {
   onUploadComplete: (image: SelectImage) => void;
   compact?: boolean;
   fullWidth?: boolean;
 };
 
+/**
+ * @brief Renders image upload panel.
+ * @param onUploadComplete Callback for successful upload item.
+ * @param compact Whether to render compact tile variant.
+ * @param fullWidth Whether compact tile should span full width.
+ * @returns Upload component JSX.
+ */
 export const ImageUpload = ({ onUploadComplete, compact = false, fullWidth = false }: ImageUploadProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -22,6 +41,13 @@ export const ImageUpload = ({ onUploadComplete, compact = false, fullWidth = fal
   const [totalFiles, setTotalFiles] = useState(0);
   const [uploadedFiles, setUploadedFiles] = useState(0);
 
+  /**
+   * @brief Displays aggregate upload outcome notification.
+   * @param files Uploaded file collection.
+   * @param successCount Number of successful uploads.
+   * @param failureCount Number of failed uploads.
+   * @returns No return value.
+   */
   const notifyUploadSummary = (files: File[], successCount: number, failureCount: number) => {
     if (files.length === 1) {
       if (successCount === 1) {
@@ -43,6 +69,12 @@ export const ImageUpload = ({ onUploadComplete, compact = false, fullWidth = fal
     toast.info(`${successCount} uploaded, ${failureCount} failed`);
   };
 
+  /**
+   * @brief Uploads one file and updates progress counters.
+   * @param file File object to upload.
+   * @param totalCount Total files in current batch.
+   * @returns Success state object.
+   */
   const uploadFile = async (file: File, totalCount: number) => {
     try {
       const image = await uploadImageAction(file);
@@ -62,6 +94,11 @@ export const ImageUpload = ({ onUploadComplete, compact = false, fullWidth = fal
     }
   };
 
+  /**
+   * @brief Uploads file batch and emits summary notification.
+   * @param files Files selected for upload.
+   * @returns Promise resolved after batch completes.
+   */
   const uploadFiles = async (files: File[]) => {
     if (!files.length) return;
     setIsUploading(true);
@@ -78,6 +115,11 @@ export const ImageUpload = ({ onUploadComplete, compact = false, fullWidth = fal
     setUploadProgress(0);
   };
 
+  /**
+   * @brief Handles drag-and-drop file submission.
+   * @param e Drop event.
+   * @returns No return value.
+   */
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
@@ -86,14 +128,31 @@ export const ImageUpload = ({ onUploadComplete, compact = false, fullWidth = fal
     uploadFiles(files);
   };
 
+  /**
+   * @brief Enables drag-over state for visual feedback.
+   * @param e Drag-over event.
+   * @returns No return value.
+   */
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(true);
   };
+
+  /**
+   * @brief Clears drag-over state.
+   * @param e Drag-leave event.
+   * @returns No return value.
+   */
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
   };
+
+  /**
+   * @brief Handles file-picker selection.
+   * @param e Change event from hidden file input.
+   * @returns No return value.
+   */
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files ? Array.from(e.target.files) : [];
     if (files.length) uploadFiles(files);

@@ -1,6 +1,19 @@
+/**
+ * @file not-found.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Implements custom 404 page.
+ * @description Shows branded not-found message with navigation action back to landing page.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import Link from "next/link";
 import { Compass, ArrowLeft } from "lucide-react";
 
+/**
+ * @brief Renders 404 not-found screen.
+ * @returns Not-found page JSX.
+ */
 const NotFound = () => (
   <div className="flex min-h-[78vh] items-center justify-center px-4 sm:px-6">
     <div className="w-full max-w-lg">

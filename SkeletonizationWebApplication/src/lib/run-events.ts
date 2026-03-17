@@ -1,5 +1,17 @@
+/**
+ * @file run-events.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Publishes and subscribes user-scoped run completion events.
+ * @description Manages per-user pub/sub channels for run completion notifications and recent-event retrieval.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { createPubSubChannel } from "./redis/index";
 
+/**
+ * @brief Payload structure for run completion notifications.
+ */
 export type RunCompletedEvent = {
   runId: string;
   userId: string;
@@ -24,6 +36,7 @@ const getUserChannel = (userId: string) => {
   return channel;
 };
 
+/** @brief Subscribes callback to run completion events for user. */
 export const subscribeToRunEvents = (userId: string, callback: (event: RunCompletedEvent) => void): (() => void) => {
   const channel = getUserChannel(userId);
 
@@ -32,12 +45,14 @@ export const subscribeToRunEvents = (userId: string, callback: (event: RunComple
   });
 };
 
+/** @brief Publishes run completion event to a user channel. */
 export const publishRunCompletedEvent = async (event: RunCompletedEvent): Promise<void> => {
   const channel = getUserChannel(event.userId);
   await channel.publish(event);
   console.log(`Published run-completed event for run ${event.runId} to user ${event.userId}`);
 };
 
+/** @brief Returns recent cached run events for a user. */
 export const getRecentRunEvents = async (userId: string): Promise<RunCompletedEvent[]> => {
   const channel = getUserChannel(userId);
   return channel.getRecentEvents();

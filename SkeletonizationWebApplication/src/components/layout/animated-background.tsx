@@ -1,3 +1,12 @@
+/**
+ * @file animated-background.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders animated node-and-connection background effect.
+ * @description Provides themed, performant canvas-based ambient background with user preference support.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import { useEffect, useRef, type ReactNode } from "react";
@@ -230,6 +239,12 @@ const drawNodes = (ctx: CanvasRenderingContext2D, nodes: Node[], dark: boolean):
   });
 };
 
+/**
+ * @brief Wraps children with optional animated canvas background.
+ * @description Initializes and manages background canvas animation lifecycle unless disabled by user preference.
+ * @param children Content rendered above the animated background layer.
+ * @returns Background canvas and wrapped children content.
+ */
 export const AnimatedBackgroundProvider = ({ children }: AnimatedBackgroundProviderProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { animatedBackgroundDisabled } = useAnimatedBackgroundPreference();

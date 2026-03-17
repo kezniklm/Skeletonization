@@ -1,3 +1,12 @@
+/**
+ * @file date-time.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Timezone-aware date and datetime format helpers.
+ * @description Normalizes dates and timezones and exposes formatting utilities for UI display.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { isValidTimezone } from "@/lib/timezone-utils";
 
 const normalizeTimezone = (timezone?: string | null): string => {
@@ -12,6 +21,7 @@ const toDate = (value: Date | string | null | undefined): Date | null => {
   return date;
 };
 
+/** @brief Formats a date value using specified or normalized timezone. */
 export const formatDateInTimezone = (
   value: Date | string | null | undefined,
   timezone?: string | null,
@@ -26,6 +36,7 @@ export const formatDateInTimezone = (
   return new Intl.DateTimeFormat(locale, { ...options, timeZone }).format(date);
 };
 
+/** @brief Formats a date-time value using specified or normalized timezone. */
 export const formatDateTimeInTimezone = (
   value: Date | string | null | undefined,
   timezone?: string | null,

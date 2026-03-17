@@ -1,3 +1,12 @@
+/**
+ * @file ImageCard.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders one benchmark image tile.
+ * @description Displays image preview, metadata badges, and actions for viewing, downloading, and comparison selection.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { useTheme } from "../../../contexts/ThemeContext";
 import type { ImageData, ImageContainer } from "../../../types";
 
@@ -11,6 +20,18 @@ type ImageCardProps = {
   onToggleComparisonSelection: (image: ImageData) => void;
 };
 
+/**
+ * @brief Displays a single image card with actions.
+ * @param image Image entry to render.
+ * @param container Parent benchmark container.
+ * @param index Image index within container.
+ * @param onImageClick Callback for opening image preview.
+ * @param onDownload Callback for downloading the image.
+ * @param isSelectedForComparison Indicates whether image is selected for comparison.
+ * @param onToggleComparisonSelection Callback for comparison selection toggle.
+ * @returns Image card JSX.
+ */
+/** @brief Renders a single benchmark image card with actions. */
 export const ImageCard = ({
   image,
   container,

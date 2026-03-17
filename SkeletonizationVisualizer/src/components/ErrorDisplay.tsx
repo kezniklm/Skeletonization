@@ -1,3 +1,12 @@
+/**
+ * @file ErrorDisplay.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders a standardized error state card.
+ * @description Shows error context with optional retry action for recoverable failures.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { useTheme } from "../contexts/ThemeContext";
 
 type ErrorDisplayProps = {
@@ -6,6 +15,13 @@ type ErrorDisplayProps = {
   retry?: () => void;
 };
 
+/**
+ * @brief Displays an error panel with optional retry button.
+ * @param title Optional card title.
+ * @param message Error details to display.
+ * @param retry Optional retry callback.
+ * @returns Error UI JSX.
+ */
 export const ErrorDisplay = ({ title = "Error", message, retry }: ErrorDisplayProps) => {
   const { getThemeClasses } = useTheme();
   const themeClasses = getThemeClasses();

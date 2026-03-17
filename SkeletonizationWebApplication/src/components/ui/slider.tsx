@@ -1,8 +1,20 @@
+/**
+ * @file slider.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Slider input component for ranged values.
+ * @description Wraps Radix slider behavior with consistent track, range, and thumb styling.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import * as SliderPrimitive from "@radix-ui/react-slider";
 import { type ComponentPropsWithoutRef, type ComponentRef, forwardRef } from "react";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * @brief Renders a styled slider control.
+ */
 const Slider = forwardRef<
   ComponentRef<typeof SliderPrimitive.Root>,
   ComponentPropsWithoutRef<typeof SliderPrimitive.Root>

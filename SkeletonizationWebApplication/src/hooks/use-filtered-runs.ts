@@ -1,3 +1,12 @@
+/**
+ * @file use-filtered-runs.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Filters and sorts lab runs by query and algorithm.
+ * @description Provides run list filtering, sorting, and algorithm toggle state for lab run exploration.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -41,6 +50,12 @@ const compareBySort = (a: LabRun, b: LabRun, sortBy: SortOption) => {
   }
 };
 
+/**
+ * @brief Returns filtered and sorted run list state.
+ * @description Manages search query, sort order, selected algorithms, and derives matching sorted runs.
+ * @param runs Source runs collection.
+ * @returns Filtering state, actions, and sorted run output.
+ */
 export const useFilteredRuns = (runs: LabRun[]) => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortBy, setSortBy] = useState<SortOption>("date-desc");

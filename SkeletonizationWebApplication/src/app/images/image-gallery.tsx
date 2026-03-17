@@ -1,3 +1,12 @@
+/**
+ * @file image-gallery.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Implements stateful image gallery page section.
+ * @description Coordinates filters, tabs, sorting, pagination, and destructive actions for user images.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import type { SelectImage } from "@/database/zod/image";
@@ -12,6 +21,11 @@ import { ImageDeleteDialog } from "./image-delete-dialog";
 import { ImageSort } from "./image-sort";
 import { ImagePagination } from "./image-pagination";
 
+/**
+ * @brief Renders interactive image gallery workspace.
+ * @param initialImages Initial image dataset loaded from server.
+ * @returns Gallery panel JSX.
+ */
 const ImageGallery = ({ initialImages }: { initialImages: SelectImage[] }) => {
   const {
     images,

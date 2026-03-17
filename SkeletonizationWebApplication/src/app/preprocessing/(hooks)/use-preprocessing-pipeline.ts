@@ -1,3 +1,10 @@
+/**
+ * @file use-preprocessing-pipeline.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Executes preprocessing filter and transform pipeline on canvas updates.
+ * @description Applies configured OpenCV operations to the base canvas and renders processed output, with optional comparison rendering.
+ */
+
 "use client";
 
 import { type CV, type Mat } from "mirada/dist/src/types/opencv";
@@ -309,6 +316,22 @@ const runProcessingPipeline = ({ cv, filters, transforms, sourceCanvas, canvas, 
   }
 };
 
+/**
+ * @brief Runs preprocessing operations whenever relevant state changes.
+ * @description Observes filter and transform dependencies to process the base canvas and optionally refresh comparison output.
+ * @param cv OpenCV runtime instance.
+ * @param filters Active filter configuration.
+ * @param transforms Active transform configuration.
+ * @param originalImageRef Reference to original image element.
+ * @param baseCanvasRef Reference to source/base canvas for processing.
+ * @param canvasRef Reference to output canvas.
+ * @param comparisonCanvasRef Reference to comparison canvas.
+ * @param showComparison Whether comparison rendering is enabled.
+ * @param setProcessing Setter for processing busy state.
+ * @param skipNextProcessingRef Optional flag to skip a single pipeline execution.
+ * @returns No return value.
+ */
+/** @brief Runs the preprocessing pipeline on state changes. */
 export const useProcessingPipeline = ({
   cv,
   filters,

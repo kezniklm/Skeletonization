@@ -1,3 +1,12 @@
+/**
+ * @file alert-dialog.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Alert dialog primitive wrappers for destructive confirmations.
+ * @description Provides themed Radix alert dialog components used for confirmation prompts and critical actions.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
@@ -5,18 +14,30 @@ import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 
+/**
+ * @brief Root alert dialog container.
+ */
 const AlertDialog = ({ ...props }: React.ComponentProps<typeof AlertDialogPrimitive.Root>) => (
   <AlertDialogPrimitive.Root data-slot="alert-dialog" {...props} />
 );
 
+/**
+ * @brief Trigger element for opening the alert dialog.
+ */
 const AlertDialogTrigger = ({ ...props }: React.ComponentProps<typeof AlertDialogPrimitive.Trigger>) => (
   <AlertDialogPrimitive.Trigger data-slot="alert-dialog-trigger" {...props} />
 );
 
+/**
+ * @brief Portal wrapper for alert dialog content.
+ */
 const AlertDialogPortal = ({ ...props }: React.ComponentProps<typeof AlertDialogPrimitive.Portal>) => (
   <AlertDialogPrimitive.Portal data-slot="alert-dialog-portal" {...props} />
 );
 
+/**
+ * @brief Backdrop overlay for the alert dialog.
+ */
 const AlertDialogOverlay = ({ className, ...props }: React.ComponentProps<typeof AlertDialogPrimitive.Overlay>) => (
   <AlertDialogPrimitive.Overlay
     data-slot="alert-dialog-overlay"
@@ -28,6 +49,9 @@ const AlertDialogOverlay = ({ className, ...props }: React.ComponentProps<typeof
   />
 );
 
+/**
+ * @brief Main content surface for the alert dialog.
+ */
 const AlertDialogContent = ({ className, ...props }: React.ComponentProps<typeof AlertDialogPrimitive.Content>) => (
   <AlertDialogPortal>
     <AlertDialogOverlay />
@@ -42,6 +66,9 @@ const AlertDialogContent = ({ className, ...props }: React.ComponentProps<typeof
   </AlertDialogPortal>
 );
 
+/**
+ * @brief Header layout for title and description.
+ */
 const AlertDialogHeader = ({ className, ...props }: React.ComponentProps<"div">) => (
   <div
     data-slot="alert-dialog-header"
@@ -50,6 +77,9 @@ const AlertDialogHeader = ({ className, ...props }: React.ComponentProps<"div">)
   />
 );
 
+/**
+ * @brief Footer layout for action buttons.
+ */
 const AlertDialogFooter = ({ className, ...props }: React.ComponentProps<"div">) => (
   <div
     data-slot="alert-dialog-footer"
@@ -58,6 +88,9 @@ const AlertDialogFooter = ({ className, ...props }: React.ComponentProps<"div">)
   />
 );
 
+/**
+ * @brief Styled title for alert dialog content.
+ */
 const AlertDialogTitle = ({ className, ...props }: React.ComponentProps<typeof AlertDialogPrimitive.Title>) => (
   <AlertDialogPrimitive.Title
     data-slot="alert-dialog-title"
@@ -66,6 +99,9 @@ const AlertDialogTitle = ({ className, ...props }: React.ComponentProps<typeof A
   />
 );
 
+/**
+ * @brief Styled description text for alert dialog content.
+ */
 const AlertDialogDescription = ({
   className,
   ...props
@@ -77,10 +113,16 @@ const AlertDialogDescription = ({
   />
 );
 
+/**
+ * @brief Primary action button for alert confirmations.
+ */
 const AlertDialogAction = ({ className, ...props }: React.ComponentProps<typeof AlertDialogPrimitive.Action>) => (
   <AlertDialogPrimitive.Action className={cn(buttonVariants(), className)} {...props} />
 );
 
+/**
+ * @brief Secondary cancel button for alert dialogs.
+ */
 const AlertDialogCancel = ({ className, ...props }: React.ComponentProps<typeof AlertDialogPrimitive.Cancel>) => (
   <AlertDialogPrimitive.Cancel className={cn(buttonVariants({ variant: "outline" }), className)} {...props} />
 );

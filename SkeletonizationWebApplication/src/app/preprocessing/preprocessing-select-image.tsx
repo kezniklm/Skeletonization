@@ -1,3 +1,10 @@
+/**
+ * @file preprocessing-select-image.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders image acquisition options for preprocessing.
+ * @description Provides upload and gallery browsing actions, including filename-conflict recovery during uploads.
+ */
+
 "use client";
 
 import { useRef, useState, type ChangeEvent } from "react";
@@ -26,6 +33,12 @@ type PreprocessingEmptyStateProps = {
   availableImagesCount: number;
 };
 
+/**
+ * @brief Displays upload and gallery actions before a preprocessing image is selected.
+ * @description Handles image upload flow, fake progress feedback, and conflict dialog retries with generated filenames.
+ * @param availableImagesCount Number of images currently available in the user's gallery.
+ * @returns A client-side selection interface for entering preprocessing workflow.
+ */
 export const PreprocessingSelectImage = ({ availableImagesCount }: PreprocessingEmptyStateProps) => {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);

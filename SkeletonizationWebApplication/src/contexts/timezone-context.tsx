@@ -1,3 +1,12 @@
+/**
+ * @file timezone-context.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Manages user timezone state.
+ * @description Provides timezone context with validation and normalization helpers for UTC and detected local timezones.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import { createContext, useContext, useState, type PropsWithChildren } from "react";
@@ -17,6 +26,13 @@ type TimezoneProviderProps = PropsWithChildren<{
   initialTimezone?: string;
 }>;
 
+/**
+ * @brief Provides timezone context for date rendering.
+ * @description Normalizes initial timezone and exposes validated timezone setter to descendants.
+ * @param children Descendant nodes requiring timezone context.
+ * @param initialTimezone Initial timezone preference.
+ * @returns Timezone context provider wrapper.
+ */
 export const TimezoneProvider = ({
   children,
   initialTimezone = defaultPreferences.timezone
@@ -41,6 +57,11 @@ export const TimezoneProvider = ({
   );
 };
 
+/**
+ * @brief Returns current timezone context.
+ * @description Throws when called outside `TimezoneProvider`.
+ * @returns Timezone context values and setter.
+ */
 export const useTimezone = () => {
   const context = useContext(TimezoneContext);
 

@@ -1,3 +1,12 @@
+/**
+ * @file navigation-user-menu.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders authenticated user dropdown menu.
+ * @description Provides account quick actions, profile navigation, and sign-out handling from header avatar menu.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -13,6 +22,12 @@ type UserMenuProps = {
   className?: string;
 };
 
+/**
+ * @brief Displays user account menu in navigation header.
+ * @description Manages dropdown open state, outside-click dismissal, and account action navigation.
+ * @param className Optional wrapper classes.
+ * @returns User menu dropdown or `null` when session is missing.
+ */
 const NavigationUserMenu = ({ className }: UserMenuProps) => {
   const { data: session } = authClient.useSession();
   const [isOpen, setIsOpen] = useState(false);
@@ -51,7 +66,7 @@ const NavigationUserMenu = ({ className }: UserMenuProps) => {
         aria-haspopup="true"
         aria-expanded={isOpen}
         onClick={() => setIsOpen((s) => !s)}
-        className="flex items-center space-x-3 rounded-full bg-gradient-to-r from-cyan-50 to-blue-50 py-2 pr-3 pl-2 transition-all hover:from-cyan-100 hover:to-blue-100 hover:shadow-md dark:from-cyan-950/30 dark:to-blue-950/30 dark:hover:from-cyan-900/40 dark:hover:to-blue-900/40"
+        className="flex items-center space-x-3 rounded-full bg-linear-to-r from-cyan-50 to-blue-50 py-2 pr-3 pl-2 transition-all hover:from-cyan-100 hover:to-blue-100 hover:shadow-md dark:from-cyan-950/30 dark:to-blue-950/30 dark:hover:from-cyan-900/40 dark:hover:to-blue-900/40"
       >
         <div className="relative h-8 w-8 overflow-hidden rounded-full ring-2 ring-cyan-500 ring-offset-2 dark:ring-cyan-400">
           <NavigationAvatar src={session.user?.image ?? undefined} alt={session.user?.name ?? "User"} />
@@ -75,7 +90,7 @@ const NavigationUserMenu = ({ className }: UserMenuProps) => {
             aria-label="User menu"
             className="absolute right-0 z-20 mt-2 w-56 origin-top-right rounded-xl border border-gray-200/50 bg-white/95 shadow-xl backdrop-blur-lg dark:border-gray-700/50 dark:bg-gray-900/95"
           >
-            <div className="border-b border-gray-200/50 bg-gradient-to-r from-cyan-50/50 to-blue-50/50 px-4 py-3 dark:border-gray-700/50 dark:from-cyan-950/20 dark:to-blue-950/20">
+            <div className="border-b border-gray-200/50 bg-linear-to-r from-cyan-50/50 to-blue-50/50 px-4 py-3 dark:border-gray-700/50 dark:from-cyan-950/20 dark:to-blue-950/20">
               <p className="text-sm font-medium text-gray-900 dark:text-white">{session.user?.name}</p>
               <p className="truncate text-xs text-gray-500 dark:text-gray-400">{session.user?.email}</p>
             </div>

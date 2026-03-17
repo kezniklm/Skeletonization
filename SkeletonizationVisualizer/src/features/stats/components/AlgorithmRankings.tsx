@@ -1,3 +1,12 @@
+/**
+ * @file AlgorithmRankings.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Displays ranked algorithm performance list.
+ * @description Visualizes average execution time ordering with rank badges and progress bars.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import type { AlgorithmAvgTime } from "../utils";
 import { useTheme } from "../../../contexts/ThemeContext";
 
@@ -6,6 +15,11 @@ type AlgorithmRankingsProps = {
   maxTime: number;
 };
 
+/**
+ * @brief Returns rank icon for leaderboard position.
+ * @param index Zero-based ranking index.
+ * @returns Emoji or numeric rank label.
+ */
 const getRankIcon = (index: number): string => {
   if (index === 0) {
     return "🥇";
@@ -19,6 +33,11 @@ const getRankIcon = (index: number): string => {
   return `${index + 1}.`;
 };
 
+/**
+ * @brief Returns progress bar gradient based on ranking position.
+ * @param index Zero-based ranking index.
+ * @returns CSS linear-gradient string.
+ */
 const getProgressGradient = (index: number): string => {
   if (index === 0) {
     return "linear-gradient(90deg, #10b981, #059669)";
@@ -32,6 +51,12 @@ const getProgressGradient = (index: number): string => {
   return "linear-gradient(90deg, #667eea, #764ba2)";
 };
 
+/**
+ * @brief Renders ranked algorithm cards by average execution time.
+ * @param algorithmAvgTimes Ordered list of algorithm timing summaries.
+ * @param maxTime Maximum average time used for bar normalization.
+ * @returns Rankings panel JSX.
+ */
 export const AlgorithmRankings = ({ algorithmAvgTimes, maxTime }: AlgorithmRankingsProps) => {
   const { theme, getThemeClasses } = useTheme();
   const themeClasses = getThemeClasses();

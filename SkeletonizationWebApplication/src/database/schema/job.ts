@@ -1,3 +1,12 @@
+/**
+ * @file job.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Defines skeletonization job table schema.
+ * @description Declares run-linked job records with algorithm, ordering, parameters, and status fields.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { integer, jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 import { ALGORITHMS } from "@/algorithms";
@@ -7,6 +16,7 @@ import { run } from "./run";
 
 const JOB_STATUS_ENUM = ["queued", "processing", "completed", "failed"] as const;
 
+/** @brief Database table schema for run processing jobs. */
 export const job = pgTable("job", {
   id: uuid("id").primaryKey().defaultRandom(),
   runId: uuid("run_id")

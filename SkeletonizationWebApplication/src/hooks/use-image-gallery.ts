@@ -1,3 +1,12 @@
+/**
+ * @file use-image-gallery.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Manages image gallery filtering and actions.
+ * @description Provides state and handlers for filtering, searching, sorting, pagination, and image mutation operations.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -13,6 +22,12 @@ type FilterOption = Readonly<{
   count: number;
 }>;
 
+/**
+ * @brief Builds state and handlers for image gallery views.
+ * @description Manages image collection transforms and server action wrappers for delete, archive, and unarchive operations.
+ * @param initialImages Initial image dataset.
+ * @returns Gallery state, derived values, and action handlers.
+ */
 export const useImageGallery = (initialImages: SelectImage[]) => {
   const [images, setImages] = useState<SelectImage[]>(initialImages);
   const [selectedFilter, setSelectedFilter] = useState<FilterType>("all");

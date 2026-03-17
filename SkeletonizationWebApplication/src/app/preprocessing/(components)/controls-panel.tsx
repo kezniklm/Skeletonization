@@ -1,3 +1,10 @@
+/**
+ * @file controls-panel.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders preprocessing control actions and editing tabs.
+ * @description Hosts history actions, preset controls, save/download actions, and tabbed interfaces for filters, drawing, transforms, and code.
+ */
+
 "use client";
 
 import {
@@ -62,6 +69,41 @@ type ControlsPanelProps = {
   onAddHistory: (description: string) => void;
 };
 
+/**
+ * @brief Displays the preprocessing control panel with tabbed tool groups.
+ * @description Combines global editing actions with specialized tabs for filter tuning, drawing, transforms, and custom code execution.
+ * @param filters Current filter state.
+ * @param setFilters Setter for filter state updates.
+ * @param transforms Current transform state.
+ * @param setTransforms Setter for transform state updates.
+ * @param onResetFilters Callback to reset filter configuration.
+ * @param onResetTransforms Callback to reset transform configuration.
+ * @param onResetAll Callback to reset the full workspace state.
+ * @param onApplyPreset Callback to apply a named preprocessing preset.
+ * @param historyIndex Current history cursor index.
+ * @param historyLength Total number of history entries.
+ * @param onUndo Callback to move one history step backward.
+ * @param onRedo Callback to move one history step forward.
+ * @param showComparison Whether side-by-side comparison is enabled.
+ * @param onToggleComparison Callback to toggle comparison mode.
+ * @param onDownload Callback to download current output.
+ * @param onSave Callback to persist current output.
+ * @param saving Whether save operation is currently running.
+ * @param activeTool Active drawing tool identifier.
+ * @param setActiveTool Setter for drawing tool changes.
+ * @param drawColor Currently selected drawing color.
+ * @param setDrawColor Setter for drawing color updates.
+ * @param brushSize Active brush size in pixels.
+ * @param setBrushSize Setter for brush size updates.
+ * @param customCode User-authored OpenCV code.
+ * @param setCustomCode Setter for custom code content.
+ * @param codeError Current custom code execution error, if any.
+ * @param onExecuteCode Callback to execute custom code.
+ * @param processing Whether preprocessing pipeline is running.
+ * @param onAddHistory Callback to append a history entry.
+ * @returns A control panel card with action toolbar and tabbed controls.
+ */
+/** @brief Renders the preprocessing controls panel and tabs. */
 export const ControlsPanel = ({
   filters,
   setFilters,

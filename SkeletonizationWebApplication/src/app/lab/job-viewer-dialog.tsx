@@ -1,3 +1,12 @@
+/**
+ * @file job-viewer-dialog.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders interactive job image viewer dialog.
+ * @description Supports single and comparison modes with pan/zoom, slider reveal, and overlay opacity controls.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -12,8 +21,14 @@ import { cn } from "@/lib/utils";
 
 import { usePanZoom } from "./use-pan-zoom";
 
+/**
+ * @brief Defines selected image source context for viewer dialog.
+ */
 export type ViewerSelection = "original" | "output";
 
+/**
+ * @brief Represents image viewer dialog input properties.
+ */
 type JobViewerDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -23,8 +38,22 @@ type JobViewerDialogProps = {
   selection: ViewerSelection;
 };
 
+/**
+ * @brief Enumerates comparison display modes.
+ */
 type CompareMode = "single" | "side-by-side" | "slider" | "overlay";
 
+/**
+ * @brief Renders modal viewer for original/output run images.
+ * @param open Whether dialog is open.
+ * @param onOpenChange Callback for dialog state changes.
+ * @param title Viewer title text.
+ * @param originalSrc Source URL for original image.
+ * @param selectedSrc Source URL for selected output image.
+ * @param selection Active viewer selection mode.
+ * @returns Viewer dialog JSX.
+ */
+/** @brief Displays modal viewer with single and compare display modes. */
 export const JobViewerDialog = ({
   open,
   onOpenChange,

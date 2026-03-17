@@ -1,8 +1,23 @@
+/**
+ * @file useBenchmarkData.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Implements benchmark data loading hook.
+ * @description Fetches benchmark JSON payload and refreshes it on a fixed interval.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { useEffect, useState } from "react";
 
 import { APP_CONFIG } from "../../../constants";
 import type { BenchmarkData } from "../../../types";
 
+/**
+ * @brief Loads and periodically refreshes benchmark dataset.
+ * @returns Data, loading flag, and error state.
+ * @example
+ * const { data, loading, error } = useBenchmarkData();
+ */
 export const useBenchmarkData = () => {
   const [data, setData] = useState<BenchmarkData | null>(null);
   const [loading, setLoading] = useState(true);

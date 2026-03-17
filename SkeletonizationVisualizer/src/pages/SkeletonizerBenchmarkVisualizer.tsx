@@ -1,3 +1,12 @@
+/**
+ * @file SkeletonizerBenchmarkVisualizer.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Composes the benchmark visualizer page workflow.
+ * @description Coordinates data loading, filtering, modal interactions, comparison selection, and dashboard rendering.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { useState, useCallback } from "react";
 
 import type { ImageContainer, ImageData } from "../types";
@@ -15,6 +24,10 @@ import { Navigation } from "../features/navigation/components";
 import { SearchAndFilter } from "../features/search-filter/components";
 import { StatsDashboard } from "../features/stats/components";
 
+/**
+ * @brief Renders the primary benchmark visualization page.
+ * @returns Complete visualizer page JSX.
+ */
 const SkeletonizerBenchmarkVisualizer = () => {
   const { toggleTheme, getThemeClasses } = useTheme();
 
@@ -43,10 +56,21 @@ const SkeletonizerBenchmarkVisualizer = () => {
   const [filteredContainers, setFilteredContainers] = useState<ImageContainer[]>([]);
   const [selectedComparisonIds, setSelectedComparisonIds] = useState<Record<string, string[]>>({});
 
+  /**
+   * @brief Updates gallery containers based on active filters.
+   * @param containers Filtered benchmark container list.
+   * @returns No return value.
+   */
   const handleFiltersChange = useCallback((containers: ImageContainer[]) => {
     setFilteredContainers(containers);
   }, []);
 
+  /**
+   * @brief Toggles an image selection entry for comparison mode.
+   * @param containerName Benchmark container name.
+   * @param image Image selected or deselected for comparison.
+   * @returns No return value.
+   */
   const toggleComparisonSelection = useCallback((containerName: string, image: ImageData) => {
     setSelectedComparisonIds((prev) => {
       const existing = prev[containerName] ?? [];
@@ -65,6 +89,11 @@ const SkeletonizerBenchmarkVisualizer = () => {
     });
   }, []);
 
+  /**
+   * @brief Clears all selected comparison images for a container.
+   * @param containerName Benchmark container name.
+   * @returns No return value.
+   */
   const clearComparisonSelection = useCallback((containerName: string) => {
     setSelectedComparisonIds((prev) => {
       const { [containerName]: _removed, ...rest } = prev;
@@ -72,6 +101,11 @@ const SkeletonizerBenchmarkVisualizer = () => {
     });
   }, []);
 
+  /**
+   * @brief Selects every processed image for one container comparison.
+   * @param container Container whose processed images should be selected.
+   * @returns No return value.
+   */
   const selectAllComparisonImages = useCallback((container: ImageContainer) => {
     const selectedIds = container.images.slice(1).map((image) => image.id);
 
@@ -88,6 +122,11 @@ const SkeletonizerBenchmarkVisualizer = () => {
     });
   }, []);
 
+  /**
+   * @brief Opens comparison modal with currently selected processed images.
+   * @param container Container used to resolve original and selected processed images.
+   * @returns No return value.
+   */
   const openSelectedComparison = useCallback(
     (container: ImageContainer) => {
       const [original, ...processedCandidates] = container.images;

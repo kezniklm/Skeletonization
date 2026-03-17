@@ -1,3 +1,12 @@
+/**
+ * @file radio-group.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Radio group primitives for single-choice selection.
+ * @description Wraps Radix radio group components with shared layout and visual styling.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
@@ -6,10 +15,16 @@ import { type ComponentProps } from "react";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * @brief Container for radio group items.
+ */
 const RadioGroup = ({ className, ...props }: ComponentProps<typeof RadioGroupPrimitive.Root>) => (
   <RadioGroupPrimitive.Root data-slot="radio-group" className={cn("grid gap-3", className)} {...props} />
 );
 
+/**
+ * @brief Individual selectable radio item.
+ */
 const RadioGroupItem = ({ className, ...props }: ComponentProps<typeof RadioGroupPrimitive.Item>) => (
   <RadioGroupPrimitive.Item
     data-slot="radio-group-item"

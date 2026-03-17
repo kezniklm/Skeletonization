@@ -1,3 +1,12 @@
+/**
+ * @file form-select.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Provides react-hook-form bound select input.
+ * @description Renders typed option selection with controlled form binding and validation feedback.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { type SelectHTMLAttributes } from "react";
 import { useFormContext, useController } from "react-hook-form";
 
@@ -7,6 +16,15 @@ type FormSelectProps = SelectHTMLAttributes<HTMLSelectElement> & {
   options: Array<{ value: string; label: string }>;
 };
 
+/**
+ * @brief Renders a form-context-connected select control.
+ * @description Uses react-hook-form controller integration to manage select value and validation state.
+ * @param name Registered form field name.
+ * @param label Optional field label text.
+ * @param options Selectable option entries.
+ * @param className Optional class overrides.
+ * @returns A labeled select field with optional error text.
+ */
 export const FormSelect = ({ name, label, options, className = "", ...props }: FormSelectProps) => {
   const {
     control,

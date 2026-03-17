@@ -1,13 +1,28 @@
+/**
+ * @file tabs.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Tab navigation primitives for segmented content.
+ * @description Provides styled Radix tabs components for tabbed interfaces and content switching.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * @brief Root tabs container component.
+ */
 const Tabs = ({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Root>) => (
   <TabsPrimitive.Root data-slot="tabs" className={cn("flex flex-col gap-2", className)} {...props} />
 );
 
+/**
+ * @brief List container for tab triggers.
+ */
 const TabsList = ({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.List>) => (
   <TabsPrimitive.List
     data-slot="tabs-list"
@@ -19,6 +34,9 @@ const TabsList = ({ className, ...props }: React.ComponentProps<typeof TabsPrimi
   />
 );
 
+/**
+ * @brief Interactive trigger for selecting a tab.
+ */
 const TabsTrigger = ({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Trigger>) => (
   <TabsPrimitive.Trigger
     data-slot="tabs-trigger"
@@ -30,6 +48,9 @@ const TabsTrigger = ({ className, ...props }: React.ComponentProps<typeof TabsPr
   />
 );
 
+/**
+ * @brief Content panel for active tab selection.
+ */
 const TabsContent = ({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Content>) => (
   <TabsPrimitive.Content data-slot="tabs-content" className={cn("flex-1 outline-none", className)} {...props} />
 );

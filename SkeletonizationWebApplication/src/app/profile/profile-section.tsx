@@ -1,3 +1,10 @@
+/**
+ * @file profile-section.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders a structured profile information section.
+ * @description Displays labeled profile fields with icons and optional status badges under a titled section header.
+ */
+
 import type { ReactElement } from "react";
 import { Shield } from "lucide-react";
 
@@ -14,6 +21,14 @@ type ProfileSectionProps = {
   fields: ProfileField[];
 };
 
+/**
+ * @brief Displays a profile data section card.
+ * @description Renders a section title with icon and iterates through formatted profile fields.
+ * @param title Section title text.
+ * @param icon Section icon element.
+ * @param fields Field entries to display in the section.
+ * @returns A profile information section card.
+ */
 export const ProfileSection = ({ title, icon, fields }: ProfileSectionProps) => (
   <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm backdrop-blur-sm transition-shadow hover:shadow-md xl:rounded-lg xl:shadow-sm 2xl:rounded-xl 2xl:shadow-md dark:border-gray-800 dark:bg-gray-900/95">
     <div className="border-b border-gray-200 bg-linear-to-r from-cyan-50/50 to-blue-50/50 px-6 py-4 xl:px-5 xl:py-3 2xl:px-6 2xl:py-4 dark:border-gray-800 dark:from-cyan-950/20 dark:to-blue-950/20">

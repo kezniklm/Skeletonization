@@ -1,3 +1,12 @@
+/**
+ * @file LoadingSpinner.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Provides themed loading feedback component.
+ * @description Displays spinner animation with configurable size and optional status text.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { useTheme } from "../contexts/ThemeContext";
 
 type LoadingSpinnerProps = {
@@ -5,6 +14,12 @@ type LoadingSpinnerProps = {
   size?: "sm" | "md" | "lg";
 };
 
+/**
+ * @brief Renders a loading spinner with optional message.
+ * @param message Optional loading text.
+ * @param size Spinner size variant.
+ * @returns Loading indicator JSX.
+ */
 export const LoadingSpinner = ({ message = "Loading...", size = "md" }: LoadingSpinnerProps) => {
   const { getThemeClasses } = useTheme();
   const themeClasses = getThemeClasses();

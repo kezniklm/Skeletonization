@@ -1,16 +1,39 @@
+/**
+ * @file image-pagination.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Provides pagination controls for image gallery.
+ * @description Renders previous/next controls and dynamic page number range with ellipsis.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
+/**
+ * @brief Represents image pagination control properties.
+ */
 type ImagePaginationProps = {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
 };
 
+/**
+ * @brief Renders page navigation controls.
+ * @param currentPage Current active page index.
+ * @param totalPages Total number of pages.
+ * @param onPageChange Callback for page change request.
+ * @returns Pagination control JSX.
+ */
 export const ImagePagination = ({ currentPage, totalPages, onPageChange }: ImagePaginationProps) => {
+  /**
+   * @brief Computes visible page numbers and ellipsis markers.
+   * @returns Ordered page token list.
+   */
   const getPageNumbers = () => {
     const pages: (number | "ellipsis")[] = [];
     const maxVisible = 5;

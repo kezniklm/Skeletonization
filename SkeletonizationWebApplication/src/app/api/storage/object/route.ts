@@ -1,8 +1,22 @@
+/**
+ * @file route.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Implements object retrieval endpoint for storage backend.
+ * @description Validates object key scope and returns binary object payload from configured S3 storage backend.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { NextResponse } from "next/server";
 
 import { getStorage } from "@/lib/storage";
 import { getStorageConfig } from "@/lib/storage/config";
 
+/**
+ * @brief Fetches one object from storage by key.
+ * @param request Incoming request containing `key` query parameter.
+ * @returns NextResponse with object bytes or JSON error payload.
+ */
 export const GET = async (request: Request) => {
   const config = getStorageConfig();
   if (config.backend !== "s3") {

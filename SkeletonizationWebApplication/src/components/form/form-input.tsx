@@ -1,3 +1,12 @@
+/**
+ * @file form-input.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Provides react-hook-form bound text input.
+ * @description Renders labeled text input with validation error display using form context registration.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { type InputHTMLAttributes } from "react";
 import { useFormContext } from "react-hook-form";
 
@@ -6,6 +15,14 @@ type FormInputProps = InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
 };
 
+/**
+ * @brief Renders a form-context-connected input field.
+ * @description Binds input registration to react-hook-form and displays validation feedback.
+ * @param name Registered form field name.
+ * @param label Optional field label text.
+ * @param className Optional class overrides.
+ * @returns A labeled input with optional error text.
+ */
 export const FormInput = ({ name, label, className = "", ...props }: FormInputProps) => {
   const {
     register,

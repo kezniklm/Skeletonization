@@ -1,5 +1,17 @@
+/**
+ * @file image-utils.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Image metadata utility helpers.
+ * @description Provides MIME detection, dimension extraction, and basename helpers for output processing.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 type MimeType = "image/png" | "image/jpeg" | "image/bmp" | "image/tiff" | "application/octet-stream";
 
+/**
+ * @brief Represents image width and height values.
+ */
 export type ImageDimensions = {
   width: number;
   height: number;
@@ -35,6 +47,7 @@ const readBmpDimensions = (buffer: Buffer): ImageDimensions => {
   return { width, height };
 };
 
+/** @brief Extracts image dimensions from raw buffer based on MIME type. */
 export const getImageDimensions = (buffer: Buffer, mimeType: string): ImageDimensions => {
   try {
     switch (mimeType) {
@@ -54,6 +67,7 @@ export const getImageDimensions = (buffer: Buffer, mimeType: string): ImageDimen
   }
 };
 
+/** @brief Infers MIME type from a filename extension. */
 export const getMimeTypeFromFilename = (filename: string): MimeType => {
   const normalized = filename.toLowerCase();
   if (normalized.endsWith(".png")) return "image/png";
@@ -63,6 +77,7 @@ export const getMimeTypeFromFilename = (filename: string): MimeType => {
   return "application/octet-stream";
 };
 
+/** @brief Returns last path segment from path-like string. */
 export const basename = (path: string | null | undefined): string => {
   if (!path) return "";
   return path.split(/[/\\]/).pop() ?? "";

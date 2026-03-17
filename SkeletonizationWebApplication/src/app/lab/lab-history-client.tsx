@@ -1,3 +1,12 @@
+/**
+ * @file lab-history-client.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Implements client-side lab history view.
+ * @description Applies interactive filtering and sorting to runs and renders expandable run detail items.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import { type LabRun } from "@/repositories/run";
@@ -10,6 +19,12 @@ import { LabFilters } from "./lab-filters";
 import { LabAlgorithmFilter } from "./lab-algorithm-filter";
 import { LabSort } from "./lab-sort";
 
+/**
+ * @brief Renders interactive run history panel.
+ * @param runs User run list.
+ * @param totalRuns Total run count from server.
+ * @returns History panel JSX.
+ */
 export const LabHistoryClient = ({ runs, totalRuns }: { runs: LabRun[]; totalRuns: number }) => {
   const {
     searchQuery,

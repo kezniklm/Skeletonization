@@ -1,3 +1,12 @@
+/**
+ * @file Navigation.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders top navigation for benchmark visualizer.
+ * @description Displays title, theme toggle, export action, and data timestamp summary.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { useTheme } from "../../../contexts/ThemeContext";
 import type { BenchmarkData } from "../../../types";
 
@@ -7,6 +16,13 @@ type NavigationProps = {
   onExportAll: () => void;
 };
 
+/**
+ * @brief Displays sticky navigation controls and metadata.
+ * @param data Loaded benchmark dataset.
+ * @param onToggleTheme Callback to toggle theme.
+ * @param onExportAll Callback to export all images.
+ * @returns Navigation bar JSX.
+ */
 export const Navigation = ({ data, onToggleTheme, onExportAll }: NavigationProps) => {
   const { theme, getThemeClasses } = useTheme();
   const themeClasses = getThemeClasses();

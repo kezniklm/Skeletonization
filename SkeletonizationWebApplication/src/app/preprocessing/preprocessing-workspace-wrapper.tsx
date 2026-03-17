@@ -1,3 +1,10 @@
+/**
+ * @file preprocessing-workspace-wrapper.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Coordinates OpenCV and image loading before rendering preprocessing workspace.
+ * @description Manages loading and error states while initializing runtime dependencies required by the workspace.
+ */
+
 "use client";
 
 import { Loader2 } from "lucide-react";
@@ -15,6 +22,13 @@ type PreprocessingWorkspaceWrapperProps = {
   defaultOutputFormat: FileOutputFormat;
 };
 
+/**
+ * @brief Initializes preprocessing prerequisites and renders the appropriate UI state.
+ * @description Combines OpenCV initialization and image loading hooks, then displays loading, error, or ready workspace content.
+ * @param selectedImage The image selected for preprocessing operations.
+ * @param defaultOutputFormat User-preferred output format for saving processed images.
+ * @returns A client component wrapping preprocessing workspace readiness states.
+ */
 export const PreprocessingWorkspaceWrapper = ({
   selectedImage,
   defaultOutputFormat

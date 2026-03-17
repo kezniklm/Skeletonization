@@ -1,5 +1,15 @@
+/**
+ * @file notifications.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Browser notification utility helpers.
+ * @description Handles permission requests and standardized run-completion/error notification payloads.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
+/** @brief Requests browser notification permission when available. */
 export const requestNotificationPermission = async (): Promise<NotificationPermission> => {
   if (!("Notification" in window)) {
     console.warn("This browser does not support notifications");
@@ -19,6 +29,7 @@ export const requestNotificationPermission = async (): Promise<NotificationPermi
   return Notification.permission;
 };
 
+/** @brief Displays a browser notification when permission is granted. */
 export const showNotification = (title: string, options?: NotificationOptions) => {
   if (!("Notification" in window)) {
     console.warn("This browser does not support notifications");
@@ -34,6 +45,7 @@ export const showNotification = (title: string, options?: NotificationOptions) =
   }
 };
 
+/** @brief Shows standardized success notification for completed run. */
 export const showSkeletonizationCompleteNotification = (runName: string, imageCount: number) => {
   showNotification("Skeletonization Complete", {
     body: `Run "${runName}" completed successfully for ${imageCount} image${imageCount > 1 ? "s" : ""}.`,
@@ -42,6 +54,7 @@ export const showSkeletonizationCompleteNotification = (runName: string, imageCo
   });
 };
 
+/** @brief Shows standardized error notification for failed run. */
 export const showSkeletonizationErrorNotification = (runName: string, error: string) => {
   showNotification("Skeletonization Failed", {
     body: `Run "${runName}" failed: ${error}`,

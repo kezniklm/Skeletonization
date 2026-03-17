@@ -1,3 +1,10 @@
+/**
+ * @file page.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders the skeletonization route page.
+ * @description Loads user images and preferences, then displays either an empty state or the skeletonization workspace.
+ */
+
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -9,6 +16,11 @@ import { getOrCreateUserPreferences } from "@/repositories/preferences";
 import { SkeletonizationWorkspace } from "./skeletonization-workspace";
 import { SkeletonizationEmptyState } from "./skeletonization-empty-state";
 
+/**
+ * @brief Loads skeletonization prerequisites and renders route content.
+ * @description Ensures authentication, fetches processable images and preferences, and conditionally renders workspace content.
+ * @returns Server-rendered skeletonization page.
+ */
 const SkeletonizationPage = async () => {
   const session = await auth.api.getSession({ headers: await headers() });
 
@@ -43,4 +55,7 @@ const SkeletonizationPage = async () => {
   );
 };
 
+/**
+ * @brief Exposes the skeletonization route page component.
+ */
 export default SkeletonizationPage;

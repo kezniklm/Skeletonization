@@ -1,3 +1,12 @@
+/**
+ * @file ImageGallery.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders the image grid for one benchmark container.
+ * @description Maps container images into actionable image cards used by the main gallery view.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import type { ImageData, ImageContainer } from "../../../types";
 
 import { ImageCard } from "./ImageCard";
@@ -10,6 +19,16 @@ type ImageGalleryProps = {
   onToggleComparisonSelection: (image: ImageData) => void;
 };
 
+/**
+ * @brief Displays all images for a selected benchmark container.
+ * @param container Container with source and processed images.
+ * @param onImageClick Callback for opening image preview.
+ * @param onDownload Callback for image download.
+ * @param selectedComparisonIds IDs selected for multi-image comparison.
+ * @param onToggleComparisonSelection Callback for selection updates.
+ * @returns Image grid JSX.
+ */
+/** @brief Renders a grid of image cards for one container. */
 export const ImageGallery = ({
   container,
   onImageClick,

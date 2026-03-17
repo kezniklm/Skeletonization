@@ -1,5 +1,15 @@
+/**
+ * @file auth.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Defines authentication-related database tables.
+ * @description Declares user, session, account, and verification schemas used by the authentication subsystem.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { boolean, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
+/** @brief Database table schema for application users. */
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
@@ -13,6 +23,7 @@ export const user = pgTable("user", {
     .notNull()
 });
 
+/** @brief Database table schema for active user sessions. */
 export const session = pgTable("session", {
   id: text("id").primaryKey(),
   expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
@@ -28,6 +39,7 @@ export const session = pgTable("session", {
     .references(() => user.id, { onDelete: "cascade" })
 });
 
+/** @brief Database table schema for linked auth provider accounts. */
 export const account = pgTable("account", {
   id: text("id").primaryKey(),
   accountId: text("account_id").notNull(),
@@ -48,6 +60,7 @@ export const account = pgTable("account", {
     .notNull()
 });
 
+/** @brief Database table schema for verification records. */
 export const verification = pgTable("verification", {
   id: text("id").primaryKey(),
   identifier: text("identifier").notNull(),

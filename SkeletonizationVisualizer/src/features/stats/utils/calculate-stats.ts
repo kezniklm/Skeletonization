@@ -1,5 +1,17 @@
+/**
+ * @file calculate-stats.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Implements benchmark statistics aggregation logic.
+ * @description Computes aggregate timings, iteration totals, and per-algorithm ordering from benchmark containers.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import type { BenchmarkData } from "../../../types";
 
+/**
+ * @brief Represents aggregated timing information for one algorithm.
+ */
 export type AlgorithmAvgTime = {
   name: string;
   avgTime: number;
@@ -8,6 +20,9 @@ export type AlgorithmAvgTime = {
   runs: number;
 };
 
+/**
+ * @brief Represents computed benchmark dashboard metrics.
+ */
 export type BenchmarkStats = {
   totalTestImages: number;
   totalAlgorithms: number;
@@ -20,6 +35,11 @@ export type BenchmarkStats = {
   slowest: AlgorithmAvgTime | undefined;
 };
 
+/**
+ * @brief Calculates aggregate benchmark statistics from raw containers.
+ * @param data Benchmark data source.
+ * @returns Computed statistics object for dashboard rendering.
+ */
 export const calculateBenchmarkStats = (data: BenchmarkData): BenchmarkStats => {
   const algorithmTimes = new Map<string, number[]>();
   const algorithmIterations = new Map<string, number>();

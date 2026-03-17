@@ -1,3 +1,10 @@
+/**
+ * @file image-selector.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders selectable image tiles for skeletonization setup.
+ * @description Provides image selection toggles, select-all behavior, and empty-state feedback.
+ */
+
 "use client";
 
 import { Check, Image as ImageIcon } from "lucide-react";
@@ -12,6 +19,14 @@ type ImageSelectorProps = {
   onSelectionChange: (imageIds: string[]) => void;
 };
 
+/**
+ * @brief Displays a selectable gallery of candidate images.
+ * @description Allows users to select individual or all images and communicates selection updates to the parent workspace.
+ * @param images Available images for selection.
+ * @param selectedImageIds Currently selected image IDs.
+ * @param onSelectionChange Callback receiving updated selected image IDs.
+ * @returns A selection grid or empty-state card.
+ */
 export const ImageSelector = ({ images, selectedImageIds, onSelectionChange }: ImageSelectorProps) => {
   const toggleImage = (imageId: string) => {
     if (selectedImageIds.includes(imageId)) {

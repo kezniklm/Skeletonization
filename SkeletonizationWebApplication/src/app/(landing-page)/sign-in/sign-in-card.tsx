@@ -1,8 +1,21 @@
+/**
+ * @file sign-in-card.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders main sign-in panel for unauthenticated users.
+ * @description Combines social sign-in buttons, benefits list, and policy links.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { Network } from "lucide-react";
 
 import { SocialSignInButtons } from "./social-sign-in-buttons";
 import { signInFeatures } from "./sign-in-features";
 
+/**
+ * @brief Renders authentication card used on landing page.
+ * @returns Sign-in card JSX.
+ */
 export const SignInCard = () => (
   <section className="w-full max-w-md lg:w-auto xl:max-w-sm 2xl:max-w-md" aria-labelledby="sign-in-heading">
     <div className="relative overflow-hidden rounded-3xl bg-white/90 shadow-2xl backdrop-blur-xl xl:rounded-2xl xl:shadow-xl 2xl:rounded-3xl 2xl:shadow-2xl dark:bg-gray-800/90">

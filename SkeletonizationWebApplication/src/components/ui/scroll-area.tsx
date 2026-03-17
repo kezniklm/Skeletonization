@@ -1,8 +1,20 @@
+/**
+ * @file scroll-area.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Scrollable viewport primitives with themed scrollbars.
+ * @description Defines reusable scroll area components for content regions requiring custom overflow behavior.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
 import { type ComponentPropsWithoutRef, type ComponentRef, forwardRef } from "react";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * @brief Scrollable container with viewport and scrollbar.
+ */
 const ScrollArea = forwardRef<
   ComponentRef<typeof ScrollAreaPrimitive.Root>,
   ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Root>
@@ -15,6 +27,9 @@ const ScrollArea = forwardRef<
 ));
 ScrollArea.displayName = ScrollAreaPrimitive.Root.displayName;
 
+/**
+ * @brief Scrollbar component for vertical or horizontal orientation.
+ */
 const ScrollBar = forwardRef<
   ComponentRef<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>,
   ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>

@@ -1,3 +1,10 @@
+/**
+ * @file settings-form.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Provides interactive user preference form controls.
+ * @description Manages validated settings form state, persistence, and side effects for theme, timezone, and preference toggles.
+ */
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,6 +28,13 @@ type SettingsFormProps = {
   initialPreferences: UserPreferences;
 };
 
+/**
+ * @brief Renders and submits the user settings form.
+ * @description Initializes preference form defaults, handles save/reset actions, and updates context providers after persistence.
+ * @param userId Identifier of the user whose preferences are updated.
+ * @param initialPreferences Initial preference values loaded from storage.
+ * @returns A settings form with grouped preference cards.
+ */
 export const SettingsForm = ({ userId, initialPreferences }: SettingsFormProps) => {
   const { setTheme } = useTheme();
   const { setAnimatedBackgroundDisabled } = useAnimatedBackgroundPreference();

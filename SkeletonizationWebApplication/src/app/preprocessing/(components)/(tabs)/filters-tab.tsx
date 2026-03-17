@@ -1,3 +1,10 @@
+/**
+ * @file filters-tab.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders preprocessing filter controls and toggles.
+ * @description Provides sliders and action buttons for numeric filter parameters and special OpenCV filter modes.
+ */
+
 "use client";
 
 import { RotateCcw, Settings2, Sparkles } from "lucide-react";
@@ -17,6 +24,15 @@ type FiltersTabProps = {
   onAddHistory: (description: string) => void;
 };
 
+/**
+ * @brief Displays filter configuration UI for preprocessing.
+ * @description Supports continuous parameter adjustments, filter mode toggles, and history annotations for each user action.
+ * @param filters Current filter state values.
+ * @param setFilters Setter for updating filter state.
+ * @param onResetFilters Callback to restore default filter values.
+ * @param onAddHistory Callback to append history descriptions for changes.
+ * @returns A tab panel containing filter controls.
+ */
 export const FiltersTab = ({ filters, setFilters, onResetFilters, onAddHistory }: FiltersTabProps) => (
   <div className="space-y-4 pt-4">
     <div className="flex items-center justify-between">

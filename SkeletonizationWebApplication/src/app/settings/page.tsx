@@ -1,3 +1,10 @@
+/**
+ * @file page.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders the authenticated settings page.
+ * @description Loads user preference data and renders settings controls for account customization.
+ */
+
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -6,6 +13,11 @@ import { getOrCreateUserPreferences } from "@/repositories/preferences";
 
 import { SettingsForm } from "./settings-form";
 
+/**
+ * @brief Loads preference data and renders settings form.
+ * @description Ensures an authenticated session, fetches user preferences, and returns settings page content.
+ * @returns Server-rendered settings page component.
+ */
 const SettingsPage = async () => {
   const session = await auth.api.getSession({ headers: await headers() });
 
@@ -31,4 +43,7 @@ const SettingsPage = async () => {
   );
 };
 
+/**
+ * @brief Exposes the settings route page component.
+ */
 export default SettingsPage;

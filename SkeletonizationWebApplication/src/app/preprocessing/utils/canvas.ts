@@ -1,11 +1,24 @@
+/**
+ * @file canvas.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Provides shared canvas helpers for preprocessing workflows.
+ * @description Implements coordinate conversion, drawing primitives, flood fill, serialization, and canvas-to-canvas rendering utilities.
+ */
+
 "use client";
 
 import type { MouseEvent, RefObject } from "react";
 
 import type { DrawingTool } from "../types";
 
+/**
+ * @brief Represents a 2D point in canvas coordinates.
+ */
 export type Point = { x: number; y: number };
 
+/**
+ * @brief Represents a crop rectangle using start and end coordinates.
+ */
 export type CropRect = {
   startX: number;
   startY: number;
@@ -13,6 +26,13 @@ export type CropRect = {
   endY: number;
 };
 
+/**
+ * @brief Resolves a canvas element from a ref or throws an error.
+ * @description Ensures downstream canvas operations always receive a non-null canvas element.
+ * @param canvasRef React ref for a canvas element.
+ * @param message Error message used when canvas is unavailable.
+ * @returns The resolved canvas element.
+ */
 export const getCanvasOrThrow = (
   canvasRef: RefObject<HTMLCanvasElement>,
   message = "Canvas element is not available."
@@ -24,6 +44,14 @@ export const getCanvasOrThrow = (
   return canvas;
 };
 
+/**
+ * @brief Resolves a 2D context from a canvas or throws an error.
+ * @description Acquires the rendering context with optional settings required by preprocessing operations.
+ * @param canvas Canvas element to query.
+ * @param options Optional context creation settings.
+ * @param message Error message used when context cannot be created.
+ * @returns A 2D canvas rendering context.
+ */
 export const get2DContextOrThrow = (
   canvas: HTMLCanvasElement,
   options: CanvasRenderingContext2DSettings = { willReadFrequently: true },
@@ -36,6 +64,13 @@ export const get2DContextOrThrow = (
   return ctx;
 };
 
+/**
+ * @brief Converts pointer event coordinates into canvas pixel coordinates.
+ * @description Maps client-space mouse coordinates to canvas-space values accounting for element scaling.
+ * @param e Mouse event emitted by the canvas.
+ * @param canvas Target canvas element.
+ * @returns Canvas-space point coordinates.
+ */
 export const getCanvasCoordinates = (e: MouseEvent<HTMLCanvasElement>, canvas: HTMLCanvasElement): Point => {
   const rect = canvas.getBoundingClientRect();
   const x = (e.clientX - rect.left) * (canvas.width / rect.width);
@@ -43,6 +78,13 @@ export const getCanvasCoordinates = (e: MouseEvent<HTMLCanvasElement>, canvas: H
   return { x, y };
 };
 
+/**
+ * @brief Creates or refreshes a temporary canvas snapshot.
+ * @description Copies source canvas pixels into a reusable offscreen canvas used for previewing transient drawing operations.
+ * @param tempCanvas Existing temp canvas instance, if any.
+ * @param sourceCanvas Canvas to snapshot.
+ * @returns The snapshot canvas or `null` when context creation fails.
+ */
 export const ensureTempCanvasSnapshot = (
   tempCanvas: HTMLCanvasElement | null,
   sourceCanvas: HTMLCanvasElement
@@ -61,8 +103,23 @@ export const ensureTempCanvasSnapshot = (
   return tempCanvas;
 };
 
+/**
+ * @brief Checks whether a drawing tool is shape-based.
+ * @description Identifies tools rendered from start/end points rather than continuous strokes.
+ * @param tool Drawing tool value.
+ * @returns `true` for rectangle, circle, and line tools.
+ */
 export const isShapeTool = (tool: DrawingTool) => tool === "rectangle" || tool === "circle" || tool === "line";
 
+/**
+ * @brief Draws a shape between start and end points.
+ * @description Renders rectangle, circle, or line previews on the provided context.
+ * @param ctx Target 2D rendering context.
+ * @param tool Active drawing tool.
+ * @param start Starting point.
+ * @param end Current or ending point.
+ * @returns No return value.
+ */
 export const drawShape = (ctx: CanvasRenderingContext2D, tool: DrawingTool, start: Point, end: Point) => {
   if (!isShapeTool(tool)) return;
 
@@ -89,6 +146,14 @@ export const drawShape = (ctx: CanvasRenderingContext2D, tool: DrawingTool, star
   }
 };
 
+/**
+ * @brief Draws a crop overlay mask and selection frame.
+ * @description Shades non-selected regions and outlines the normalized crop rectangle.
+ * @param ctx Target 2D rendering context.
+ * @param canvas Canvas element receiving overlay rendering.
+ * @param crop Raw crop bounds.
+ * @returns No return value.
+ */
 export const drawCropOverlay = (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, crop: CropRect) => {
   const { x, y, width, height } = normalizeCropRect(crop);
 
@@ -103,6 +168,12 @@ export const drawCropOverlay = (ctx: CanvasRenderingContext2D, canvas: HTMLCanva
   ctx.strokeRect(x, y, width, height);
 };
 
+/**
+ * @brief Normalizes crop coordinates into top-left origin and positive size.
+ * @description Converts drag bounds into canonical rectangle values.
+ * @param crop Raw crop rectangle.
+ * @returns Normalized crop rectangle with `x`, `y`, `width`, and `height`.
+ */
 export const normalizeCropRect = (crop: CropRect) => {
   const x = Math.min(crop.startX, crop.endX);
   const y = Math.min(crop.startY, crop.endY);
@@ -111,6 +182,15 @@ export const normalizeCropRect = (crop: CropRect) => {
   return { x, y, width, height };
 };
 
+/**
+ * @brief Initializes drawing stroke settings and starting point.
+ * @description Configures stroke styles and begins a new path for freehand drawing.
+ * @param ctx Target 2D rendering context.
+ * @param point Initial stroke point.
+ * @param color Stroke color.
+ * @param brushSize Brush width in pixels.
+ * @returns No return value.
+ */
 export const beginStroke = (ctx: CanvasRenderingContext2D, point: Point, color: string, brushSize: number) => {
   ctx.strokeStyle = color;
   ctx.fillStyle = color;
@@ -121,6 +201,17 @@ export const beginStroke = (ctx: CanvasRenderingContext2D, point: Point, color: 
   ctx.moveTo(point.x, point.y);
 };
 
+/**
+ * @brief Continues a freehand stroke for pencil or eraser tools.
+ * @description Updates compositing and stroke properties before drawing to the next point.
+ * @param ctx Target 2D rendering context.
+ * @param tool Active drawing tool.
+ * @param point Next stroke point.
+ * @param brushSize Brush width in pixels.
+ * @param color Stroke color.
+ * @returns No return value.
+ */
+/** @brief Continues a freehand stroke on the canvas. */
 export const continueStroke = (
   ctx: CanvasRenderingContext2D,
   tool: DrawingTool,
@@ -137,6 +228,17 @@ export const continueStroke = (
   ctx.stroke();
 };
 
+/**
+ * @brief Performs flood fill on a canvas pixel region.
+ * @description Fills connected pixels near the start point using color matching with tolerance.
+ * @param canvas Canvas element to mutate.
+ * @param startX Fill start X coordinate.
+ * @param startY Fill start Y coordinate.
+ * @param fillColor Target fill color.
+ * @param tolerance Color tolerance threshold.
+ * @returns `true` when fill modifies the canvas; otherwise `false`.
+ */
+/** @brief Flood-fills connected canvas pixels. */
 export const floodFillCanvas = (
   canvas: HTMLCanvasElement,
   startX: number,
@@ -205,12 +307,26 @@ export const floodFillCanvas = (
   return true;
 };
 
+/**
+ * @brief Serializes a canvas ref to a data URL.
+ * @description Returns empty string when canvas is unavailable.
+ * @param canvasRef React ref containing an optional canvas.
+ * @param type Output MIME type.
+ * @returns Canvas data URL string.
+ */
 export const getCanvasDataUrl = (canvasRef: RefObject<HTMLCanvasElement | null>, type = "image/png"): string => {
   const canvas = canvasRef.current;
   if (!canvas) return "";
   return canvas.toDataURL(type);
 };
 
+/**
+ * @brief Draws an image element into a canvas.
+ * @description Resizes the canvas to image dimensions and paints the image content.
+ * @param canvas Target canvas element.
+ * @param img Source image element.
+ * @returns No return value.
+ */
 export const drawImageElementToCanvas = (canvas: HTMLCanvasElement, img: HTMLImageElement) => {
   canvas.width = img.width;
   canvas.height = img.height;
@@ -222,6 +338,13 @@ export const drawImageElementToCanvas = (canvas: HTMLCanvasElement, img: HTMLIma
   ctx.drawImage(img, 0, 0);
 };
 
+/**
+ * @brief Draws a data URL image into a canvas.
+ * @description Loads the encoded image and forwards rendering to `drawImageElementToCanvas`.
+ * @param canvas Target canvas element.
+ * @param dataUrl Encoded image data URL.
+ * @returns No return value.
+ */
 export const drawDataUrlToCanvas = (canvas: HTMLCanvasElement, dataUrl: string) => {
   if (!dataUrl) return;
 
@@ -232,6 +355,13 @@ export const drawDataUrlToCanvas = (canvas: HTMLCanvasElement, dataUrl: string) 
   img.src = dataUrl;
 };
 
+/**
+ * @brief Copies pixels from one canvas to another.
+ * @description Resizes target canvas to source dimensions before drawing source content.
+ * @param target Destination canvas.
+ * @param source Source canvas.
+ * @returns No return value.
+ */
 export const drawCanvasToCanvas = (target: HTMLCanvasElement, source: HTMLCanvasElement) => {
   target.width = source.width;
   target.height = source.height;

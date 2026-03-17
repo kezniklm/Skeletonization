@@ -1,15 +1,46 @@
+/**
+ * @file route.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Implements run-events Server-Sent Events endpoint.
+ * @description Streams run completion updates with heartbeat, TTL handling, and recent-event polling for authenticated users.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { headers } from "next/headers";
 
 import { auth } from "@/auth";
 import { getRecentRunEvents, subscribeToRunEvents } from "@/lib/run-events";
 
+/**
+ * @brief Forces dynamic execution for SSE endpoint.
+ * @description Prevents response caching and static optimization.
+ */
 export const dynamic = "force-dynamic";
 
+/**
+ * @brief Sets maximum execution window for SSE request.
+ * @description Limits long-running route execution time in seconds.
+ */
 export const maxDuration = 60;
 
+/**
+ * @brief Defines maximum lifetime of one SSE connection.
+ * @description Connection is rotated after this interval to reduce stale subscriptions.
+ */
 const SSE_CONNECTION_TTL_MS = 50_000;
+
+/**
+ * @brief Defines polling interval for missed recent run events.
+ * @description Supplements pub/sub delivery to improve reliability.
+ */
 const RECENT_EVENTS_POLL_MS = 2000;
 
+/**
+ * @brief Opens authenticated SSE stream of run events.
+ * @param request Incoming HTTP request with abort signal.
+ * @returns Streaming text/event-stream response or unauthorized response.
+ */
 export const GET = async (request: Request) => {
   const session = await auth.api.getSession({ headers: await headers() });
 
@@ -29,6 +60,10 @@ export const GET = async (request: Request) => {
     cleanup();
   };
 
+  /**
+   * @brief Releases timers, subscriptions, and abort listeners.
+   * @returns No return value.
+   */
   const cleanup = () => {
     if (heartbeatInterval) {
       clearInterval(heartbeatInterval);

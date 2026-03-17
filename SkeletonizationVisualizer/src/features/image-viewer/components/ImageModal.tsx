@@ -1,3 +1,12 @@
+/**
+ * @file ImageModal.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Implements interactive modal image viewer.
+ * @description Provides zoom, pan, keyboard shortcuts, navigation, and download actions for benchmark images.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { useRef, useEffect, useState } from "react";
 
 import { useTheme } from "../../../contexts/ThemeContext";
@@ -12,6 +21,17 @@ type ImageModalProps = {
   onNavigate?: (direction: number) => void;
 };
 
+/**
+ * @brief Renders zoomable and navigable image viewer dialog.
+ * @param image Currently selected image.
+ * @param container Container associated with selected image.
+ * @param isOpen Modal visibility state.
+ * @param onClose Callback to close modal.
+ * @param onDownload Callback to download selected image.
+ * @param onNavigate Optional callback for previous/next navigation.
+ * @returns Modal JSX or null when closed.
+ */
+/** @brief Renders zoomable modal image viewer with navigation controls. */
 export const ImageModal = ({ image, container, isOpen, onClose, onDownload, onNavigate }: ImageModalProps) => {
   const { theme, getThemeClasses } = useTheme();
   const themeClasses = getThemeClasses();

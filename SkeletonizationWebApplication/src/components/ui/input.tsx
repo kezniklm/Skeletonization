@@ -1,5 +1,17 @@
+/**
+ * @file input.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Text input component with shared styling.
+ * @description Provides a standardized input primitive for forms and controls across the application.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { cn } from "@/lib/utils";
 
+/**
+ * @brief Renders a styled input element.
+ */
 const Input = ({ className, type, ...props }: React.ComponentProps<"input">) => (
   <input
     type={type}

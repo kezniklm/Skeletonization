@@ -1,3 +1,12 @@
+/**
+ * @file notification-permission-dialog.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Dialog for requesting browser notification permission.
+ * @description Prompts users to grant notification access when preferences are enabled but browser permission is missing.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -20,6 +29,9 @@ type NotificationPermissionDialogProps = {
   notificationsEnabled: boolean;
 };
 
+/**
+ * @brief Prompts for browser notification permission when needed.
+ */
 export const NotificationPermissionDialog = ({ notificationsEnabled }: NotificationPermissionDialogProps) => {
   const [dismissed, setDismissed] = useState(false);
 

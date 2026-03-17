@@ -1,3 +1,10 @@
+/**
+ * @file skeletonization-image-gallery.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders image gallery selection for skeletonization runs.
+ * @description Displays selectable image cards with optional per-image preprocessing toggles and filter-aware empty state handling.
+ */
+
 "use client";
 
 import Image from "next/image";
@@ -21,6 +28,19 @@ type SkeletonizationImageGalleryProps = {
   selectedFilter: FilterType;
 };
 
+/**
+ * @brief Displays paginated selectable images for skeletonization.
+ * @description Manages select-all behavior, per-image selection state, and preprocess toggles for selected images.
+ * @param images Current page of images to display.
+ * @param allFilteredImages Full filtered image list for select-all operations.
+ * @param selectedImageIds Currently selected image IDs.
+ * @param onSelectionChange Callback receiving updated image selections.
+ * @param getShouldPreprocessImage Resolver for per-image preprocess state.
+ * @param onTogglePreprocessImage Callback to toggle per-image preprocess setting.
+ * @param selectedFilter Active filter type used for empty-state messaging.
+ * @returns Image gallery content or a filter-aware empty state.
+ */
+/** @brief Renders selectable skeletonization image gallery content. */
 export const SkeletonizationImageGallery = ({
   images,
   allFilteredImages,

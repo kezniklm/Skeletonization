@@ -1,3 +1,12 @@
+/**
+ * @file job-result-processor.ts
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Processes worker result events and finalizes run state.
+ * @description Persists job stats/results, creates output images, transitions run/job statuses, and emits completion events.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { createImage } from "@/repositories/image";
 import { getJobsByRunId, getJobWithOwner, updateJobStatus, type JobWithOwner } from "@/repositories/job";
 import { upsertJobStats } from "@/repositories/job-stats";
@@ -5,6 +14,7 @@ import { getRunOwnerAndName, getRunStatus, updateRunStatus } from "@/repositorie
 
 import { copyOutputFile } from "./output-file-handler";
 import { redisClientManager } from "./redis/client";
+/** @brief Processes a single worker result payload. */
 import { QUEUE_NAMES, skeletonizationWorkerResultSchema, type SkeletonizationWorkerResult } from "./redis/index";
 import { publishRunCompletedEvent } from "./run-events";
 
@@ -71,6 +81,7 @@ const processSuccessfulResult = async (jobInfo: JobWithOwner, outputPath: string
   await updateJobStatus(jobInfo.jobId, "completed");
 };
 
+/** @brief Processes one skeletonization worker result message and updates job/run state. */
 export const processResult = async (result: SkeletonizationWorkerResult): Promise<void> => {
   const jobInfo = await getJobWithOwner(result.job_id);
 
@@ -108,6 +119,9 @@ export const processResult = async (result: SkeletonizationWorkerResult): Promis
   await checkRunCompletion(jobInfo.runId);
 };
 
+/**
+ * @brief Summary information for batch processing execution.
+ */
 export type BatchProcessResult = {
   processed: number;
   errors: number;
@@ -115,6 +129,7 @@ export type BatchProcessResult = {
   stoppedEarly: boolean;
 };
 
+/** @brief Processes a bounded batch of result messages from Redis queue. */
 export const processBatch = async (maxBatchSize = 20, maxExecutionTimeMs = 10000): Promise<BatchProcessResult> => {
   const startTime = Date.now();
   let processed = 0;

@@ -1,3 +1,12 @@
+/**
+ * @file form-textarea.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Provides react-hook-form bound textarea control.
+ * @description Renders a labeled textarea with registration and inline validation message handling.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { type TextareaHTMLAttributes } from "react";
 import { useFormContext } from "react-hook-form";
 
@@ -6,6 +15,14 @@ type FormTextareaProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
   label?: string;
 };
 
+/**
+ * @brief Renders a form-context-connected textarea field.
+ * @description Binds textarea registration to react-hook-form and shows field-level validation errors.
+ * @param name Registered form field name.
+ * @param label Optional field label text.
+ * @param className Optional class overrides.
+ * @returns A labeled textarea with optional error text.
+ */
 export const FormTextarea = ({ name, label, className = "", ...props }: FormTextareaProps) => {
   const {
     register,

@@ -1,3 +1,12 @@
+/**
+ * @file BenchmarkGallery.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Renders benchmark container sections with image galleries.
+ * @description Displays per-container controls for multi-image comparison selection and delegates image rendering.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { useTheme } from "../contexts/ThemeContext";
 import { ImageGallery } from "../features/gallery/components";
 import type { ImageContainer, ImageData } from "../types";
@@ -13,6 +22,19 @@ type BenchmarkGalleryProps = {
   onCompareSelected: (container: ImageContainer) => void;
 };
 
+/**
+ * @brief Displays filtered benchmark containers and comparison actions.
+ * @param filteredContainers Visible benchmark containers after filtering.
+ * @param onImageClick Callback invoked when image preview is requested.
+ * @param onDownload Callback invoked when image download is requested.
+ * @param selectedComparisonIds Selected image IDs keyed by container name.
+ * @param onToggleComparisonSelection Callback for toggling image comparison selection.
+ * @param onClearComparisonSelection Callback for clearing container selection.
+ * @param onSelectAllComparison Callback for selecting all processed images.
+ * @param onCompareSelected Callback for opening multi-image comparison.
+ * @returns Gallery section JSX.
+ */
+/** @brief Renders benchmark gallery sections and comparison controls. */
 export const BenchmarkGallery = ({
   filteredContainers,
   onImageClick,

@@ -1,3 +1,12 @@
+/**
+ * @file SearchAndFilter.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Implements benchmark search and algorithm filtering controls.
+ * @description Filters container results by search text and selected algorithm and reports filtered output to parent.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { useState, useEffect, useMemo } from "react";
 
 import { useTheme } from "../../../contexts/ThemeContext";
@@ -8,6 +17,12 @@ type SearchAndFilterProps = {
   onFiltersChange: (filteredContainers: ImageContainer[]) => void;
 };
 
+/**
+ * @brief Renders search input and algorithm filter controls.
+ * @param containers Source benchmark containers.
+ * @param onFiltersChange Callback invoked with filtered containers.
+ * @returns Search and filter section JSX.
+ */
 export const SearchAndFilter = ({ containers, onFiltersChange }: SearchAndFilterProps) => {
   const { getThemeClasses } = useTheme();
   const themeClasses = getThemeClasses();
@@ -17,6 +32,10 @@ export const SearchAndFilter = ({ containers, onFiltersChange }: SearchAndFilter
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<string>("all");
 
   // Filter logic
+  /**
+   * @brief Builds selectable algorithm list including global option.
+   * @returns Ordered algorithm option names.
+   */
   const getAlgorithmList = () => ["all", ...containers.map((c) => c.name)];
 
   const filteredContainers = useMemo(

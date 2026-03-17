@@ -1,3 +1,12 @@
+/**
+ * @file lab-algorithm-filter.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Implements algorithm filter dropdown for lab history.
+ * @description Allows multi-select algorithm filtering using checkbox menu items.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 "use client";
 
 import { Filter } from "lucide-react";
@@ -15,12 +24,22 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { formatAlgorithmName } from "@/lib/format";
 
+/**
+ * @brief Represents algorithm filter component properties.
+ */
 type LabAlgorithmFilterProps = {
   readonly algorithms: readonly Algorithm[];
   selectedAlgorithms: ReadonlySet<Algorithm>;
   toggleAlgorithm: (algorithm: Algorithm) => void;
 };
 
+/**
+ * @brief Renders algorithm multi-select dropdown.
+ * @param algorithms Available algorithm list.
+ * @param selectedAlgorithms Currently selected algorithms.
+ * @param toggleAlgorithm Callback to toggle algorithm selection.
+ * @returns Dropdown filter JSX.
+ */
 export const LabAlgorithmFilter = ({ algorithms, selectedAlgorithms, toggleAlgorithm }: LabAlgorithmFilterProps) => (
   <DropdownMenu>
     <DropdownMenuTrigger asChild>

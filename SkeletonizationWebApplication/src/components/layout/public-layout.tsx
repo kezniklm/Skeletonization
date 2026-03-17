@@ -1,6 +1,21 @@
+/**
+ * @file public-layout.tsx
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Defines layout shell for public pages.
+ * @description Renders public navigation badges and page container for unauthenticated or landing routes.
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 import { navigationBadges } from "../navigation/constants/navigation-badges";
 import { Navigation } from "../navigation/navigation";
 
+/**
+ * @brief Renders public application layout.
+ * @description Filters visible navigation badges for public routes and renders main page content.
+ * @param children Nested page content.
+ * @returns Public layout wrapper with navigation.
+ */
 export const PublicLayout = ({
   children
 }: Readonly<{
