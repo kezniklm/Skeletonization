@@ -7,7 +7,7 @@
  * @date 2026-03-16
  */
 
-import { and, asc, desc, eq, notInArray } from "drizzle-orm";
+import { and, asc, desc, eq, ilike, notInArray } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 
 import { type Algorithm } from "@/algorithms";
@@ -68,6 +68,26 @@ export const getRunById = async (runId: string) => {
 /** @brief Lists runs for a user ordered by creation date descending. */
 export const getRunsByUserId = async (userId: string) =>
   db.select().from(run).where(eq(run.userId, userId)).orderBy(desc(run.createdAt));
+
+/** @brief Returns true when a user already has a run with the same name (case-insensitive). */
+export const runNameExistsForUser = async (userId: string, name: string): Promise<boolean> => {
+  const trimmedName = name.trim();
+
+  if (!trimmedName) {
+    return false;
+  }
+
+  // Escape LIKE wildcards so ilike performs exact-name matching, just case-insensitive.
+  const escapedName = trimmedName.replace(/([%_\\])/g, "\\$1");
+
+  const existingRuns = await db
+    .select({ id: run.id })
+    .from(run)
+    .where(and(eq(run.userId, userId), ilike(run.name, escapedName)))
+    .limit(1);
+
+  return existingRuns.length > 0;
+};
 
 /** @brief Counts runs for a user. */
 export const getRunCountByUserId = async (userId: string) => db.$count(run, eq(run.userId, userId));

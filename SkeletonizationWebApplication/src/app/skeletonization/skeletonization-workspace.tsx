@@ -7,7 +7,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, ArrowRight, ArrowLeft, Check } from "lucide-react";
 import { toast } from "sonner";
@@ -20,7 +20,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { type SelectImage } from "@/database/zod/image";
-import { createSkeletonizationRunsAction } from "@/server-actions/skeletonization";
+import { checkRunNameAvailabilityAction, createSkeletonizationRunsAction } from "@/server-actions/skeletonization";
 import { useImageGallery } from "@/hooks/use-image-gallery";
 import type { Algorithm } from "@/algorithms";
 import { StepIndicator } from "@/components/ui/step-indicator";
@@ -73,6 +73,8 @@ type RunFormErrors = {
   imageIds?: string;
 };
 
+const DUPLICATE_RUN_NAME_MESSAGE = "Run name is already taken. Please choose a different name.";
+
 /**
  * @brief Renders the skeletonization run configuration workspace.
  * @description Guides users through naming runs, choosing algorithms and images, reviewing configuration, and submitting run creation.
@@ -82,14 +84,133 @@ type RunFormErrors = {
  */
 export const SkeletonizationWorkspace = ({ images, defaultOutputFormat }: SkeletonizationWorkspaceProps) => {
   const router = useRouter();
+  const lastTakenToastNameRef = useRef("");
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedImageIds, setSelectedImageIds] = useState<string[]>([]);
   const [selectedAlgorithms, setSelectedAlgorithms] = useState<Algorithm[]>([]);
   const [runName, setRunName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCheckingName, setIsCheckingName] = useState(false);
+  const [lastCheckedName, setLastCheckedName] = useState("");
+  const [lastCheckedNameAvailable, setLastCheckedNameAvailable] = useState<boolean | null>(null);
   const [errors, setErrors] = useState<RunFormErrors>({});
   const [preprocessAllImages, setPreprocessAllImages] = useState(true);
   const [preprocessByImageId, setPreprocessByImageId] = useState<Record<string, boolean>>({});
+
+  const validateRunNameAvailability = async (
+    name: string,
+    options: { notifyIfTaken?: boolean; notifyOnError?: boolean; forceNotifyIfTaken?: boolean } = {}
+  ): Promise<boolean> => {
+    const { notifyIfTaken = false, notifyOnError = true, forceNotifyIfTaken = false } = options;
+    const trimmedName = name.trim();
+
+    if (!trimmedName) {
+      return true;
+    }
+
+    if (trimmedName === lastCheckedName && lastCheckedNameAvailable !== null) {
+      if (
+        !lastCheckedNameAvailable &&
+        notifyIfTaken &&
+        (forceNotifyIfTaken || lastTakenToastNameRef.current !== trimmedName)
+      ) {
+        lastTakenToastNameRef.current = trimmedName;
+        toast.error(DUPLICATE_RUN_NAME_MESSAGE);
+      }
+
+      return lastCheckedNameAvailable;
+    }
+
+    setIsCheckingName(true);
+    try {
+      const { available } = await checkRunNameAvailabilityAction(trimmedName);
+
+      setLastCheckedName(trimmedName);
+      setLastCheckedNameAvailable(available);
+
+      if (!available && notifyIfTaken && (forceNotifyIfTaken || lastTakenToastNameRef.current !== trimmedName)) {
+        lastTakenToastNameRef.current = trimmedName;
+        toast.error(DUPLICATE_RUN_NAME_MESSAGE);
+      }
+
+      if (available && lastTakenToastNameRef.current === trimmedName) {
+        lastTakenToastNameRef.current = "";
+      }
+
+      return available;
+    } catch (error) {
+      console.error("Error checking run name availability:", error);
+
+      if (notifyOnError) {
+        toast.error("Failed to validate run name");
+      }
+
+      return false;
+    } finally {
+      setIsCheckingName(false);
+    }
+  };
+
+  useEffect(() => {
+    if (currentStep !== 1) {
+      return;
+    }
+
+    const trimmedName = runName.trim();
+    const nameValidation = runStep1Schema.shape.name.safeParse(trimmedName);
+
+    if (!nameValidation.success) {
+      return;
+    }
+
+    if (trimmedName === lastCheckedName && lastCheckedNameAvailable !== null) {
+      if (!lastCheckedNameAvailable && lastTakenToastNameRef.current !== trimmedName) {
+        lastTakenToastNameRef.current = trimmedName;
+        toast.error(DUPLICATE_RUN_NAME_MESSAGE);
+      }
+
+      return;
+    }
+
+    let isCancelled = false;
+
+    const debounce = setTimeout(async () => {
+      setIsCheckingName(true);
+
+      try {
+        const { available } = await checkRunNameAvailabilityAction(trimmedName);
+
+        if (isCancelled) {
+          return;
+        }
+
+        setLastCheckedName(trimmedName);
+        setLastCheckedNameAvailable(available);
+
+        if (!available && lastTakenToastNameRef.current !== trimmedName) {
+          lastTakenToastNameRef.current = trimmedName;
+          toast.error(DUPLICATE_RUN_NAME_MESSAGE);
+        }
+
+        if (available && lastTakenToastNameRef.current === trimmedName) {
+          lastTakenToastNameRef.current = "";
+        }
+      } catch (error) {
+        if (!isCancelled) {
+          console.error("Error checking run name availability:", error);
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsCheckingName(false);
+        }
+      }
+    }, 350);
+
+    return () => {
+      isCancelled = true;
+      clearTimeout(debounce);
+    };
+  }, [runName, currentStep, lastCheckedName, lastCheckedNameAvailable]);
 
   const setPreprocessAll = (nextValue: boolean) => {
     setPreprocessAllImages(nextValue);
@@ -191,8 +312,17 @@ export const SkeletonizationWorkspace = ({ images, defaultOutputFormat }: Skelet
     return true;
   };
 
-  const handleNext = () => {
-    if (currentStep === 1 && !validateStep1()) return;
+  const handleNext = async () => {
+    if (currentStep === 1) {
+      if (!validateStep1()) return;
+
+      const available = await validateRunNameAvailability(runName, {
+        notifyIfTaken: true,
+        forceNotifyIfTaken: true
+      });
+      if (!available) return;
+    }
+
     if (currentStep === 2 && !validateStep2()) return;
 
     setCurrentStep((prev) => Math.min(prev + 1, STEPS.length));
@@ -236,6 +366,15 @@ export const SkeletonizationWorkspace = ({ images, defaultOutputFormat }: Skelet
       return;
     }
 
+    const available = await validateRunNameAvailability(runName, {
+      notifyIfTaken: true,
+      forceNotifyIfTaken: true
+    });
+    if (!available) {
+      setCurrentStep(1);
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       await createSkeletonizationRunsAction({
@@ -257,7 +396,13 @@ export const SkeletonizationWorkspace = ({ images, defaultOutputFormat }: Skelet
       router.push("/lab");
     } catch (error) {
       console.error("Error creating run:", error);
-      toast.error(error instanceof Error ? error.message : "Failed to create run");
+      const errorMessage = error instanceof Error ? error.message : "Failed to create run";
+
+      if (errorMessage === DUPLICATE_RUN_NAME_MESSAGE) {
+        setCurrentStep(1);
+      }
+
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -281,6 +426,10 @@ export const SkeletonizationWorkspace = ({ images, defaultOutputFormat }: Skelet
     }
   };
 
+  const trimmedRunName = runName.trim();
+  const isRunNameTaken =
+    trimmedRunName.length > 0 && lastCheckedName === trimmedRunName && lastCheckedNameAvailable === false;
+
   return (
     <div className="space-y-8 lg:space-y-4 2xl:space-y-8">
       <StepIndicator steps={STEPS} currentStep={currentStep} />
@@ -303,11 +452,31 @@ export const SkeletonizationWorkspace = ({ images, defaultOutputFormat }: Skelet
                   id="runName"
                   placeholder="e.g., Medical Images - Analysis 1"
                   value={runName}
+                  className={
+                    isRunNameTaken
+                      ? "border-red-500 ring-2 ring-red-500/35 focus-visible:border-red-500 focus-visible:ring-red-500/45 dark:border-red-400 dark:ring-red-400/35 dark:focus-visible:border-red-400 dark:focus-visible:ring-red-400/45"
+                      : undefined
+                  }
                   onChange={(e) => {
-                    setRunName(e.target.value);
+                    const nextName = e.target.value;
+
+                    setRunName(nextName);
+                    setLastCheckedName("");
+                    setLastCheckedNameAvailable(null);
+
+                    if (lastTakenToastNameRef.current && nextName.trim() !== lastTakenToastNameRef.current) {
+                      lastTakenToastNameRef.current = "";
+                    }
+
                     if (errors.name) {
                       setErrors((prev) => ({ ...prev, name: undefined }));
                     }
+                  }}
+                  onBlur={() => {
+                    void validateRunNameAvailability(runName, {
+                      notifyIfTaken: false,
+                      notifyOnError: false
+                    });
                   }}
                   disabled={isSubmitting}
                 />
@@ -490,16 +659,25 @@ export const SkeletonizationWorkspace = ({ images, defaultOutputFormat }: Skelet
       </div>
 
       <div className="flex justify-between">
-        <Button onClick={handleBack} variant="outline" disabled={currentStep === 1 || isSubmitting}>
+        <Button onClick={handleBack} variant="outline" disabled={currentStep === 1 || isSubmitting || isCheckingName}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </Button>
 
         <div className="flex gap-3">
           {currentStep < STEPS.length ? (
-            <Button onClick={handleNext} disabled={!canProceed() || isSubmitting}>
-              Next
-              <ArrowRight className="ml-2 h-4 w-4" />
+            <Button onClick={handleNext} disabled={!canProceed() || isSubmitting || isCheckingName}>
+              {isCheckingName && currentStep === 1 ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Checking...
+                </>
+              ) : (
+                <>
+                  Next
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </>
+              )}
             </Button>
           ) : (
             <Button onClick={handleSubmit} disabled={isSubmitting} size="lg" className="gap-2">

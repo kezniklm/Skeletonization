@@ -15,15 +15,32 @@ import { type CreateSkeletonizationRun, createSkeletonizationRunSchema } from "@
 import { publishJobs, type SkeletonizationJob } from "@/lib/job-publisher";
 import { getImagesByIds } from "@/repositories/image";
 import { createJobsBulk } from "@/repositories/job";
-import { createRun, updateRunStatus } from "@/repositories/run";
+import { createRun, runNameExistsForUser, updateRunStatus } from "@/repositories/run";
 
 import { requireUser } from "./common";
+
+/** @brief Checks whether the provided run name is available for the current user. */
+export const checkRunNameAvailabilityAction = async (name: string): Promise<{ available: boolean }> => {
+  const user = await requireUser("check run name availability");
+  const trimmedName = name.trim();
+
+  if (!trimmedName) {
+    return { available: true };
+  }
+
+  const exists = await runNameExistsForUser(user.id, trimmedName);
+  return { available: !exists };
+};
 
 /** @brief Creates a run, persists jobs, and enqueues processing tasks. */
 export const createSkeletonizationRunsAction = async (input: CreateSkeletonizationRun) => {
   const user = await requireUser("create skeletonization run");
 
   const { name, algorithms, imageIds, params } = createSkeletonizationRunSchema.parse(input);
+
+  if (await runNameExistsForUser(user.id, name)) {
+    throw new Error("Run name is already taken. Please choose a different name.");
+  }
 
   const getShouldRunPreprocessing = (imageId: string) =>
     params.preprocessByImageId[imageId] ?? params.preprocessAllImages;
