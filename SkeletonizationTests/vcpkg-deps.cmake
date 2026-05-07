@@ -1,1 +1,8 @@
 find_package(GTest CONFIG REQUIRED)
+find_package(CLI11 REQUIRED)
+find_package(RapidJSON CONFIG REQUIRED)
+find_package(glog CONFIG REQUIRED)
+find_package(libenvpp CONFIG REQUIRED)
+find_package(hiredis CONFIG REQUIRED)
+find_package(hiredis_ssl CONFIG REQUIRED)
+find_package(AWSSDK CONFIG REQUIRED COMPONENTS s3)

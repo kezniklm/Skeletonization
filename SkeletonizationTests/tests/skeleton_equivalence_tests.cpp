@@ -16,6 +16,18 @@
 * @date 2026-03-16
 */
 
+/**
+ *
+ * @file skeleton_equivalence_tests.cpp
+ * @author Matej Keznikl (matej.keznikl@gmail.com)
+ * @brief Tests skeleton equivalence helpers.
+ *
+ * This file contains unit tests for skeleton output comparison utilities.
+ *
+ * @version 1.0
+ * @date 2026-03-16
+ */
+
 #include "gtest/gtest.h"
 #include "opencv2/core/mat.hpp"
 #include "../include/common/image_factory.hpp"
