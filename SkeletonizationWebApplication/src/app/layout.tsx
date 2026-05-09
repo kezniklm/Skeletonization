@@ -14,6 +14,7 @@ import { type Metadata } from "next";
 import { Providers } from "@/components/layout/providers";
 import { PrivateLayout } from "@/components/layout/private-layout";
 import { PublicLayout } from "@/components/layout/public-layout";
+import { SmallScreenOverlay } from "@/components/layout/small-screen-overlay";
 import { auth } from "@/auth";
 import { getOrCreateUserPreferences } from "@/repositories/preferences";
 import { OpenCvScript } from "@/scripts/opencv";
@@ -57,6 +58,7 @@ const RootLayout = async ({
           timezone={userPreferences?.timezone ?? defaultPreferences.timezone}
           isLoggedIn={isLoggedIn}
         >
+          <SmallScreenOverlay />
           {isLoggedIn ? <PrivateLayout>{children}</PrivateLayout> : <PublicLayout>{children}</PublicLayout>}
         </Providers>
       </body>

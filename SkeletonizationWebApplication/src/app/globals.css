@@ -276,3 +276,98 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.small-screen-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  background: linear-gradient(150deg, #e0f2fe 0%, #f8fafc 45%, #ffffff 100%);
+  color: #0f172a;
+  overflow: hidden;
+}
+
+.small-screen-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(60% 60% at 15% 20%, rgba(14, 165, 233, 0.18), transparent 65%),
+    radial-gradient(70% 70% at 85% 10%, rgba(56, 189, 248, 0.2), transparent 70%);
+  opacity: 0.9;
+}
+
+.small-screen-overlay__frame {
+  position: relative;
+  z-index: 1;
+  width: min(32rem, 100%);
+  border-radius: 24px;
+  padding: 2.5rem 2.25rem;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  box-shadow: 0 32px 80px rgba(15, 23, 42, 0.2);
+  backdrop-filter: blur(14px);
+}
+
+.small-screen-overlay__eyebrow {
+  margin-bottom: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #0ea5e9;
+}
+
+.small-screen-overlay__title {
+  margin: 0 0 1rem;
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.small-screen-overlay__copy {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #1e293b;
+}
+
+.small-screen-overlay__meta {
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.dark .small-screen-overlay {
+  background: linear-gradient(160deg, #020617 0%, #0f172a 55%, #0b1120 100%);
+  color: #e2e8f0;
+}
+
+.dark .small-screen-overlay::before {
+  background:
+    radial-gradient(60% 60% at 15% 20%, rgba(56, 189, 248, 0.22), transparent 65%),
+    radial-gradient(70% 70% at 85% 10%, rgba(14, 116, 144, 0.35), transparent 70%);
+}
+
+.dark .small-screen-overlay__frame {
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.55);
+}
+
+.dark .small-screen-overlay__eyebrow {
+  color: #38bdf8;
+}
+
+.dark .small-screen-overlay__copy {
+  color: #cbd5f5;
+}
+
+.dark .small-screen-overlay__meta {
+  color: #94a3b8;
+}
