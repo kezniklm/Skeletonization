@@ -11,8 +11,8 @@
 
 import { useEffect, useState } from "react";
 
-const MIN_VIEWPORT_WIDTH = 1366;
-const MIN_VIEWPORT_HEIGHT = 768;
+const MIN_VIEWPORT_WIDTH = 1250;
+const MIN_VIEWPORT_HEIGHT = 550;
 
 const isViewportTooSmall = () => {
   if (typeof window === "undefined") {
@@ -77,7 +77,9 @@ export const SmallScreenOverlay = () => {
         <p id="small-screen-description" className="small-screen-overlay__copy">
           This experience is optimized for screens 14 inches and larger. Please switch to a larger device to continue.
         </p>
-        <div className="small-screen-overlay__meta">Minimum recommended: 1366 x 768.</div>
+        <div className="small-screen-overlay__meta">
+          Minimum recommended: {MIN_VIEWPORT_WIDTH} x {MIN_VIEWPORT_HEIGHT}.
+        </div>
       </div>
     </div>
   );

@@ -29,7 +29,7 @@ export const PublicLayout = ({
     <div className="flex min-h-screen flex-col">
       <Navigation navigationBadges={publicNavigationBadges} navigationItems={[]} />
 
-      <main className="container mx-auto px-8 py-13 lg:max-w-4/5 2xl:py-16">{children}</main>
+      <main className="container mx-auto px-8 pt-8 pb-12 lg:max-w-4/5 xl:pt-6 xl:pb-10 2xl:py-16">{children}</main>
     </div>
   );
 };

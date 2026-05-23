@@ -71,10 +71,7 @@ export const PreprocessingWorkspace = ({
 
       <SaveConfirmationDialog isOpen={isOpen} onClose={closeDialog} onSelectAction={selectAction} />
 
-      <div
-        className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_420px] xl:grid-cols-[minmax(0,1fr)_480px]"
-        style={{ height: "calc(100vh - 140px)" }}
-      >
+      <div className="preprocessing-workspace-grid grid gap-4 lg:grid-cols-[minmax(0,1fr)_420px] xl:grid-cols-[minmax(0,1fr)_480px]">
         <PreviewPanel {...previewProps} />
         <ControlsPanel {...controlsProps} />
       </div>
