@@ -19,6 +19,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cstdlib>
 #include <filesystem>
 #include <memory>
 #include <stdexcept>
@@ -207,6 +208,21 @@ namespace commandline
 		try
 		{
 			app.parse(argc_, argv_);
+		}
+		catch (const CLI::CallForHelp& e)
+		{
+			const int exit_code = app.exit(e);
+			std::exit(exit_code);
+		}
+		catch (const CLI::CallForAllHelp& e)
+		{
+			const int exit_code = app.exit(e);
+			std::exit(exit_code);
+		}
+		catch (const CLI::CallForVersion& e)
+		{
+			const int exit_code = app.exit(e);
+			std::exit(exit_code);
 		}
 		catch (const CLI::ParseError& e)
 		{

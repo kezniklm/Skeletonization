@@ -53,7 +53,7 @@ namespace commandline
 		std::vector<configuration::skeletonizer_config> skeletonizer_configurations;
 
 		/// Enables image preprocessing before execution.
-		bool run_image_preprocessing{};
+		bool run_image_preprocessing;
 	};
 
 	/**
