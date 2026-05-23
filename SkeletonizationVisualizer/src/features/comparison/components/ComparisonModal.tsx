@@ -169,10 +169,11 @@ export const ComparisonModal = ({
 
   const sideBySideImages = [original, ...processedImages];
   const sideBySideCount = sideBySideImages.length;
-  const isSmallSideBySide = sideBySideCount <= 3;
 
   const sideBySideCardWidth =
-    sideBySideCount === 2 ? "min(700px, 90vw)" : sideBySideCount === 3 ? "min(560px, 85vw)" : "min(500px, 80vw)";
+    sideBySideCount === 2 ? "min(520px, 78vw)" : sideBySideCount === 3 ? "min(440px, 70vw)" : "min(380px, 65vw)";
+
+  const isCenteredSideBySide = sideBySideCount === 2;
 
   return (
     <div
@@ -285,7 +286,7 @@ export const ComparisonModal = ({
           {comparisonMode === "side-by-side" && (
             <div
               className={`comparison-scrollbar flex h-full gap-4 overflow-x-auto pb-4 md:gap-6 ${
-                isSmallSideBySide ? "justify-center" : ""
+                isCenteredSideBySide ? "justify-center" : "justify-start"
               }`}
             >
               {sideBySideImages.map((image) => (
