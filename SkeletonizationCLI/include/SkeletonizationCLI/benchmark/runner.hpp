@@ -26,9 +26,9 @@
 
 #include "SkeletonizationCLI/interfaces/i_arguments_provider.hpp"
 #include "SkeletonizationCLI/interfaces/i_image_loader.hpp"
-#include "SkeletonizationCLI/interfaces/i_image_preprocessor.hpp"
 #include "SkeletonizationCLI/visual_inspector/image_container.hpp"
 #include "SkeletonizationCore/configuration/types.hpp"
+#include "SkeletonizationCore/extensions/standard_image_processor.hpp"
 #include "SkeletonizationCore/skeletonizer/skeletonizer.hpp"
 
 namespace skeletonization_benchmark
@@ -50,12 +50,12 @@ namespace skeletonization_benchmark
 		 * @param image_metadata Image benchmark metadata.
 		 * @param args_provider Arguments provider dependency.
 		 * @param image_loader Image loader dependency.
-		 * @param image_preprocessor Image preprocessor dependency.
+		 * @param image_processor Image processor dependency.
 		 */
 		runner(const configuration::image_benchmark_metadata& image_metadata,
 		       std::shared_ptr<cli::interfaces::i_arguments_provider> args_provider,
 		       const cli::interfaces::i_image_loader& image_loader,
-		       const cli::interfaces::i_image_preprocessor& image_preprocessor);
+		       const standard_image_processor& image_processor);
 
 		/**
 		 * @brief Registers all benchmark cases for this runner.

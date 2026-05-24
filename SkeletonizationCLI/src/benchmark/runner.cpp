@@ -18,6 +18,7 @@
 #include "SkeletonizationCLI/benchmark/runner.hpp"
 
 #include <functional>
+#include <stdexcept>
 #include <string>
 #include <utility>
 
@@ -40,14 +41,26 @@ namespace skeletonization_benchmark
 	runner::runner(const configuration::image_benchmark_metadata& image_metadata,
 	               std::shared_ptr<cli::interfaces::i_arguments_provider> args_provider,
 	               const cli::interfaces::i_image_loader& image_loader,
-	               const cli::interfaces::i_image_preprocessor& image_preprocessor)
+	               const standard_image_processor& image_processor)
 		: image_metadata_(image_metadata)
 		  , args_provider_(std::move(args_provider))
 		  , input_image_(image_loader.load(image_metadata.path))
-		  , binary_image_(args_provider_->run_image_preprocessing()
-			                  ? image_preprocessor.preprocess(input_image_)
-			                  : input_image_)
+		  , binary_image_()
 	{
+		if (args_provider_->run_image_preprocessing())
+		{
+			binary_image_ = image_processor.preprocess(input_image_);
+			return;
+		}
+
+		const auto normalized = image_processor.normalize_binary_image(input_image_);
+		if (!normalized)
+		{
+			LOG(ERROR) << "Failed to normalize image '" << image_metadata_.path << "': " << normalized.error();
+			throw std::runtime_error(normalized.error());
+		}
+
+		binary_image_ = normalized.value();
 	}
 
 	void runner::register_all_benchmarks()

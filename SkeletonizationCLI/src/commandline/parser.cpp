@@ -121,7 +121,7 @@ namespace commandline
 			   "--run_image_preprocessing",
 			   args.run_image_preprocessing,
 			   "Enables image preprocessing")
-		   ->default_val(true);
+		   ->default_val(false);
 
 		app.callback([&]
 		{

@@ -21,6 +21,7 @@
 #include <expected>
 #include <string>
 
+#include "SkeletonizationCore/extensions/standard_image_processor.hpp"
 #include "SkeletonizationCore/skeletonizer/algorithm_factory.hpp"
 
 #include "SkeletonizationWorker/application/interfaces/skeletonization_processor.hpp"
@@ -48,5 +49,7 @@ namespace worker::infrastructure
 	private:
 		/// Configured processor backend type.
 		skeletonizer::skeletonizer_type processor_type_;
+		/// Standard image processor for preprocessing and normalization.
+		standard_image_processor image_processor_{};
 	};
 }

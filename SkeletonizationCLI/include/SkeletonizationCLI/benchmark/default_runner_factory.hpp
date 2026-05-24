@@ -23,9 +23,9 @@
 #include "runner.hpp"
 #include "SkeletonizationCLI/interfaces/i_arguments_provider.hpp"
 #include "SkeletonizationCLI/interfaces/i_image_loader.hpp"
-#include "SkeletonizationCLI/interfaces/i_image_preprocessor.hpp"
 #include "SkeletonizationCLI/interfaces/i_runner_factory.hpp"
 #include "SkeletonizationCore/configuration/types.hpp"
+#include "SkeletonizationCore/extensions/standard_image_processor.hpp"
 
 namespace skeletonization_benchmark
 {
@@ -44,15 +44,15 @@ namespace skeletonization_benchmark
 		 *
 		 * @param args_provider Arguments provider service.
 		 * @param image_loader Image loader service.
-		 * @param image_preprocessor Image preprocessor service.
+		 * @param image_processor Image processor service.
 		 */
 		default_runner_factory(
 			std::shared_ptr<cli::interfaces::i_arguments_provider> args_provider,
 			std::shared_ptr<cli::interfaces::i_image_loader> image_loader,
-			std::shared_ptr<cli::interfaces::i_image_preprocessor> image_preprocessor)
+			std::shared_ptr<standard_image_processor> image_processor)
 			: args_provider_(std::move(args_provider))
 			  , image_loader_(std::move(image_loader))
-			  , image_preprocessor_(std::move(image_preprocessor))
+			  , image_processor_(std::move(image_processor))
 		{
 		}
 
@@ -69,7 +69,7 @@ namespace skeletonization_benchmark
 				image_metadata,
 				args_provider_,
 				*image_loader_,
-				*image_preprocessor_);
+				*image_processor_);
 		}
 
 	private:
@@ -77,7 +77,7 @@ namespace skeletonization_benchmark
 		std::shared_ptr<cli::interfaces::i_arguments_provider> args_provider_;
 		/// Shared image loader dependency.
 		std::shared_ptr<cli::interfaces::i_image_loader> image_loader_;
-		/// Shared image preprocessor dependency.
-		std::shared_ptr<cli::interfaces::i_image_preprocessor> image_preprocessor_;
+		/// Shared image processor dependency.
+		std::shared_ptr<standard_image_processor> image_processor_;
 	};
 }
